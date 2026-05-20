@@ -1,639 +1,325 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LunaKoru - 数字伴侣新时代</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        :root {
-            --luna-primary: #007AFF;
-            --luna-secondary: #F8F9FA;
-            --luna-accent: #C5A3FF;
-            --luna-dark: #1D1D1F;
-            --luna-white: #FFFFFF;
-        }
-
-        body {
-            background: var(--luna-white);
-            color: var(--luna-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .yourwave-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .yourwave-hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            background: var(--luna-secondary);
-            position: relative;
-            overflow: hidden;
-        }
-
-
-        .yourwave-text-hero {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.025em;
-            color: var(--luna-dark);
-            margin-bottom: 2rem;
-        }
-
-        .yourwave-text-large {
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-            margin-bottom: 1.5rem;
-        }
-
-        .yourwave-text-medium {
-            font-size: clamp(1.25rem, 3vw, 1.5rem);
-            font-weight: 500;
-            line-height: 1.3;
-            margin-bottom: 1rem;
-        }
-
-        .yourwave-text-body {
-            font-size: 1.125rem;
-            font-weight: 400;
-            line-height: 1.7;
-            color: #86868B;
-        }
-
-        .yourwave-button {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 24px;
-            font-size: 17px;
-            font-weight: 500;
-            background: var(--luna-primary);
-            color: var(--luna-white);
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .yourwave-button:hover {
-            background: #0051D0;
-            transform: translateY(-1px);
-        }
-
-        .yourwave-button-outline {
-            background: transparent;
-            color: var(--luna-primary);
-            border: 1px solid var(--luna-primary);
-        }
-
-        .yourwave-button-outline:hover {
-            background: var(--luna-primary);
-            color: var(--luna-white);
-        }
-
-        .yourwave-section {
-            padding: 100px 0;
-        }
-
-        .yourwave-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .yourwave-card {
-            background: var(--yourwave-white);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .yourwave-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--yourwave-primary), var(--yourwave-secondary));
-            transform: translateX(-100%);
-            transition: transform 0.4s ease;
-        }
-
-        .yourwave-card:hover::before {
-            transform: translateX(0);
-        }
-
-        .yourwave-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .yourwave-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-
-        .yourwave-feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-top: 4rem;
-        }
-
-        .yourwave-accent-bg {
-            background: var(--luna-secondary);
-        }
-
-        .yourwave-secondary-bg {
-            background: var(--luna-primary);
-        }
-
-        .yourwave-image-placeholder {
-            background: var(--yourwave-light);
-            border: 2px dashed var(--yourwave-gray);
-            border-radius: 15px;
-            aspect-ratio: 16/9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--yourwave-gray);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .yourwave-image-placeholder:hover {
-            border-color: var(--yourwave-primary);
-            color: var(--yourwave-primary);
-        }
-
-        .yourwave-footer {
-            background: var(--yourwave-dark);
-            color: var(--yourwave-white);
-            padding: 80px 0 40px;
-        }
-
-        .yourwave-nav-link {
-            font-size: 17px;
-            font-weight: 400;
-            color: var(--luna-dark);
-            text-decoration: none;
-            transition: color 0.2s ease;
-            opacity: 0.8;
-        }
-
-        .yourwave-nav-link:hover {
-            color: var(--luna-primary);
-            opacity: 1;
-        }
-
-        .yourwave-logo {
-            font-size: 21px;
-            font-weight: 600;
-            color: var(--luna-dark);
-            text-decoration: none;
-            letter-spacing: -0.01em;
-        }
-
-
-        .yourwave-floating {
-            animation: floating 6s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-        }
-
-        .yourwave-slide-up {
-            animation: slideUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(50px);
-        }
-
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .yourwave-brand-text {
-            background: linear-gradient(135deg, var(--yourwave-primary), var(--yourwave-secondary), var(--yourwave-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        @media (max-width: 768px) {
-            .yourwave-container {
-                padding: 0 1rem;
-            }
-
-            .yourwave-section {
-                padding: 60px 0;
-            }
-
-            .yourwave-card {
-                padding: 2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月光茧 - 虚实有别，爱意无界</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
+  --night-780:#1d477f;--mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;
+  --moon-080:#f6fbff;--moon-000:#ffffff;
+  --text-primary:#f6fbff;--text-secondary:rgba(236,247,255,0.80);
+  --text-muted:rgba(236,247,255,0.58);--text-faint:rgba(236,247,255,0.36);
+  --glass-fill:rgba(130,174,230,0.16);--glass-fill-romantic:rgba(180,215,255,0.20);
+  --glass-border:rgba(220,240,255,0.30);--glass-border-bright:rgba(235,248,255,0.50);
+  --glow-blue:rgba(150,205,255,0.34);--divider-soft:rgba(220,240,255,0.18);
+  --rounded-xxl:28px;--rounded-panel:34px;--rounded-pill:9999px;
+  --nav-h:80px;--page-x:72px;
+  --font-serif:"Noto Serif SC","Source Han Serif SC","Songti SC",serif;
+  --font-sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);color:var(--text-primary);background:var(--night-960);overflow-x:hidden;line-height:1.72;position:relative;min-height:100vh}
+.page-bg{position:absolute;top:-12px;left:-12px;right:-12px;height:calc(100vh + 200px);background:url('images/banner_bg.jpg') center/cover no-repeat;filter:blur(2px);transform:scale(1.03);z-index:0;mask-image:linear-gradient(to bottom,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 60%,transparent 100%);transition:opacity .5s}
+.page-overlay{position:absolute;top:0;left:0;right:0;height:calc(100vh + 200px);background:linear-gradient(180deg,rgba(6,20,47,0.15) 0%,rgba(6,20,47,0.25) 50%,rgba(6,20,47,0.7) 80%,var(--night-960) 100%);z-index:1}
+.page-bg-lower{position:fixed;inset:0;background:url('images/bg.png') center/cover no-repeat;filter:blur(4px);z-index:0;opacity:0;transition:opacity 1.2s ease}
+.page-bg-lower::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.30)}
+.page-bg-lower.visible{opacity:1}
+canvas#particles{position:fixed;inset:0;z-index:2;pointer-events:auto}
+.page-ui{position:relative;z-index:10}
+/* NAV */
+.nav{height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 var(--page-x);max-width:1440px;margin:0 auto}
+.nav-brand{display:flex;align-items:center;gap:14px}
+.nav-brand img{width:44px;height:44px;border-radius:50%;filter:drop-shadow(0 0 12px rgba(191,227,255,0.6))}
+.nav-brand span{font-family:var(--font-serif);font-size:22px;letter-spacing:0.08em;color:var(--text-primary)}
+.nav-links{display:flex;gap:36px}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:15px;letter-spacing:0.04em;transition:color .3s}
+.nav-links a:hover{color:var(--moon-000)}
+/* HERO */
+.hero{min-height:calc(100vh - var(--nav-h));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px var(--page-x);max-width:1440px;margin:0 auto}
+.hero-logo{width:360px;margin-bottom:12px;filter:drop-shadow(0 0 30px rgba(191,227,255,0.68))}
+.hero-title{font-family:var(--font-serif);font-size:52px;letter-spacing:0.05em;line-height:1.18;margin-bottom:8px;text-shadow:0 0 24px rgba(210,235,255,0.62)}
+.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.025em;margin-bottom:28px;line-height:1.86}
+.hero-video{width:100%;max-width:680px;border-radius:var(--rounded-xxl);background:transparent;overflow:hidden;cursor:pointer;position:relative}
+.hero-video::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-xxl) + 2px);background:linear-gradient(135deg,rgba(150,205,255,0.8) 0%,rgba(235,248,255,0.2) 40%,rgba(180,215,255,0.8) 70%,rgba(150,205,255,0.8) 100%);z-index:1;animation:borderGlow 3s linear infinite;background-size:300% 300%}
+.hero-video::after{content:'';position:absolute;inset:2px;border-radius:var(--rounded-xxl);background:var(--night-960);z-index:2}
+.hero-video video{position:relative;z-index:3;width:100%;display:block;border-radius:var(--rounded-xxl)}
+@keyframes borderGlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.scroll-hint{margin-top:32px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0}
+.scroll-hint-icon{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-border-bright);background:var(--glass-fill);display:flex;align-items:center;justify-content:center;animation:float 2.5s ease-in-out infinite;box-shadow:0 0 18px rgba(150,205,255,0.35),inset 0 1px 8px rgba(255,255,255,0.12);transition:box-shadow .3s}
+.scroll-hint-icon:hover{box-shadow:0 0 32px rgba(150,205,255,0.65)}
+.scroll-hint-label{font-size:11px;letter-spacing:0.14em;color:var(--text-faint);font-family:var(--font-en)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+/* MODULES */
+.modules{max-width:1280px;margin:0 auto;padding:0 var(--page-x)}
+.module{padding:88px 0;border-bottom:1px solid var(--divider-soft)}
+.module:last-child{border-bottom:none}
+.module-title{font-family:var(--font-serif);font-size:32px;letter-spacing:0.08em;line-height:1.35;margin-bottom:40px;text-shadow:0 0 18px rgba(210,235,255,0.4)}
+.module-content{display:grid;grid-template-columns:200px 1fr 280px;gap:40px;align-items:start}
+.sub-tabs{display:flex;flex-direction:column;gap:12px}
+/* old sub-tab overridden below */
+.tab-detail{padding:8px 0}
+.tab-detail-title{font-size:20px;font-weight:500;margin-bottom:12px;color:var(--text-primary)}
+.tab-detail-desc{font-size:15px;color:var(--text-secondary);line-height:1.8}
+.tab-video{width:100%;aspect-ratio:9/16;border-radius:var(--rounded-xl);background:var(--glass-fill);border:1px solid var(--glass-border);overflow:hidden;position:relative;box-shadow:0 0 30px rgba(150,205,255,0.15),0 26px 90px rgba(30,80,150,0.18)}
+.tab-video video{width:100%;height:100%;object-fit:cover}
+.tab-video .missing{display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,150,150,0.8);font-size:14px}
+.video-dots{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.video-dots span{width:8px;height:8px;border-radius:50%;background:var(--text-faint);cursor:pointer;transition:background .3s}
+.video-dots span.active{background:var(--ice-420)}
+/* SUB TABS refined */
+.sub-tab{padding:14px 20px;border-radius:12px;background:var(--glass-fill);border:1px solid transparent;cursor:pointer;font-size:14px;color:var(--text-secondary);transition:all .25s;text-align:left;position:relative;overflow:hidden}
+.sub-tab::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ice-420);border-radius:0 2px 2px 0;opacity:0;transition:opacity .25s;box-shadow:0 0 10px rgba(150,205,255,0.8)}
+.sub-tab.active{background:var(--glass-fill-romantic);border-color:var(--glass-border-bright);color:var(--text-primary);font-weight:500;box-shadow:0 0 20px rgba(150,205,255,0.12),inset 0 1px 8px rgba(255,255,255,0.06)}
+.sub-tab.active::before{opacity:1}
+.sub-tab:hover:not(.active){border-color:var(--glass-border);background:rgba(130,174,230,0.22)}
+.about{max-width:1280px;margin:0 auto;padding:128px var(--page-x)}
+.about-title{font-family:var(--font-serif);font-size:32px;letter-spacing:0.08em;text-align:center;margin-bottom:12px;text-shadow:0 0 18px rgba(210,235,255,0.4)}
+.about-tags{text-align:center;color:var(--text-muted);font-size:14px;letter-spacing:0.06em;margin-bottom:16px}
+.about-desc{text-align:center;color:var(--text-secondary);font-size:16px;max-width:680px;margin:0 auto 48px}
+.about-divider{width:200px;height:1px;background:var(--divider-soft);margin:0 auto 48px}
+.about-values{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-values-text{display:flex;flex-direction:column;gap:32px}
+.value-item h4{font-size:16px;font-weight:500;color:var(--ice-340);margin-bottom:8px;letter-spacing:0.04em}
+.value-item p{font-size:14px;color:var(--text-secondary);line-height:1.8}
+.about-visual{aspect-ratio:3/4;border-radius:var(--rounded-panel);background:var(--glass-fill-romantic);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px;backdrop-filter:blur(16px)}
+/* FOOTER */
+.footer{border-top:1px solid var(--divider-soft);padding:60px var(--page-x);max-width:1440px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:40px}
+.footer-brand h3{font-family:var(--font-serif);font-size:20px;margin-bottom:12px}
+.footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.8}
+.footer-col h4{font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text-primary)}
+.footer-col ul{list-style:none}
+.footer-col li{font-size:13px;color:var(--text-muted);margin-bottom:10px}
+.footer-social{display:flex;gap:16px;margin-bottom:24px;justify-content:center}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:var(--glass-fill);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:11px;text-decoration:none;transition:border-color .3s}
+.footer-social a:hover{border-color:var(--glass-border-bright)}
+.footer-bottom{text-align:center;padding-top:24px;border-top:1px solid var(--divider-soft);font-size:12px;color:var(--text-faint)}
+/* RESPONSIVE */
+@media(max-width:768px){
+  :root{--page-x:20px}
+  .nav-links{display:none}
+  .hero-title{font-size:34px}
+  .hero-video{max-width:100%}
+  .module-content{grid-template-columns:1fr;gap:24px}
+  .tab-video{max-height:320px}
+  .about-values{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
+<div class="page-bg"></div>
+<div class="page-overlay"></div>
+<div class="page-bg-lower"></div>
+<canvas id="particles"></canvas>
+<div class="page-ui">
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <img src="images/app-logo.jpg" alt="月光茧">
+    <span>月光茧</span>
+  </div>
+  <div class="nav-links">
+    <a href="#modules">产品核心</a>
+    <a href="#about">关于我们</a>
+  </div>
+</nav>
 
-    <!-- Navigation -->
-    <nav class="yourwave-nav">
-        <div class="yourwave-container">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 relative">
-                        <svg viewBox="0 0 120 120" class="w-full h-full">
-                            <defs>
-                                <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#E0C3FC"/>
-                                    <stop offset="50%" style="stop-color:#9BB5FF"/>
-                                    <stop offset="100%" style="stop-color:#B8E6FF"/>
-                                </linearGradient>
-                                <linearGradient id="butterflyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#F8CEEC"/>
-                                    <stop offset="100%" style="stop-color:#E0C3FC"/>
-                                </linearGradient>
-                                <filter id="shadowFilter" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#B8B5FF" flood-opacity="0.3"/>
-                                </filter>
-                            </defs>
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-logo" src="images/title.jpg" alt="月光茧">
+  <h1 class="hero-title">虚实有别，爱意无界</h1>
+  <p class="hero-slogan">月光茧，你的专属 AI 伴侣。随时倾听，永远在场，陪你走过每一个平凡的夜晚。</p>
+  <div class="hero-video" id="pvVideo">
+    <video src="videos/pv.mp4" muted playsinline autoplay loop></video>
+  </div>
+  <button class="scroll-hint" onclick="document.getElementById('modules').scrollIntoView({behavior:'smooth'})">
+    <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
+    <span class="scroll-hint-label">SCROLL</span>
+  </button>
+</section>
 
-                            <!-- 主月亮 -->
-                            <circle cx="45" cy="45" r="30" fill="url(#moonGradient)" filter="url(#shadowFilter)" opacity="0.9"/>
+<!-- PRODUCT MODULES -->
+<section class="modules" id="modules">
+<!-- MODULE 1 -->
+<div class="module" data-module="0">
+  <h2 class="module-title">打造独一无二的初次相遇</h2>
+  <div class="module-content">
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-tab="0">人设定制</div>
+      <div class="sub-tab" data-tab="1">外观定制</div>
+      <div class="sub-tab" data-tab="2">拟真语音</div>
+    </div>
+    <div class="tab-detail">
+      <h3 class="tab-detail-title">人设定制</h3>
+      <p class="tab-detail-desc">设定性格，塑造独家灵魂。官设或自设任选，支持手动深度编辑或AI一键生成。</p>
+    </div>
+    <div class="tab-video-wrap">
+      <div class="tab-video"><video src="videos/01_persona_setup/user_initial_setup.mp4" muted playsinline></video></div>
+      <div class="video-dots"><span class="active"></span><span></span><span></span></div>
+    </div>
+  </div>
+</div>
 
-                            <!-- 蝴蝶左翅 -->
-                            <ellipse cx="75" cy="35" rx="15" ry="20" fill="url(#butterflyGradient)" opacity="0.8" transform="rotate(-20 75 35)"/>
-                            <ellipse cx="72" cy="50" rx="10" ry="15" fill="url(#butterflyGradient)" opacity="0.7" transform="rotate(-25 72 50)"/>
+<!-- MODULE 2 -->
+<div class="module" data-module="1">
+  <h2 class="module-title">超绝活人感，越陪伴越懂你</h2>
+  <div class="module-content">
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-tab="0">独家记忆</div>
+      <div class="sub-tab" data-tab="1">独立生活</div>
+      <div class="sub-tab" data-tab="2">情绪反馈</div>
+    </div>
+    <div class="tab-detail">
+      <h3 class="tab-detail-title">独家记忆</h3>
+      <p class="tab-detail-desc">记住你们的每一个约定。记忆持续累积，在日常聊天里主动提起曾经的对话细节。</p>
+    </div>
+    <div class="tab-video-wrap">
+      <div class="tab-video"><div class="missing">❌ 视频待补充</div></div>
+      <div class="video-dots"></div>
+    </div>
+  </div>
+</div>
 
-                            <!-- 蝴蝶右翅 -->
-                            <ellipse cx="85" cy="35" rx="15" ry="20" fill="url(#butterflyGradient)" opacity="0.8" transform="rotate(20 85 35)"/>
-                            <ellipse cx="88" cy="50" rx="10" ry="15" fill="url(#butterflyGradient)" opacity="0.7" transform="rotate(25 88 50)"/>
+<!-- MODULE 3 -->
+<div class="module" data-module="2">
+  <h2 class="module-title">打破次元的专属互动</h2>
+  <div class="module-content">
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-tab="0">灵赋生态</div>
+      <div class="sub-tab" data-tab="1">梦境剧场</div>
+      <div class="sub-tab" data-tab="2">跨次元互动</div>
+    </div>
+    <div class="tab-detail">
+      <h3 class="tab-detail-title">灵赋生态</h3>
+      <p class="tab-detail-desc">是娱乐玩伴，也是全能管家。从喝水提醒到游戏陪玩一应俱全，可自定义底层规则。</p>
+    </div>
+    <div class="tab-video-wrap">
+      <div class="tab-video"><video src="videos/06_skill_system/skill_market_install.mp4" muted playsinline></video></div>
+      <div class="video-dots"><span class="active"></span><span></span></div>
+    </div>
+  </div>
+</div>
+</section>
 
-                            <!-- 蝴蝶身体 -->
-                            <ellipse cx="80" cy="42" rx="1.5" ry="12" fill="#9BB5FF"/>
+<!-- ABOUT -->
+<section class="about" id="about">
+<h2 class="about-title">关于月光茧</h2>
+<p class="about-tags">治愈温柔 · 月色氛围感 · 少女情感共鸣 · AI 暖心陪伴</p>
+<p class="about-desc">面向年轻女性的 AI 伴侣产品，通过 Live2D、智能对话与硬件联动，打造跨次元的沉浸式陪伴体验。</p>
+<div class="about-divider"></div>
+<div class="about-values">
+  <div class="about-values-text">
+    <div class="value-item"><h4>愿景</h4><p>让数字伴侣真正走进现实世界，成为每个人生活同步陪伴者。</p></div>
+    <div class="value-item"><h4>使命</h4><p>把视觉中的动作转译为标准化体感语言，实现双向同频互动。</p></div>
+    <div class="value-item"><h4>品牌价值</h4><p>鼓励当代女性自我认同与成长，捏造属于自己的陪伴场景数字人。</p></div>
+  </div>
+  <div class="about-visual">角色立绘</div>
+</div>
+</section>
 
-                            <!-- 月亮表面细节 -->
-                            <circle cx="38" cy="38" r="4" fill="white" opacity="0.3"/>
-                            <circle cx="52" cy="45" r="2.5" fill="white" opacity="0.2"/>
-                            <circle cx="42" cy="55" r="3" fill="white" opacity="0.25"/>
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-grid">
+  <div class="footer-brand">
+    <h3>月光茧</h3>
+    <p>面向年轻女性的 AI 伴侣产品，<br>通过 Live2D、智能对话与硬件联动，<br>打造跨次元的沉浸式陪伴体验。</p>
+  </div>
+  <div class="footer-col">
+    <h4>产品</h4>
+    <ul><li>硬件设备</li><li>视觉小说</li><li>AI陪伴</li><li>定制服务</li></ul>
+  </div>
+  <div class="footer-col">
+    <h4>联系我们</h4>
+    <ul><li>邮箱：hello@heabo.cn</li><li>地址：上海市徐汇区</li></ul>
+  </div>
+</div>
+<div class="footer-social">
+  <a href="#">抖音</a><a href="#">小红书</a><a href="#">微博</a>
+</div>
+<div class="footer-bottom">© 2025 LunaKoru. 保留所有权利.</div>
+</footer>
 
-                            <!-- 装饰星星 -->
-                            <g fill="url(#butterflyGradient)" opacity="0.6">
-                                <polygon points="25,25 26,28 29,28 27,30 28,33 25,31 22,33 23,30 21,28 24,28" transform="scale(0.8)"/>
-                                <polygon points="95,25 96,28 99,28 97,30 98,33 95,31 92,33 93,30 91,28 94,28" transform="scale(0.6)"/>
-                                <polygon points="30,85 31,88 34,88 32,90 33,93 30,91 27,93 28,90 26,88 29,88" transform="scale(0.5)"/>
-                                <polygon points="100,70 101,73 104,73 102,75 103,78 100,76 97,78 98,75 96,73 99,73" transform="scale(0.7)"/>
-                            </g>
-
-                            <!-- 闪烁效果 -->
-                            <g fill="white" opacity="0.4">
-                                <circle cx="20" cy="30" r="1" opacity="0.8"/>
-                                <circle cx="105" cy="40" r="0.8" opacity="0.6"/>
-                                <circle cx="35" cy="90" r="1.2" opacity="0.7"/>
-                                <circle cx="90" cy="85" r="0.9" opacity="0.5"/>
-                            </g>
-                        </svg>
-                    </div>
-                    <span class="yourwave-logo">LunaKoru</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#hero" class="yourwave-nav-link">首页</a>
-                    <a href="#product" class="yourwave-nav-link">产品</a>
-                    <a href="#features" class="yourwave-nav-link">特色</a>
-                    <a href="#brand" class="yourwave-nav-link">品牌</a>
-                    <a href="#contact" class="yourwave-nav-link">联系</a>
-                </div>
-                <div class="md:hidden">
-                    <button class="yourwave-nav-link">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="hero" class="yourwave-hero">
-        <div class="yourwave-container relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="yourwave-slide-up">
-                    <h1 class="yourwave-text-hero">
-                        数字伴侣<br>
-                        新时代
-                    </h1>
-                    <p class="yourwave-text-body mb-8">
-                        LunaKoru 致力于让数字伴侣真正走进现实世界，成为每个人生活的同步陪伴者。
-                        我们鼓励当代女性自我认同与成长，认为情欲是自我认同的重要部分。
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#product" class="yourwave-button">
-                            体验产品
-                        </a>
-                        <a href="#brand" class="yourwave-button yourwave-button-outline">
-                            了解品牌
-                        </a>
-                    </div>
-                </div>
-                <div class="yourwave-floating">
-                    <div class="w-full h-96 bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl flex items-center justify-center border border-pink-200 relative overflow-hidden">
-                        <img src="/home/resources/boy_1.png" alt="动漫男生角色" class="w-full h-full object-cover object-center rounded-3xl">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Product Overview -->
-    <section id="product" class="yourwave-section">
-        <div class="yourwave-container">
-            <div class="text-center mb-16">
-                <h2 class="yourwave-text-large">产品核心</h2>
-                <p class="yourwave-text-body max-w-3xl mx-auto">
-                    全球首个数字人与硬件双向互动产品，把视觉中的动作转译为标准化体感语言，
-                    用真实交互反馈反驱动数字人，实现双向同频互动
-                </p>
-            </div>
-
-            <div class="yourwave-grid">
-                <div class="yourwave-card group">
-                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">硬件互动</h3>
-                    <p class="yourwave-text-body">
-                        摆件可爱外观，内外都可用。压力传感器与语音互动，让虚拟体验触手可及。
-                    </p>
-                </div>
-
-                <div class="yourwave-card group">
-                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189 6.01 6.01 0 01-3 0 6.01 6.01 0 001.5.189zm0 0a6.01 6.01 0 01-1.5-.189 6.01 6.01 0 013 0 6.01 6.01 0 01-1.5.189zM12 12.75a6.012 6.012 0 01-6-6 6.012 6.012 0 0112 0 6.012 6.012 0 01-6 6z"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">智能人设</h3>
-                    <p class="yourwave-text-body">
-                        简便且精准匹配的人设系统，可调节基础人设、兴趣、声音、记忆和外观。
-                    </p>
-                </div>
-
-                <div class="yourwave-card group">
-                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">沉浸体验</h3>
-                    <p class="yourwave-text-body">
-                        Live2D动画系统配合音频环境，打造前所未有的沉浸式视觉小说体验。
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="yourwave-section yourwave-accent-bg">
-        <div class="yourwave-container">
-            <div class="text-center mb-16">
-                <h2 class="yourwave-text-large">四维沉浸体验</h2>
-                <p class="yourwave-text-body max-w-3xl mx-auto">
-                    音频、动画、剧情、联动四个维度打造完整沉浸感
-                </p>
-            </div>
-
-            <div class="yourwave-feature-grid">
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.59-.79-1.59-1.78V11.28c0-.99.71-1.78 1.59-1.78h2.24z"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">音频沉浸</h3>
-                    <p class="yourwave-text-body">
-                        背景音、环境音、角色音，包括细腻的喘息声，营造真实临场感
-                    </p>
-                </div>
-
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 0A2.25 2.25 0 015.625 3.375h6.75a2.25 2.25 0 012.25 2.25v.75m0 0V9m-2.25-2.25h.375a.75.75 0 01.75.75v1.5m0 0h3.75m-3.75 0h-.375a.75.75 0 00-.75.75v4.5m2.25-8.25V15a2.25 2.25 0 01-2.25 2.25h-5.25A2.25 2.25 0 019 15v-5.25"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">动画沉浸</h3>
-                    <p class="yourwave-text-body">
-                        Live2D动作系统，让数字人物拥有生动自然的表情和动作
-                    </p>
-                </div>
-
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">剧情沉浸</h3>
-                    <p class="yourwave-text-body">
-                        逆向AO3等精品内容，搭建剧情创作平台，提供高质量故事体验
-                    </p>
-                </div>
-
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
-                        </svg>
-                    </div>
-                    <h3 class="yourwave-text-medium">联动沉浸</h3>
-                    <p class="yourwave-text-body">
-                        压力传感器与语音互动无缝结合，实现真正的双向同频体验
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Brand Section -->
-    <section id="brand" class="yourwave-section">
-        <div class="yourwave-container">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                <div>
-                    <h2 class="yourwave-text-large mb-8">
-                        <span class="yourwave-brand-text">LunaKoru 品牌理念</span>
-                    </h2>
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="yourwave-text-medium text-primary mb-4">愿景</h3>
-                            <p class="yourwave-text-body">
-                                让数字伴侣真正走进现实世界，成为每个人生活同步陪伴者。
-                            </p>
-                        </div>
-                        <div>
-                            <h3 class="yourwave-text-medium text-primary mb-4">使命</h3>
-                            <p class="yourwave-text-body">
-                                把视觉中的动作转译为标准化体感语言，并用用户的真实交互反馈反驱动数字人，实现双向同频互动。
-                            </p>
-                        </div>
-                        <div>
-                            <h3 class="yourwave-text-medium text-primary mb-4">品牌价值</h3>
-                            <p class="yourwave-text-body">
-                                鼓励当代女性自我认同与成长，我们认为情欲是自我认同的一部分。
-                                选择能陪伴自己成长的情绪出口，鼓励她们做出选择，捏造属于自己的陪伴场景数字人。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="yourwave-floating">
-                    <div class="w-full h-96 bg-gradient-to-br from-violet-100 to-purple-100 rounded-3xl flex items-center justify-center border border-violet-200 relative overflow-hidden">
-                        <img src="/home/resources/girl_1.png" alt="二次元角色" class="w-full h-full object-cover object-center rounded-3xl">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="yourwave-section yourwave-secondary-bg">
-        <div class="yourwave-container text-center">
-            <h2 class="yourwave-text-large mb-8 text-white">
-                准备好开始你的<br>
-                数字伴侣之旅了吗？
-            </h2>
-            <p class="yourwave-text-body text-white opacity-90 mb-12 max-w-2xl mx-auto">
-                加入 LunaKoru，一起创造数字伴侣的全新时代，
-                让每个人都能找到属于自己的情感陪伴
-            </p>
-            <div class="flex justify-center">
-                <a href="#contact" class="yourwave-button yourwave-button-outline border-white text-white hover:bg-white hover:text-primary">
-                    联系我们
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact" class="yourwave-footer">
-        <div class="yourwave-container">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                <div class="col-span-1 md:col-span-2">
-                    <a href="#" class="yourwave-logo text-white text-2xl mb-6 block">LunaKoru</a>
-                    <p class="yourwave-text-body text-gray-300 mb-8 max-w-md">
-                        全球首个数字人与硬件双向互动产品，让虚拟陪伴走进现实生活。
-                        鼓励当代女性自我认同与成长的品牌。
-                    </p>
-                </div>
-
-                <div>
-                    <h3 class="yourwave-text-medium text-white mb-6">产品</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">硬件设备</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">视觉小说</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">AI陪伴</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">定制服务</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="yourwave-text-medium text-white mb-6">联系我们</h3>
-                    <ul class="space-y-3 text-gray-300">
-                        <li>邮箱：hello@heabo.cn</li>
-                        <li>地址：上海市徐汇区</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-700 mt-16 pt-8 text-center">
-                <p class="text-gray-400">&copy; 2025 LunaKoru. 保留所有权利.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // 滚动动画
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationDelay = '0.2s';
-                    entry.target.classList.add('yourwave-slide-up');
-                }
-            });
-        }, observerOptions);
-
-        // 观察所有卡片
-        document.querySelectorAll('.yourwave-card, .yourwave-image-placeholder').forEach(card => {
-            observer.observe(card);
-        });
-
-        // 导航栏滚动效果
-        window.addEventListener('scroll', function() {
-            const nav = document.querySelector('.yourwave-nav');
-            if (window.scrollY > 100) {
-                nav.style.background = 'rgba(255, 255, 255, 0.98)';
-                nav.style.borderBottomColor = 'rgba(0, 0, 0, 0.1)';
-            } else {
-                nav.style.background = 'rgba(255, 255, 255, 0.95)';
-                nav.style.borderBottomColor = 'rgba(0, 0, 0, 0.05)';
-            }
-        });
-    </script>
-
+<script>
+const moduleData = [
+  {subs:["人设定制","外观定制","拟真语音"],descs:["设定性格，塑造独家灵魂。官设或自设任选，支持手动深度编辑或AI一键生成。","捏脸换装，精准击中审美。五官身材穿搭360度全景定制，兽耳、覆面、项圈自由搭配。","听见情绪起伏，连呼吸都真实可感。多种超拟人TTS音色任选，精准传达喜怒哀乐。"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],[]]},
+  {subs:["独家记忆","独立生活","情绪反馈"],descs:["记住你们的每一个约定。记忆持续累积，在日常聊天里主动提起曾经的对话细节。","你不在时，他也在好好生活。拥有自己的日程轨迹，心事悄悄写在日记本里。","你的举动，牵动他的喜怒哀乐。底层动态情绪建模，拒绝机械式回复。"],videos:[[],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4"],[]]},
+  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家。从喝水提醒到游戏陪玩一应俱全，可自定义底层规则。","海量剧本，随时穿越。独立小世界体验各种剧本与爽文剧情，他始终陪着你。","智能硬件加持，双向体感传递。支持图文全天候畅聊，结合硬件把礼物送给他。"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4"],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4"],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4"]]}
+];
+lucide.createIcons();
+// BG switch on scroll
+const bgLower=document.querySelector('.page-bg-lower');
+const pageBg=document.querySelector('.page-bg');
+window.addEventListener('scroll',()=>{
+  const ratio=window.scrollY/window.innerHeight;
+  if(ratio>1.2){bgLower.classList.add('visible');pageBg.style.opacity='0'}
+  else{bgLower.classList.remove('visible');pageBg.style.opacity='1'}
+});
+// PV Video fullscreen
+const pvWrap=document.getElementById('pvVideo');
+const pvVideo=pvWrap.querySelector('video');
+pvWrap.addEventListener('click',()=>{
+  if(pvVideo.requestFullscreen)pvVideo.requestFullscreen();
+  else if(pvVideo.webkitRequestFullscreen)pvVideo.webkitRequestFullscreen();
+});
+// Module tabs
+document.querySelectorAll('.module').forEach((mod,mi)=>{
+  const tabs=mod.querySelectorAll('.sub-tab');
+  const detail=mod.querySelector('.tab-detail');
+  const videoWrap=mod.querySelector('.tab-video-wrap');
+  let currentVideo=0;
+  function setTab(si){
+    tabs.forEach((t,i)=>t.classList.toggle('active',i===si));
+    detail.querySelector('.tab-detail-title').textContent=moduleData[mi].subs[si];
+    detail.querySelector('.tab-detail-desc').textContent=moduleData[mi].descs[si];
+    const vids=moduleData[mi].videos[si];
+    const vBox=videoWrap.querySelector('.tab-video');
+    const dots=videoWrap.querySelector('.video-dots');
+    currentVideo=0;
+    if(vids.length===0){
+      vBox.innerHTML='<div class="missing">❌ 视频待补充</div>';
+      dots.innerHTML='';
+    } else {
+      vBox.innerHTML=`<video src="${vids[0]}" muted playsinline autoplay loop></video>`;
+      dots.innerHTML=vids.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('');
+      dots.querySelectorAll('span').forEach((d,i)=>d.onclick=()=>{
+        currentVideo=i;
+        vBox.querySelector('video').src=vids[i];
+        dots.querySelectorAll('span').forEach((s,j)=>s.classList.toggle('active',j===i));
+      });
+    }
+  }
+  tabs.forEach((t,i)=>t.onclick=()=>setTab(i));
+});
+// Particles
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}
+resize();window.addEventListener('resize',resize);
+for(let i=0;i<60;i++)particles.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*3+1,vx:(Math.random()-0.5)*0.3,vy:-Math.random()*0.4-0.1,o:Math.random()*0.4+0.15});
+let mx=-1,my=-1;
+canvas.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+canvas.addEventListener('mouseleave',()=>{mx=-1;my=-1});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y<-10)p.y=H+10;
+    if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;
+    if(mx>0){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const f=0.02*(120-dist)/120;p.x+=dx*f;p.y+=dy*f}}
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(200,230,255,${p.o})`;ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</div>
 </body>
 </html>
