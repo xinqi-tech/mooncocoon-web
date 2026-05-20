@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunaKoru - 数字伴侣新时代</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --luna-primary: #007AFF;
+            --luna-secondary: #F8F9FA;
+            --luna-accent: #C5A3FF;
+            --luna-dark: #1D1D1F;
+            --luna-white: #FFFFFF;
+        }
+
+        body {
+            background: var(--luna-white);
+            color: var(--luna-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .yourwave-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .yourwave-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: var(--luna-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .yourwave-text-hero {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            color: var(--luna-dark);
+            margin-bottom: 2rem;
+        }
+
+        .yourwave-text-large {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .yourwave-text-medium {
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+            font-weight: 500;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+        }
+
+        .yourwave-text-body {
+            font-size: 1.125rem;
+            font-weight: 400;
+            line-height: 1.7;
+            color: #86868B;
+        }
+
+        .yourwave-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            font-size: 17px;
+            font-weight: 500;
+            background: var(--luna-primary);
+            color: var(--luna-white);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .yourwave-button:hover {
+            background: #0051D0;
+            transform: translateY(-1px);
+        }
+
+        .yourwave-button-outline {
+            background: transparent;
+            color: var(--luna-primary);
+            border: 1px solid var(--luna-primary);
+        }
+
+        .yourwave-button-outline:hover {
+            background: var(--luna-primary);
+            color: var(--luna-white);
+        }
+
+        .yourwave-section {
+            padding: 100px 0;
+        }
+
+        .yourwave-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .yourwave-card {
+            background: var(--yourwave-white);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .yourwave-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--yourwave-primary), var(--yourwave-secondary));
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+        }
+
+        .yourwave-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .yourwave-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .yourwave-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .yourwave-feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .yourwave-accent-bg {
+            background: var(--luna-secondary);
+        }
+
+        .yourwave-secondary-bg {
+            background: var(--luna-primary);
+        }
+
+        .yourwave-image-placeholder {
+            background: var(--yourwave-light);
+            border: 2px dashed var(--yourwave-gray);
+            border-radius: 15px;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--yourwave-gray);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .yourwave-image-placeholder:hover {
+            border-color: var(--yourwave-primary);
+            color: var(--yourwave-primary);
+        }
+
+        .yourwave-footer {
+            background: var(--yourwave-dark);
+            color: var(--yourwave-white);
+            padding: 80px 0 40px;
+        }
+
+        .yourwave-nav-link {
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--luna-dark);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            opacity: 0.8;
+        }
+
+        .yourwave-nav-link:hover {
+            color: var(--luna-primary);
+            opacity: 1;
+        }
+
+        .yourwave-logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--luna-dark);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+
+        .yourwave-floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .yourwave-slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .yourwave-brand-text {
+            background: linear-gradient(135deg, var(--yourwave-primary), var(--yourwave-secondary), var(--yourwave-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .yourwave-container {
+                padding: 0 1rem;
+            }
+
+            .yourwave-section {
+                padding: 60px 0;
+            }
+
+            .yourwave-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="yourwave-nav">
+        <div class="yourwave-container">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 relative">
+                        <svg viewBox="0 0 120 120" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#E0C3FC"/>
+                                    <stop offset="50%" style="stop-color:#9BB5FF"/>
+                                    <stop offset="100%" style="stop-color:#B8E6FF"/>
+                                </linearGradient>
+                                <linearGradient id="butterflyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#F8CEEC"/>
+                                    <stop offset="100%" style="stop-color:#E0C3FC"/>
+                                </linearGradient>
+                                <filter id="shadowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#B8B5FF" flood-opacity="0.3"/>
+                                </filter>
+                            </defs>
+
+                            <!-- 主月亮 -->
+                            <circle cx="45" cy="45" r="30" fill="url(#moonGradient)" filter="url(#shadowFilter)" opacity="0.9"/>
+
+                            <!-- 蝴蝶左翅 -->
+                            <ellipse cx="75" cy="35" rx="15" ry="20" fill="url(#butterflyGradient)" opacity="0.8" transform="rotate(-20 75 35)"/>
+                            <ellipse cx="72" cy="50" rx="10" ry="15" fill="url(#butterflyGradient)" opacity="0.7" transform="rotate(-25 72 50)"/>
+
+                            <!-- 蝴蝶右翅 -->
+                            <ellipse cx="85" cy="35" rx="15" ry="20" fill="url(#butterflyGradient)" opacity="0.8" transform="rotate(20 85 35)"/>
+                            <ellipse cx="88" cy="50" rx="10" ry="15" fill="url(#butterflyGradient)" opacity="0.7" transform="rotate(25 88 50)"/>
+
+                            <!-- 蝴蝶身体 -->
+                            <ellipse cx="80" cy="42" rx="1.5" ry="12" fill="#9BB5FF"/>
+
+                            <!-- 月亮表面细节 -->
+                            <circle cx="38" cy="38" r="4" fill="white" opacity="0.3"/>
+                            <circle cx="52" cy="45" r="2.5" fill="white" opacity="0.2"/>
+                            <circle cx="42" cy="55" r="3" fill="white" opacity="0.25"/>
+
+                            <!-- 装饰星星 -->
+                            <g fill="url(#butterflyGradient)" opacity="0.6">
+                                <polygon points="25,25 26,28 29,28 27,30 28,33 25,31 22,33 23,30 21,28 24,28" transform="scale(0.8)"/>
+                                <polygon points="95,25 96,28 99,28 97,30 98,33 95,31 92,33 93,30 91,28 94,28" transform="scale(0.6)"/>
+                                <polygon points="30,85 31,88 34,88 32,90 33,93 30,91 27,93 28,90 26,88 29,88" transform="scale(0.5)"/>
+                                <polygon points="100,70 101,73 104,73 102,75 103,78 100,76 97,78 98,75 96,73 99,73" transform="scale(0.7)"/>
+                            </g>
+
+                            <!-- 闪烁效果 -->
+                            <g fill="white" opacity="0.4">
+                                <circle cx="20" cy="30" r="1" opacity="0.8"/>
+                                <circle cx="105" cy="40" r="0.8" opacity="0.6"/>
+                                <circle cx="35" cy="90" r="1.2" opacity="0.7"/>
+                                <circle cx="90" cy="85" r="0.9" opacity="0.5"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="yourwave-logo">LunaKoru</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#hero" class="yourwave-nav-link">首页</a>
+                    <a href="#product" class="yourwave-nav-link">产品</a>
+                    <a href="#features" class="yourwave-nav-link">特色</a>
+                    <a href="#brand" class="yourwave-nav-link">品牌</a>
+                    <a href="#contact" class="yourwave-nav-link">联系</a>
+                </div>
+                <div class="md:hidden">
+                    <button class="yourwave-nav-link">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="yourwave-hero">
+        <div class="yourwave-container relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="yourwave-slide-up">
+                    <h1 class="yourwave-text-hero">
+                        数字伴侣<br>
+                        新时代
+                    </h1>
+                    <p class="yourwave-text-body mb-8">
+                        LunaKoru 致力于让数字伴侣真正走进现实世界，成为每个人生活的同步陪伴者。
+                        我们鼓励当代女性自我认同与成长，认为情欲是自我认同的重要部分。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#product" class="yourwave-button">
+                            体验产品
+                        </a>
+                        <a href="#brand" class="yourwave-button yourwave-button-outline">
+                            了解品牌
+                        </a>
+                    </div>
+                </div>
+                <div class="yourwave-floating">
+                    <div class="w-full h-96 bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl flex items-center justify-center border border-pink-200 relative overflow-hidden">
+                        <img src="/home/resources/boy_1.png" alt="动漫男生角色" class="w-full h-full object-cover object-center rounded-3xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Overview -->
+    <section id="product" class="yourwave-section">
+        <div class="yourwave-container">
+            <div class="text-center mb-16">
+                <h2 class="yourwave-text-large">产品核心</h2>
+                <p class="yourwave-text-body max-w-3xl mx-auto">
+                    全球首个数字人与硬件双向互动产品，把视觉中的动作转译为标准化体感语言，
+                    用真实交互反馈反驱动数字人，实现双向同频互动
+                </p>
+            </div>
+
+            <div class="yourwave-grid">
+                <div class="yourwave-card group">
+                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">硬件互动</h3>
+                    <p class="yourwave-text-body">
+                        摆件可爱外观，内外都可用。压力传感器与语音互动，让虚拟体验触手可及。
+                    </p>
+                </div>
+
+                <div class="yourwave-card group">
+                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189 6.01 6.01 0 01-3 0 6.01 6.01 0 001.5.189zm0 0a6.01 6.01 0 01-1.5-.189 6.01 6.01 0 013 0 6.01 6.01 0 01-1.5.189zM12 12.75a6.012 6.012 0 01-6-6 6.012 6.012 0 0112 0 6.012 6.012 0 01-6 6z"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">智能人设</h3>
+                    <p class="yourwave-text-body">
+                        简便且精准匹配的人设系统，可调节基础人设、兴趣、声音、记忆和外观。
+                    </p>
+                </div>
+
+                <div class="yourwave-card group">
+                    <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">沉浸体验</h3>
+                    <p class="yourwave-text-body">
+                        Live2D动画系统配合音频环境，打造前所未有的沉浸式视觉小说体验。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="yourwave-section yourwave-accent-bg">
+        <div class="yourwave-container">
+            <div class="text-center mb-16">
+                <h2 class="yourwave-text-large">四维沉浸体验</h2>
+                <p class="yourwave-text-body max-w-3xl mx-auto">
+                    音频、动画、剧情、联动四个维度打造完整沉浸感
+                </p>
+            </div>
+
+            <div class="yourwave-feature-grid">
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.59-.79-1.59-1.78V11.28c0-.99.71-1.78 1.59-1.78h2.24z"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">音频沉浸</h3>
+                    <p class="yourwave-text-body">
+                        背景音、环境音、角色音，包括细腻的喘息声，营造真实临场感
+                    </p>
+                </div>
+
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 0A2.25 2.25 0 015.625 3.375h6.75a2.25 2.25 0 012.25 2.25v.75m0 0V9m-2.25-2.25h.375a.75.75 0 01.75.75v1.5m0 0h3.75m-3.75 0h-.375a.75.75 0 00-.75.75v4.5m2.25-8.25V15a2.25 2.25 0 01-2.25 2.25h-5.25A2.25 2.25 0 019 15v-5.25"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">动画沉浸</h3>
+                    <p class="yourwave-text-body">
+                        Live2D动作系统，让数字人物拥有生动自然的表情和动作
+                    </p>
+                </div>
+
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">剧情沉浸</h3>
+                    <p class="yourwave-text-body">
+                        逆向AO3等精品内容，搭建剧情创作平台，提供高质量故事体验
+                    </p>
+                </div>
+
+                <div class="text-center group">
+                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+                        </svg>
+                    </div>
+                    <h3 class="yourwave-text-medium">联动沉浸</h3>
+                    <p class="yourwave-text-body">
+                        压力传感器与语音互动无缝结合，实现真正的双向同频体验
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Section -->
+    <section id="brand" class="yourwave-section">
+        <div class="yourwave-container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div>
+                    <h2 class="yourwave-text-large mb-8">
+                        <span class="yourwave-brand-text">LunaKoru 品牌理念</span>
+                    </h2>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="yourwave-text-medium text-primary mb-4">愿景</h3>
+                            <p class="yourwave-text-body">
+                                让数字伴侣真正走进现实世界，成为每个人生活同步陪伴者。
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="yourwave-text-medium text-primary mb-4">使命</h3>
+                            <p class="yourwave-text-body">
+                                把视觉中的动作转译为标准化体感语言，并用用户的真实交互反馈反驱动数字人，实现双向同频互动。
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="yourwave-text-medium text-primary mb-4">品牌价值</h3>
+                            <p class="yourwave-text-body">
+                                鼓励当代女性自我认同与成长，我们认为情欲是自我认同的一部分。
+                                选择能陪伴自己成长的情绪出口，鼓励她们做出选择，捏造属于自己的陪伴场景数字人。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="yourwave-floating">
+                    <div class="w-full h-96 bg-gradient-to-br from-violet-100 to-purple-100 rounded-3xl flex items-center justify-center border border-violet-200 relative overflow-hidden">
+                        <img src="/home/resources/girl_1.png" alt="二次元角色" class="w-full h-full object-cover object-center rounded-3xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="yourwave-section yourwave-secondary-bg">
+        <div class="yourwave-container text-center">
+            <h2 class="yourwave-text-large mb-8 text-white">
+                准备好开始你的<br>
+                数字伴侣之旅了吗？
+            </h2>
+            <p class="yourwave-text-body text-white opacity-90 mb-12 max-w-2xl mx-auto">
+                加入 LunaKoru，一起创造数字伴侣的全新时代，
+                让每个人都能找到属于自己的情感陪伴
+            </p>
+            <div class="flex justify-center">
+                <a href="#contact" class="yourwave-button yourwave-button-outline border-white text-white hover:bg-white hover:text-primary">
+                    联系我们
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="yourwave-footer">
+        <div class="yourwave-container">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <a href="#" class="yourwave-logo text-white text-2xl mb-6 block">LunaKoru</a>
+                    <p class="yourwave-text-body text-gray-300 mb-8 max-w-md">
+                        全球首个数字人与硬件双向互动产品，让虚拟陪伴走进现实生活。
+                        鼓励当代女性自我认同与成长的品牌。
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="yourwave-text-medium text-white mb-6">产品</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">硬件设备</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">视觉小说</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">AI陪伴</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">定制服务</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="yourwave-text-medium text-white mb-6">联系我们</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li>邮箱：hello@heabo.cn</li>
+                        <li>地址：上海市徐汇区</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-16 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2025 LunaKoru. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0.2s';
+                    entry.target.classList.add('yourwave-slide-up');
+                }
+            });
+        }, observerOptions);
+
+        // 观察所有卡片
+        document.querySelectorAll('.yourwave-card, .yourwave-image-placeholder').forEach(card => {
+            observer.observe(card);
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.yourwave-nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(255, 255, 255, 0.98)';
+                nav.style.borderBottomColor = 'rgba(0, 0, 0, 0.1)';
+            } else {
+                nav.style.background = 'rgba(255, 255, 255, 0.95)';
+                nav.style.borderBottomColor = 'rgba(0, 0, 0, 0.05)';
+            }
+        });
+    </script>
+
+</body>
+</html>
