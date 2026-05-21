@@ -130,7 +130,11 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 .about-divider{width:200px;height:1px;background:var(--divider-soft);margin:0 auto 48px}
 .about-values{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
 .about-values-text{display:flex;flex-direction:column;gap:36px}
-.value-item{transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease;padding:20px 24px;border-radius:16px;border:1px solid transparent}
+.value-item{transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease;padding:20px 24px;border-radius:16px;border:1px solid transparent;opacity:0;transform:translateX(-30px)}
+.value-item.visible{opacity:1;transform:translateX(0);transition:opacity 0.6s cubic-bezier(0.22,1,0.36,1),transform 0.6s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease}
+.value-item:nth-child(1).visible{transition-delay:0s}
+.value-item:nth-child(2).visible{transition-delay:0.2s}
+.value-item:nth-child(3).visible{transition-delay:0.4s}
 .value-item:hover{transform:scale(1.03);border-color:rgba(220,240,255,0.18);box-shadow:0 0 32px rgba(150,205,255,0.25),0 0 60px rgba(150,205,255,0.1);background:rgba(130,174,230,0.08)}
 .value-item h4{font-size:20px;font-weight:500;color:var(--ice-340);margin-bottom:12px;letter-spacing:0.04em;padding-bottom:10px;position:relative;display:inline-block}
 .value-item h4::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,var(--ice-420),rgba(150,205,255,0.3),transparent);box-shadow:0 0 8px rgba(150,205,255,0.5)}
@@ -586,6 +590,19 @@ const titleObserver=new IntersectionObserver(entries=>{
   });
 },{threshold:0.1,rootMargin:'0px 0px 80px 0px'});
 document.querySelectorAll('.module-title').forEach(t=>titleObserver.observe(t));
+
+// About value-item scroll animation
+const aboutValues=document.querySelector('.about-values-text');
+if(aboutValues){
+  const valueObserver=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){
+      setTimeout(()=>{aboutValues.querySelectorAll('.value-item').forEach(el=>el.classList.add('visible'));},400);
+    } else {
+      aboutValues.querySelectorAll('.value-item').forEach(el=>el.classList.remove('visible'));
+    }
+  },{threshold:0.2});
+  valueObserver.observe(aboutValues);
+}
 
 // Nav active state on scroll
 const navLinks=document.querySelectorAll('.nav-links a');
