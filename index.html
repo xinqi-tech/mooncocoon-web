@@ -490,8 +490,8 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     }
   }
   tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
-  // 预加载所有子tab的首个视频
-  moduleData[mi].videos.forEach(vids=>{if(vids.length){const l=document.createElement('link');l.rel='preload';l.as='video';l.href=vids[0];document.head.appendChild(l);}});
+  // 预缓冲所有子tab的首个视频
+  moduleData[mi].videos.forEach(vids=>{if(vids.length){const v=document.createElement('video');v.src=vids[0];v.preload='auto';v.muted=true;v.style.display='none';document.body.appendChild(v);}});
   let modInitDone=false;
   let activeTabIdx=0;
   const modRow=mod.querySelector('.module-row');
