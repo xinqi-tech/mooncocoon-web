@@ -706,6 +706,7 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 
 // Custom animated cursor + particle trail
 (function(){
+  if(window.matchMedia('(max-width:768px)').matches)return;
   const cursor=document.createElement('div');
   cursor.className='custom-cursor';
   document.body.appendChild(cursor);
