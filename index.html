@@ -428,25 +428,26 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
   const nextBtn=videoWrap.querySelector('.video-nav.next');
   let currentVideo=0;
   let currentVids=[];
-  function goTo(i,dir){
+  function goTo(i){
     if(!currentVids.length)return;
-    const oldIdx=currentVideo;
     currentVideo=(i+currentVids.length)%currentVids.length;
-    if(currentVideo===oldIdx)return;
-    if(dir===undefined)dir=currentVideo>oldIdx?'left':'right';
     const vBox=videoWrap.querySelector('.tab-video');
-    const outAnim=dir==='left'?'videoSlideOutLeft 0.25s ease both':'videoSlideOutRight 0.25s ease both';
-    const inAnim=dir==='left'?'videoSlideInRight 0.25s ease both':'videoSlideInLeft 0.25s ease both';
-    vBox.style.animation=outAnim;
-    setTimeout(()=>{
-      vBox.innerHTML=`<video src="${currentVids[currentVideo]}" muted playsinline autoplay loop></video>`;
-      injectLightParticles(vBox);
-      vBox.style.animation=inAnim;
-    },260);
+    const oldV=vBox.querySelector('video');
+    const newV=document.createElement('video');
+    newV.src=currentVids[currentVideo];newV.muted=true;newV.playsInline=true;newV.autoplay=true;newV.loop=true;
+    Object.assign(newV.style,{width:'100%',height:'100%',objectFit:'cover',position:'absolute',inset:'0',zIndex:'2',borderRadius:'24px',opacity:'0',transition:'opacity 0.4s ease'});
+    vBox.appendChild(newV);
+    vBox.classList.add('switching');
+    newV.onloadeddata=()=>{
+      newV.style.opacity='1';
+      if(oldV){oldV.style.transition='opacity 0.4s ease 0.15s';oldV.style.opacity='0';}
+      setTimeout(()=>{if(oldV&&oldV.parentNode)oldV.remove();newV.style.zIndex='1';vBox.classList.remove('switching');},600);
+    };
+    newV.load();
     videoWrap.querySelectorAll('.video-dots span').forEach((s,j)=>s.classList.toggle('active',j===currentVideo));
   }
-  if(prevBtn)prevBtn.onclick=()=>goTo(currentVideo-1,'right');
-  if(nextBtn)nextBtn.onclick=()=>goTo(currentVideo+1,'left');
+  if(prevBtn)prevBtn.onclick=()=>goTo(currentVideo-1);
+  if(nextBtn)nextBtn.onclick=()=>goTo(currentVideo+1);
   function setTab(si,dir){
     const oldIdx=activeTabIdx;
     activeTabIdx=si;
