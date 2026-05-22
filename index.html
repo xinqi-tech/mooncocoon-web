@@ -476,9 +476,9 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       }
       injectLightParticles(vBox);
       const showNav=currentVids.length>1;
-      if(prevBtn)prevBtn.style.display=showNav?'':'none';
-      if(nextBtn)nextBtn.style.display=showNav?'':'none';
-      dots.style.display=showNav?'':'none';
+      if(prevBtn)prevBtn.style.visibility=showNav?'':'hidden';
+      if(nextBtn)nextBtn.style.visibility=showNav?'':'hidden';
+      dots.style.visibility=showNav?'':'hidden';
     }
     if(dir){
       const outAnim=dir==='left'?'videoSlideOutLeft 0.25s ease both':'videoSlideOutRight 0.25s ease both';
