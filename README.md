@@ -4,6 +4,9 @@
 
 - **飞书设计方案文档**：https://feishu.cn/docx/AgdjdWXJloI1LJxRoZrc8SU7nwe
 - **Figma 线框原型**：https://www.figma.com/design/iO27mrD2V65fuP6S2DGiLH
+- **GitHub Pages 在线预览**：https://xinqi-tech.github.io/mooncocoon-web/
+- **飞书设计方案文档**：https://feishu.cn/docx/AgdjdWXJloI1LJxRoZrc8SU7nwe
+- **Figma 线框原型**：https://www.figma.com/design/iO27mrD2V65fuP6S2DGiLH
 - **飞书原始需求文档**：https://pcni5ldjg9t4.feishu.cn/wiki/NXIZwPrCCihYQKkcYeecfPaTnig
 
 ## 目录结构
