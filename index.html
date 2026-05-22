@@ -162,10 +162,6 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 @keyframes moduleTitleIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
 @keyframes tabContentIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes videoBounce{0%{transform:scale(1)}30%{transform:scale(1.05)}60%{transform:scale(0.97)}100%{transform:scale(1)}}
-@keyframes videoSlideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-110%);opacity:0}}
-@keyframes videoSlideInRight{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes videoSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
-@keyframes videoSlideInLeft{from{transform:translateX(-110%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes navUnderline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .hero-logo{opacity:1}
 .hero-title{animation:heroTitleIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both}
@@ -428,27 +424,26 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
   const nextBtn=videoWrap.querySelector('.video-nav.next');
   let currentVideo=0;
   let currentVids=[];
-  function goTo(i,dir){
+  function goTo(i){
     if(!currentVids.length)return;
-    const oldIdx=currentVideo;
     currentVideo=(i+currentVids.length)%currentVids.length;
-    if(currentVideo===oldIdx)return;
-    if(dir===undefined)dir=currentVideo>oldIdx?'left':'right';
     const vBox=videoWrap.querySelector('.tab-video');
-    const outAnim=dir==='left'?'videoSlideOutLeft 0.25s ease both':'videoSlideOutRight 0.25s ease both';
-    const inAnim=dir==='left'?'videoSlideInRight 0.25s ease both':'videoSlideInLeft 0.25s ease both';
-    vBox.style.animation=outAnim;
-    setTimeout(()=>{
-      vBox.innerHTML=`<video src="${currentVids[currentVideo]}" muted playsinline autoplay loop></video>`;
-      injectLightParticles(vBox);
-      vBox.style.animation=inAnim;
-    },260);
+    const oldV=vBox.querySelector('video');
+    const newV=document.createElement('video');
+    newV.src=currentVids[currentVideo];newV.muted=true;newV.playsInline=true;newV.autoplay=true;newV.loop=true;
+    Object.assign(newV.style,{width:'100%',height:'100%',objectFit:'cover',position:'absolute',inset:'0',zIndex:'2',borderRadius:'24px',opacity:'0',transition:'opacity 0.4s ease'});
+    vBox.appendChild(newV);
+    newV.onloadeddata=()=>{
+      newV.style.opacity='1';
+      if(oldV){oldV.style.transition='opacity 0.4s ease 0.15s';oldV.style.opacity='0';}
+      setTimeout(()=>{if(oldV&&oldV.parentNode)oldV.remove();newV.style.zIndex='1';},600);
+    };
+    newV.load();
     videoWrap.querySelectorAll('.video-dots span').forEach((s,j)=>s.classList.toggle('active',j===currentVideo));
   }
-  if(prevBtn)prevBtn.onclick=()=>goTo(currentVideo-1,'right');
-  if(nextBtn)nextBtn.onclick=()=>goTo(currentVideo+1,'left');
-  function setTab(si,dir){
-    const oldIdx=activeTabIdx;
+  if(prevBtn)prevBtn.onclick=()=>goTo(currentVideo-1);
+  if(nextBtn)nextBtn.onclick=()=>goTo(currentVideo+1);
+  function setTab(si){
     activeTabIdx=si;
     tabs.forEach(t=>{t.classList.remove('active')});
     void tabs[0].offsetWidth;
@@ -464,27 +459,17 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     const vBox=videoWrap.querySelector('.tab-video');
     const dots=videoWrap.querySelector('.video-dots');
     currentVideo=0;
-    function applyContent(){
-      if(!currentVids.length){
-        vBox.innerHTML='<div class="missing">❌ 视频待补充</div>';
-        dots.innerHTML='';
-      } else {
-        vBox.innerHTML=`<video src="${currentVids[0]}" muted playsinline autoplay loop></video>`;
-        dots.innerHTML=currentVids.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('');
-        dots.querySelectorAll('span').forEach((d,i)=>d.onclick=()=>goTo(i));
-      }
-      injectLightParticles(vBox);
-    }
-    if(dir){
-      const outAnim=dir==='left'?'videoSlideOutLeft 0.25s ease both':'videoSlideOutRight 0.25s ease both';
-      const inAnim=dir==='left'?'videoSlideInRight 0.25s ease both':'videoSlideInLeft 0.25s ease both';
-      vBox.style.animation=outAnim;
-      setTimeout(()=>{applyContent();vBox.style.animation=inAnim;},260);
+    if(!currentVids.length){
+      vBox.innerHTML='<div class="missing">❌ 视频待补充</div>';
+      dots.innerHTML='';
     } else {
-      applyContent();
+      vBox.innerHTML=`<video src="${currentVids[0]}" muted playsinline autoplay loop></video>`;
+      dots.innerHTML=currentVids.map((_,i)=>`<span class="${i===0?'active':''}"></span>`).join('');
+      dots.querySelectorAll('span').forEach((d,i)=>d.onclick=()=>goTo(i));
     }
+    injectLightParticles(vBox);
   }
-  tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
+  tabs.forEach((t,i)=>t.onclick=()=>setTab(i));
   let modInitDone=false;
   let activeTabIdx=0;
   const modRow=mod.querySelector('.module-row');
@@ -666,6 +651,9 @@ _origForEach.forEach(mod=>{
       detail.style.animation='none';
       detail.offsetHeight;
       detail.style.animation='tabContentIn 0.3s ease both';
+      // Video bounce (Q弹)
+      const video=mod.querySelector('.tab-video');
+      if(video){video.style.animation='none';video.offsetHeight;video.style.animation='videoBounce 0.4s cubic-bezier(0.34,1.56,0.64,1) both';}
       // 发光动效
       this.classList.add('click-glow');
       setTimeout(()=>this.classList.remove('click-glow'),600);
