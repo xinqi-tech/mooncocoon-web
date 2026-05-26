@@ -25,7 +25,7 @@
 .custom-cursor{position:fixed;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);width:44px;height:44px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('images/cursor_stop.apng')}
 .custom-cursor.moving{background-image:url('images/cursor_fly.apng')}
 .cursor-trail{position:fixed;pointer-events:none;z-index:999998;transform:translate(-50%,-50%);width:62px;height:62px;background:url('images/cursor_trail.apng') center/contain no-repeat;opacity:1}
-canvas#cursor-particles{position:fixed;inset:0;z-index:999997;pointer-events:none}
+canvas#cursor-particles{position:fixed;inset:0;z-index:999997;pointer-events:none;contain:strict}
 html{scroll-behavior:smooth}
 body{font-family:var(--font-sans);color:var(--text-primary);background:var(--night-960);overflow-x:hidden;line-height:1.72;position:relative;min-height:100vh}
 .page-bg{position:fixed;inset:0;z-index:0;overflow:hidden;will-change:opacity;transform:translateZ(0)}
@@ -35,7 +35,7 @@ body{font-family:var(--font-sans);color:var(--text-primary);background:var(--nig
 .page-bg-lower-inner{position:absolute;inset:0;background:url('images/bg.png') center/cover no-repeat;filter:blur(4px);transform:scale(1.02)}
 .page-bg-lower-mask{position:absolute;inset:0;background:rgba(0,0,0,0.40)}
 .page-bg-lower.visible{opacity:1}
-canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
+canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:strict}
 .page-ui{position:relative;z-index:10}
 /* NAV */
 .nav-wrap{position:fixed;top:0;left:0;right:0;z-index:99999;padding-top:16px}
@@ -64,8 +64,8 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:110px var(--page-x) 40px;max-width:1440px;margin:0 auto;contain:paint layout}
 .hero-logo{width:360px;margin-bottom:8px;filter:drop-shadow(0 0 30px rgba(191,227,255,0.68))}
-.hero-title{font-family:var(--font-serif);font-size:54px;letter-spacing:0.05em;line-height:1.18;margin-bottom:8px;text-shadow:0 0 24px rgba(210,235,255,0.62);font-weight:300}
-.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:20px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
+.hero-title{font-family:var(--font-serif);font-size:54px;letter-spacing:0.05em;line-height:1.18;margin-bottom:16px;text-shadow:0 0 24px rgba(210,235,255,0.62);font-weight:300}
+.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:48px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
 .hero-video{width:100%;max-width:680px;border-radius:var(--rounded-xxl);background:transparent;overflow:visible;cursor:pointer;position:relative;aspect-ratio:16/9}
 .hero-video::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-xxl) + 2px);background:linear-gradient(135deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.65) 20%,rgba(255,255,255,0.35) 50%,rgba(255,255,255,0.1) 80%,rgba(255,255,255,0.03) 100%);z-index:1;box-shadow:0 0 18px rgba(255,255,255,0.35),-4px -4px 24px rgba(255,255,255,0.2)}
 .hero-video::after{content:'';position:absolute;inset:2px;border-radius:var(--rounded-xxl);background:var(--night-960);z-index:2}
@@ -95,7 +95,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 .module-title.visible{opacity:1}
 .module-title .halo{position:absolute;top:-10px;left:-8px;width:72px;height:72px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.82) 0%,rgba(210,240,255,0.5) 35%,rgba(150,205,255,0.18) 65%,transparent 100%);pointer-events:none;animation:haloMorph 4s ease-in-out infinite;filter:blur(6px);mix-blend-mode:screen}
 .module-title .char{display:inline-block;opacity:0;font-size:1em}
-.module-title .char:first-of-type{font-size:2em}
+.module-title .char.first-word{font-size:2em}
 .module-title.visible .char{animation:charIn 1.2s cubic-bezier(0.22,1,0.36,1) both}.module-content{display:grid;grid-template-columns:200px 1fr 480px;grid-template-rows:auto 1fr;gap:0 40px;align-items:center;width:100%}
 .tab-video-wrap{grid-column:3;grid-row:1/3;display:flex;flex-direction:column;align-items:center;gap:0;align-self:center;justify-content:center;margin-top:40px}
 .video-carousel{position:relative;width:100%;min-height:434px}
@@ -113,7 +113,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 .video-caption{font-size:14px;color:var(--text-secondary);transition:opacity .3s;letter-spacing:0.06em;font-weight:300}
 .sub-tabs{display:flex;flex-direction:column;gap:24px;flex-shrink:0;width:240px}
 .tab-detail{padding:8px 0;opacity:0}
-.tab-detail-title{font-size:18px;font-weight:300;color:var(--ice-340);margin-bottom:14px;padding-bottom:10px;position:relative;display:inline-block;letter-spacing:0.04em}
+.tab-detail-title{font-size:24px;font-weight:300;color:var(--ice-340);margin-bottom:14px;padding-bottom:10px;position:relative;display:inline-block;letter-spacing:0.04em}
 .tab-detail-title::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,var(--ice-420),rgba(150,205,255,0.3),transparent);box-shadow:0 0 8px rgba(150,205,255,0.5)}
 @keyframes descExpandIn{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
 .tab-detail-desc{animation:descExpandIn 1s cubic-bezier(0.22,1,0.36,1) both;max-width:280px;font-size:15px;line-height:2;letter-spacing:0.03em;font-weight:300;color:var(--text-secondary)}
@@ -129,25 +129,25 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 .sub-tab.click-glow{box-shadow:0 0 40px rgba(150,205,255,0.5),0 0 80px rgba(150,205,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);border-color:rgba(235,248,255,0.7)}
 @keyframes butterflyEnter{0%{opacity:0;transform:translateX(50px) scale(0.2) rotate(-35deg);filter:drop-shadow(0 0 4px rgba(150,205,255,0.5)) drop-shadow(0 0 10px rgba(255,255,255,0.3))}100%{opacity:1;transform:translateX(0) scale(1) rotate(-35deg);filter:drop-shadow(0 0 10px rgba(150,205,255,0.8)) drop-shadow(0 0 20px rgba(255,255,255,0.6))}}
 @keyframes butterflyGlow{0%{opacity:1;transform:translateX(0) scale(1) rotate(-35deg);filter:drop-shadow(0 0 6px rgba(150,205,255,0.7)) drop-shadow(0 0 14px rgba(255,255,255,0.5))}100%{opacity:1;transform:translateX(0) scale(1.2) rotate(-35deg);filter:drop-shadow(0 0 16px rgba(255,255,255,1)) drop-shadow(0 0 28px rgba(150,205,255,0.9))}}
-.about{max-width:1280px;margin:0 auto;padding:128px var(--page-x);position:relative}
+.about{max-width:1280px;margin:0 auto;padding:20px var(--page-x) 40px;position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
 .about-title{font-family:var(--font-serif);font-size:32px;font-weight:300;letter-spacing:0.08em;text-align:center;margin-bottom:12px;text-shadow:0 0 18px rgba(210,235,255,0.4)}
-.about-header{display:flex;flex-direction:column;align-items:center;gap:8px}
-.about-ip-logo{width:280px;opacity:0.92;filter:drop-shadow(0 0 20px rgba(180,150,255,0.4))}
+.about-header{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:40px}
+.about-ip-logo{width:192px;opacity:0.92;filter:drop-shadow(0 0 20px rgba(180,150,255,0.4))}
 .about-tags{text-align:center;color:var(--text-muted);font-size:14px;letter-spacing:0.06em;margin-bottom:16px}
-.about-desc{text-align:center;color:var(--text-secondary);font-size:16px;max-width:680px;margin:0 auto 48px}
-.about-divider{width:200px;height:1px;background:var(--divider-soft);margin:0 auto 48px}
+.about-desc{text-align:center;color:var(--text-secondary);font-size:16px;max-width:680px;margin:0 auto 20px}
+.about-divider{width:200px;height:1px;background:var(--divider-soft);margin:0 auto 20px}
 .about-values{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.about-values-text{display:flex;flex-direction:column;gap:36px}
-.value-item{transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease;padding:20px 24px;border-radius:16px;border:1px solid transparent;opacity:0;transform:translateX(-30px)}
+.about-values-text{display:flex;flex-direction:column;gap:32px}
+.value-item{transition:transform 0.3s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease;padding:24px 28px;border-radius:16px;border:1px solid transparent;opacity:0;transform:translateX(-30px)}
 .value-item.visible{opacity:1;transform:translateX(0);transition:opacity 0.6s cubic-bezier(0.22,1,0.36,1),transform 0.6s cubic-bezier(0.22,1,0.36,1),box-shadow 0.3s ease}
 .value-item:nth-child(1).visible{transition-delay:0s}
 .value-item:nth-child(2).visible{transition-delay:0.2s}
 .value-item:nth-child(3).visible{transition-delay:0.4s}
 .value-item:hover{transform:scale(1.03);border-color:rgba(220,240,255,0.18);box-shadow:0 0 32px rgba(150,205,255,0.25),0 0 60px rgba(150,205,255,0.1);background:rgba(130,174,230,0.08)}
-.value-item h4{font-size:18px;font-weight:400;color:var(--ice-340);margin-bottom:12px;letter-spacing:0.06em;padding-bottom:10px;position:relative;display:inline-block}
+.value-item h4{font-size:24px;font-weight:400;color:var(--ice-340);margin-bottom:12px;letter-spacing:0.06em;padding-bottom:10px;position:relative;display:inline-block}
 .value-item h4::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,var(--ice-420),rgba(150,205,255,0.3),transparent);box-shadow:0 0 8px rgba(150,205,255,0.5)}
-.value-item p{font-size:15px;font-weight:300;color:var(--text-secondary);line-height:2;letter-spacing:0.03em}
-.about-visual{aspect-ratio:3/4;border-radius:var(--rounded-panel);background:var(--glass-fill-romantic);border:none;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px;backdrop-filter:blur(16px);position:relative;overflow:visible}
+.value-item p{font-size:18px;font-weight:300;color:var(--text-secondary);line-height:2;letter-spacing:0.03em}
+.about-visual{aspect-ratio:4/5;border-radius:var(--rounded-panel);background:var(--glass-fill-romantic);border:none;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:14px;backdrop-filter:blur(16px);position:relative;overflow:visible;max-height:420px}
 .about-visual::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-panel) + 2px);background:linear-gradient(135deg,rgba(255,255,255,0.88) 0%,rgba(255,255,255,0.55) 25%,rgba(255,255,255,0.25) 55%,rgba(255,255,255,0.06) 85%,rgba(255,255,255,0.02) 100%);z-index:0;pointer-events:none;box-shadow:0 0 16px rgba(255,255,255,0.3),-3px -3px 20px rgba(255,255,255,0.18)}
 .about-visual::after{content:'';position:absolute;bottom:-9px;right:-9px;width:55%;height:45%;border-radius:0 0 calc(var(--rounded-panel) + 4px) 0;border-right:1px solid rgba(255,255,255,0.18);border-bottom:1px solid rgba(255,255,255,0.18);z-index:0;pointer-events:none;box-shadow:5px 5px 14px rgba(255,255,255,0.08);mask-image:radial-gradient(ellipse at 100% 100%,white 0%,white 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 100% 100%,white 0%,white 30%,transparent 75%)}
 /* FOOTER */
@@ -209,7 +209,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
   .module-content{grid-template-columns:1fr;grid-template-rows:auto auto auto;gap:22px}
   .module-title{grid-column:1;grid-row:2;margin-bottom:8px}
   .module-title .char{font-size:1.2rem!important}
-  .module-title .char:first-of-type{font-size:1.8rem!important}
+  .module-title .char.first-word{font-size:1.8rem!important}
   .tab-video-wrap{grid-column:1;grid-row:1;align-self:center}
   .video-carousel{min-height:280px}
   .video-card.center{width:140px}
@@ -243,7 +243,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
   </div>
   <div class="nav-links">
     <a href="#hero">首页</a>
-    <a href="#modules">产品核心</a>
+    <a href="#modules">产品介绍</a>
     <a href="#about">关于我们</a>
   </div>
 </nav>
@@ -262,7 +262,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
-  <p class="hero-slogan">月光茧，你的专属 AI 伴侣。随时倾听，永远在场，陪你走过每一个平凡的夜晚。</p>
+  <p class=”hero-slogan”>专属记忆，为你而生——“星河流转，而我始终记得你”</p>
   <div class="hero-video" id="pvVideo">
     <video src="videos/pv.mp4" muted playsinline autoplay loop></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
@@ -287,7 +287,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">人设定制</h3>
-      <p class="tab-detail-desc">设定性格，塑造独家灵魂。官设或自设任选，支持手动深度编辑或AI一键生成。</p>
+      <p class="tab-detail-desc">▸ 结合用户性格与喜好，设定他的性格，塑造独家灵魂<br>▸ 官设和自设任选<br>▸ 支持手动深度编辑或AI一键生成</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -309,7 +309,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">独家记忆</h3>
-      <p class="tab-detail-desc">记住你们的每一个约定。记忆持续累积，在日常聊天里主动提起曾经的对话细节。</p>
+      <p class="tab-detail-desc">▸ 记住你们的每一个约定<br>▸ 记忆持续累积<br>▸ 在日常聊天里主动提起曾经的对话细节</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -331,7 +331,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">灵赋生态</h3>
-      <p class="tab-detail-desc">是娱乐玩伴，也是全能管家。从喝水提醒到游戏陪玩一应俱全，可自定义底层规则。</p>
+      <p class="tab-detail-desc">▸ 是娱乐玩伴，也是全能管家<br>▸ 从喝水提醒到游戏陪玩一应俱全<br>▸ 可自定义底层规则</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -346,9 +346,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 <section class="about" id="about">
 <div class="about-header">
   <img src="images/ip-logo.jpg" alt="LunaKoru" class="about-ip-logo">
-  <h2 class="about-title">关于月光茧</h2>
 </div>
-<div class="about-divider"></div>
 <div class="about-values">
   <div class="about-values-text">
     <div class="value-item"><h4>愿景</h4><p>让每个人身边都有一个真正好的伴侣——他记得一切，与你一起成长，真实到跨越次元。</p></div>
@@ -381,9 +379,9 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none}
 <script>
 document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
 const moduleData = [
-  {subs:["人设定制","外观定制","拟真语音"],descs:["设定性格，塑造独家灵魂。官设或自设任选，支持手动深度编辑或AI一键生成。","捏脸换装，精准击中审美。五官身材穿搭360度全景定制，兽耳、覆面、项圈自由搭配。","听见情绪起伏，连呼吸都真实可感。多种超拟人TTS音色任选，精准传达喜怒哀乐。"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],[]],captions:[["初始设定","风格选择","AI语音"],["发色调整","五官细节","身材调整"],["待补充","待补充","待补充"]]},
-  {subs:["独家记忆","独立生活","情绪反馈"],descs:["记住你们的每一个约定。记忆持续累积，在日常聊天里主动提起曾经的对话细节。","你不在时，他也在好好生活。拥有自己的日程轨迹，心事悄悄写在日记本里。","你的举动，牵动他的喜怒哀乐。底层动态情绪建模，拒绝机械式回复。"],videos:[[],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],[]],captions:[["待补充","待补充","待补充"],["日记本","日程表","待补充"],["待补充","待补充","待补充"]]},
-  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家。从喝水提醒到游戏陪玩一应俱全，可自定义底层规则。","海量剧本，随时穿越。独立小世界体验各种剧本与爽文剧情，他始终陪着你。","智能硬件加持，双向体感传递。支持图文全天候畅聊，结合硬件把礼物送给他。"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4",""],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4",""]],captions:[["灵赋市场","表情互动","待补充"],["剧场入口","剧情演示","待补充"],["图文聊天","体感互动","待补充"]]}
+  {subs:["人设定制","外观定制","拟真语音"],descs:["结合用户性格与喜好，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],[]],captions:[["初始设定","风格选择","AI语音"],["发色调整","五官细节","身材调整"],["待补充","待补充","待补充"]]},
+  {subs:["独家记忆","独立生活","情绪反馈"],descs:["记住你们的每一个约定\n记忆持续累积\n在日常聊天里主动提起曾经的对话细节","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[[],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],[]],captions:[["待补充","待补充","待补充"],["日记本","日程表","待补充"],["待补充","待补充","待补充"]]},
+  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家\n从喝水提醒到游戏陪玩一应俱全\n可自定义底层规则","用户共创，平台共享，海量剧本，丰富机制\n你的选择，决定着下一步的发展\n不论穿越多少次，剧情在变，陪伴着你的他始终不变","支持文字，语音，图片，文件，链接等多种畅聊方式\n拍照送礼，将心意打破次元传递\n智能硬件加持，双向体感互动，他也能给予你现实的快乐"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4",""],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4",""]],captions:[["灵赋市场","表情互动","待补充"],["剧场入口","剧情演示","待补充"],["图文聊天","体感互动","待补充"]]}
 ];
 // BG switch on scroll
 const bgLower=document.querySelector('.page-bg-lower');
@@ -400,7 +398,7 @@ window.addEventListener('scroll',()=>{
     pageBg.style.opacity=1-t;
     _rafPending=false;
   });
-});
+},{passive:true});
 // PV Video fullscreen
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
@@ -490,7 +488,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     detail.querySelector('.tab-detail-title').textContent=moduleData[mi].subs[si];
     const desc=detail.querySelector('.tab-detail-desc');
     desc.style.animation='none';void desc.offsetWidth;
-    desc.textContent=moduleData[mi].descs[si];
+    desc.innerHTML=moduleData[mi].descs[si].split('\n').map(s=>'▸ '+s).join('<br>');
     desc.style.animation='descExpandIn 1s cubic-bezier(0.22,1,0.36,1) both';
     renderCarousel(moduleData[mi].videos[si],moduleData[mi].captions[si]);
   }
@@ -538,7 +536,7 @@ function mkParticle(forceBottom){
     fill:`rgba(220,242,255,${o.toFixed(2)})`
   };
 }
-for(let i=0;i<55;i++)particles.push(mkParticle(false));
+for(let i=0;i<35;i++)particles.push(mkParticle(false));
 let mx=-1,my=-1;
 canvas.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
 // Pre-render glow sprite on offscreen canvas (avoid per-frame filter+gradient)
@@ -554,6 +552,7 @@ gc.fillStyle=gr;gc.fillRect(0,0,GLOW_SIZE,GLOW_SIZE);
 
 canvas.addEventListener('mouseleave',()=>{mx=-1;my=-1});
 function draw(){
+  if(animPaused){requestAnimationFrame(draw);return;}
   ctx.clearRect(0,0,W,H);
   particles.forEach(p=>{
     p.x+=p.vx;p.y+=p.vy;
@@ -570,6 +569,10 @@ function draw(){
   requestAnimationFrame(draw);
 }
 setTimeout(draw, 500);
+
+// Pause animations when tab is hidden
+let animPaused=false;
+document.addEventListener('visibilitychange',()=>{animPaused=document.hidden;});
 
 // Hero title glow loop (start after entry animation)
 setTimeout(()=>document.querySelector('.hero-title')?.classList.add('glow-loop'), 2200);
@@ -595,12 +598,15 @@ heroObserver.observe(heroSection);
 
 // Module title wave typewriter effect
 const waveOffsets=[0,-8,-14,-10,-4,2,8,12,8,2,-4,-10,-14,-8,0,6,10,6,0,-6];
-document.querySelectorAll('.module-title').forEach(t=>{
+const firstWordLen=[2,2,2];
+document.querySelectorAll('.module-title').forEach((t,mi)=>{
   const text=t.textContent.trim();
+  const fwLen=firstWordLen[mi]||2;
   t.innerHTML='<span class="halo"></span>'+[...text].map((ch,i)=>{
-    const sizeRem=i===0?5.2:2.6;
+    const isFirstWord=i<fwLen;
+    const sizeRem=isFirstWord?5.2:2.6;
     const waveY=waveOffsets[i%waveOffsets.length];
-    return `<span class="char" style="font-size:${sizeRem}rem;--wave-y:${waveY}px;animation-delay:${0.04*i}s">${ch===' '?'&nbsp;':ch}</span>`;
+    return `<span class="char${isFirstWord?' first-word':''}" style="font-size:${sizeRem}rem;--wave-y:${waveY}px;animation-delay:${0.04*i}s">${ch===' '?'&nbsp;':ch}</span>`;
   }).join('');
 });
 const titleObserver=new IntersectionObserver(entries=>{
