@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>月光茧 - 虚实有别，爱意无界</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 <style>
+@font-face{font-family:"QingNiao Serif";src:url("fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"QingNiao Sans";src:url("fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
 :root {
   --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
   --night-780:#1d477f;--mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;
@@ -18,8 +21,8 @@
   --glow-blue:rgba(150,205,255,0.34);--divider-soft:rgba(220,240,255,0.18);
   --rounded-xxl:28px;--rounded-panel:34px;--rounded-pill:9999px;
   --nav-h:56px;--page-x:18px;
-  --font-serif:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
-  --font-sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-serif:"QingNiao Serif","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-sans:"QingNiao Sans","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
 .custom-cursor{position:fixed;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);width:44px;height:44px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('images/cursor_stop.apng')}
@@ -262,7 +265,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
-  <p class=”hero-slogan”>专属记忆，为你而生——“星河流转，而我始终记得你”</p>
+  <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
   <div class="hero-video" id="pvVideo">
     <video src="videos/pv.mp4" muted playsinline autoplay loop></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
