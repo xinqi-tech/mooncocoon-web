@@ -179,6 +179,9 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 @keyframes videoSlideInLeft{from{transform:translateX(-110%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes navUnderline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .hero-logo{opacity:1}
+body.is-loading .hero-logo{opacity:0}
+body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-video{animation:none!important;opacity:0}
+.hero-logo{transition:opacity .6s ease}
 .hero-title{animation:heroTitleIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both}
 .hero-title.glow-loop{animation:heroTitleIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both,titleGlow 4s ease-in-out 1.2s infinite alternate}
 .hero-slogan{animation:heroSlideUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.3s both}
@@ -231,9 +234,140 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
   .hero-social{right:12px;gap:10px}
   .hero-social a{width:36px;height:36px}
 }
+/* ===== LOADER ===== */
+body.is-loading{overflow:hidden}
+.loader{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .6s ease,visibility .6s ease}
+.loader.is-done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,rgba(120,170,235,0.30),transparent 58%),radial-gradient(circle at 78% 76%,rgba(150,205,255,0.16),transparent 52%),linear-gradient(180deg,#081e48 0%,#06142f 56%,#030d20 100%)}
+.loader-bg::after{content:'';position:absolute;inset:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))}
+.loader-stage{position:relative;width:320px;height:320px;display:grid;place-items:center}
+.loader-orbit,.loader-textring{position:absolute;inset:0;border-radius:50%;pointer-events:none;will-change:transform}
+.orbit-1{animation:loaderSpin 26s linear infinite}
+.orbit-2{animation:loaderSpinRev 34s linear infinite}
+.loader-textring{animation:loaderSpin 48s linear infinite}
+.loader-orbit svg,.loader-textring svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.loader-textring text{fill:rgba(236,247,255,0.62);font-family:var(--font-sans);font-size:12px;letter-spacing:1.8px}
+.orbit-dot{position:absolute;width:12px;height:12px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 8px rgba(180,225,255,0.9))}
+.orbit-bf{position:absolute;width:34px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 12px rgba(205,232,255,0.85));opacity:0.95}
+.loader-ring{position:absolute;width:188px;height:188px;transform:rotate(-90deg);overflow:visible;filter:drop-shadow(0 0 11px rgba(210,236,255,0.92))}
+.loader-ring .rt{fill:none;stroke:rgba(220,240,255,0.16);stroke-width:4}
+.loader-ring .rf{fill:none;stroke:url(#lgrad);stroke-width:4.5;stroke-linecap:round;transition:stroke-dashoffset .25s ease}
+.loader-center{position:relative;display:flex;align-items:baseline;justify-content:center}
+.loader-percent{font-family:var(--font-serif);font-size:46px;font-weight:300;color:#fff;letter-spacing:0.02em;text-shadow:0 0 22px rgba(215,236,255,0.78);font-variant-numeric:tabular-nums;line-height:1}
+.loader-percent i{font-size:20px;font-style:normal;color:rgba(236,247,255,0.74);margin-left:2px}
+.loader-label{margin-top:48px;font-size:14px;letter-spacing:0.16em;color:rgba(236,247,255,0.66);text-shadow:0 2px 10px rgba(3,13,32,0.7);animation:loaderBreath 3s ease-in-out infinite}
+@keyframes loaderSpin{to{transform:rotate(360deg)}}
+@keyframes loaderSpinRev{to{transform:rotate(-360deg)}}
+@keyframes loaderBreath{0%,100%{opacity:0.55}50%{opacity:0.95}}
+@media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
+@media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
 </head>
-<body>
+<body class="is-loading">
+<!-- LOADER -->
+<div class="loader" id="loader" role="progressbar" aria-label="加载中" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="loader-bg"></div>
+  <div class="loader-stage">
+    <div class="loader-textring" aria-hidden="true">
+      <svg viewBox="0 0 320 320">
+        <defs><path id="lt-circle" d="M160,10 a150,150 0 1,1 -0.1,0"/></defs>
+        <text><textPath href="#lt-circle" startOffset="0" textLength="942" lengthAdjust="spacing">VIRTUAL AND REAL · LOVE WITHOUT BOUNDS · VIRTUAL AND REAL · LOVE WITHOUT BOUNDS · </textPath></text>
+      </svg>
+    </div>
+    <div class="loader-orbit orbit-1" aria-hidden="true">
+      <svg viewBox="0 0 320 320" fill="none"><circle cx="160" cy="160" r="138" stroke="rgba(199,229,255,0.24)" stroke-width="1" stroke-dasharray="3 9"/></svg>
+      <img class="orbit-dot" src="images/light.png" alt="" style="top:6.9%;left:50%">
+    </div>
+    <div class="loader-orbit orbit-2" aria-hidden="true">
+      <svg viewBox="0 0 320 320" fill="none"><path d="M160,40 A120,120 0 0 1 280,160" stroke="rgba(156,203,255,0.55)" stroke-width="1.5" stroke-linecap="round"/><path d="M160,280 A120,120 0 0 1 40,160" stroke="rgba(156,203,255,0.55)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <img class="orbit-bf" src="images/butterfly.png" alt="" style="top:12.5%;left:50%">
+      <img class="orbit-dot" src="images/light.png" alt="" style="top:50%;left:87.5%;width:10px;height:10px">
+    </div>
+    <svg class="loader-ring" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><linearGradient id="lgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eaf7ff"/><stop offset="1" stop-color="#bfe3ff"/></linearGradient></defs>
+      <circle class="rt" cx="50" cy="50" r="46"/>
+      <circle class="rf" id="loaderRingFill" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+    </svg>
+    <div class="loader-center">
+      <div class="loader-percent"><span id="loaderNum">0</span><i>%</i></div>
+    </div>
+  </div>
+  <div class="loader-label">月 光 茧 · 载入中</div>
+</div>
+<script>
+(function(){
+  var loader=document.getElementById('loader');
+  var ringFill=document.getElementById('loaderRingFill');
+  var numEl=document.getElementById('loaderNum');
+  var CIRC=289.03; // 2*pi*46
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // First-screen assets weighted by approx download cost
+  var assets=[
+    {src:'images/banner_bg.jpg',w:40,type:'img'},
+    {src:'videos/pv.mp4',w:34,type:'video'},
+    {src:'images/bg.png',w:8,type:'img'},
+    {src:'images/app-logo.jpg',w:7,type:'img'},
+    {src:'images/title.jpg',w:4,type:'img'},
+    {src:'images/light.png',w:1,type:'img'},
+    {src:'images/butterfly.png',w:1,type:'img'},
+    {src:'images/about.jpg',w:5,type:'img'}
+  ];
+  var totalW=assets.reduce(function(a,b){return a+b.w;},0);
+  var loadedW=0, done=false;
+  var target=0;    // real progress 0..1
+  var shown=0;     // smoothed displayed progress
+  var minTime=1500, started=performance.now();
+
+  function bump(w){ loadedW+=w; target=Math.min(loadedW/totalW,1); }
+
+  assets.forEach(function(a){
+    if(a.type==='img'){
+      var im=new Image();
+      im.onload=im.onerror=function(){bump(a.w);};
+      im.src=a.src;
+    }else{
+      var v=document.createElement('video');
+      v.preload='auto'; v.muted=true;
+      var fired=false, fire=function(){if(fired)return;fired=true;bump(a.w);};
+      v.addEventListener('canplaythrough',fire);
+      v.addEventListener('loadeddata',function(){setTimeout(fire,1200);}); // fallback if canplaythrough never fires
+      v.addEventListener('error',fire);
+      v.src=a.src;
+      // hard cap so a stalled video can't trap the loader
+      setTimeout(fire,9000);
+    }
+  });
+
+  // window load as a final safety net
+  window.addEventListener('load',function(){ if(target<1){loadedW=totalW;target=1;} });
+
+  function finish(){
+    if(done)return; done=true;
+    loader.setAttribute('aria-valuenow','100');
+    setTimeout(function(){
+      loader.classList.add('is-done');
+      document.body.classList.remove('is-loading');
+      window.dispatchEvent(new Event('loader:done'));
+      setTimeout(function(){ if(loader&&loader.parentNode)loader.parentNode.removeChild(loader); },700);
+    },reduce?60:340);
+  }
+
+  function tick(){
+    // ease the shown value toward target so it never snaps
+    shown += (target-shown)*0.12;
+    if(target>=1 && shown>0.997) shown=1;
+    var pct=Math.round(shown*100);
+    numEl.textContent=pct;
+    ringFill.setAttribute('stroke-dashoffset',(CIRC*(1-shown)).toFixed(2));
+    loader.setAttribute('aria-valuenow',pct);
+    var elapsed=performance.now()-started;
+    if(shown>=1 && elapsed>=minTime){ finish(); return; }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
 <div class="page-bg"><div class="page-bg-inner"></div></div>
 <div class="page-overlay"></div>
 <div class="page-bg-lower"><div class="page-bg-lower-inner"></div><div class="page-bg-lower-mask"></div></div>
