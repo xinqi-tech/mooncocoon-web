@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户协议 - 月光茧（LunaKoru）</title>
+    <meta name="description" content="月光茧（LunaKoru）用户协议，了解您使用月光茧产品与服务的权利和义务。">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.8;
+            color: #4a5a7c;
+            background: linear-gradient(180deg, #d8e2f0 0%, #c8d5e8 50%, #b8c8e0 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.35) 0%, transparent 40%),
+                linear-gradient(240deg, rgba(255,255,255,0.25) 0%, transparent 50%),
+                linear-gradient(60deg, rgba(180,195,220,0.2) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding: 40px 32px;
+            background: linear-gradient(135deg, #9aadd0 0%, #8a9dc8 50%, #7a8db8 100%);
+            border-radius: 50px;
+            color: white;
+            box-shadow:
+                0 10px 40px rgba(122, 141, 184, 0.35),
+                inset 0 2px 12px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 10px rgba(100, 120, 160, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(45deg, transparent 38%, rgba(255,255,255,0.12) 42%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 58%, transparent 62%),
+                linear-gradient(-30deg, transparent 40%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 55%, transparent 60%),
+                linear-gradient(70deg, transparent 35%, rgba(200,215,240,0.1) 40%, rgba(200,215,240,0.18) 48%, transparent 55%);
+            pointer-events: none;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 8%;
+            right: 8%;
+            height: 45%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.08) 100%);
+            border-radius: 0 0 42px 42px;
+            pointer-events: none;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 12px 0 16px 0;
+            text-shadow: 0 2px 8px rgba(90, 110, 150, 0.3);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.1em;
+        }
+        header .brand {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.15em;
+            font-weight: 500;
+        }
+
+        header .header-meta {
+            position: relative;
+            z-index: 1;
+        }
+
+        header .effective-date {
+            display: inline-block;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow:
+                0 8px 32px rgba(122, 141, 184, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+        }
+
+        .intro {
+            font-size: 1rem;
+            color: #5a6a8c;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(138, 157, 200, 0.25);
+        }
+
+        section {
+            margin-bottom: 36px;
+        }
+
+        section:last-child {
+            margin-bottom: 0;
+        }
+        h2 {
+            font-size: 1.35rem;
+            color: #6a7db0;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #9aadd0;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: #5a6a98;
+            margin: 20px 0 12px 0;
+        }
+
+        h4 {
+            font-size: 1rem;
+            color: #6a7aa8;
+            margin: 16px 0 8px 0;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            color: #5a6a98;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(154, 173, 208, 0.25) 0%, rgba(138, 157, 200, 0.18) 100%);
+            border-left: 4px solid #8a9dc8;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(5px);
+        }
+        .contact-card {
+            background: linear-gradient(135deg, #9aadd0 0%, #8a9dc8 50%, #7a8db8 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin: 20px 0;
+            box-shadow:
+                0 6px 24px rgba(122, 141, 184, 0.3),
+                inset 0 2px 10px rgba(255, 255, 255, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.22) 0%, transparent 45%),
+                linear-gradient(-45deg, transparent 50%, rgba(255,255,255,0.08) 70%, transparent 80%);
+            pointer-events: none;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .contact-value {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 8px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            transition: background 0.2s ease;
+        }
+        .contact-value:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .response-note {
+            text-align: center;
+            color: #6a7a9c;
+            font-size: 0.95rem;
+            margin-top: 16px;
+            padding: 12px 20px;
+            background: rgba(154, 173, 208, 0.12);
+            border-radius: 12px;
+        }
+
+        .response-note strong {
+            color: #5a6a98;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            padding: 24px;
+            color: #7a8ab0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            header {
+                padding: 28px 20px;
+                border-radius: 32px;
+            }
+            header h1 {
+                font-size: 1.5rem;
+            }
+            .content {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand">月光茧 · LunaKoru</div>
+            <h1>用户协议</h1>
+            <div class="header-meta">
+                <span class="effective-date">生效日期：2025年</span>
+            </div>
+        </header>
+        <main class="content">
+            <div class="intro">
+                <p>欢迎使用月光茧（LunaKoru）。在您开始使用本产品前，请务必仔细阅读本协议。一旦您点击"同意"、注册、或实际使用本服务，即表示您已阅读、理解并同意本协议内容，包括月光茧对使用协议所做的任何修改。</p>
+            </div>
+
+            <section id="section1">
+                <h2>一、协议的适用范围</h2>
+                <p>1.1 本协议适用于您使用的所有月光茧相关服务及产品，包括但不限于：</p>
+                <ul>
+                    <li>月光茧（LunaKoru）App</li>
+                    <li>月光茧官方网站与网页服务</li>
+                    <li>月光茧云服务</li>
+                    <li>月光茧官方智能互动设备及配件（下称"设备"）</li>
+                </ul>
+                <p>1.2 本协议由用户与月光茧（LunaKoru）运营方（以下简称"运营方"）共同缔结，对双方具有法律约束力。运营方有权根据业务需求不时更新本协议，更新后的协议条款一旦在相关服务平台公布即代替原来的协议条款，恕不另行单独通知。</p>
+            </section>
+
+            <section id="section2">
+                <h2>二、服务说明</h2>
+                <p>2.1 月光茧为用户提供多种数字互动体验，包括但不限于：</p>
+                <ul>
+                    <li>数字角色陪伴与互动式对话</li>
+                    <li>剧情内容、动态视觉叙事体验</li>
+                    <li>支持可穿戴互动设备的蓝牙连接与反馈控制</li>
+                    <li>用户内容系统（如个人空间、互动记录）</li>
+                    <li>内容购买与订阅服务</li>
+                    <li>Cloud Sync 云端同步</li>
+                </ul>
+                <p>2.2 本产品的宗旨是提供一种沉浸式、情感化、富表达力的数字陪伴体验。运营方有权根据技术发展、市场需求等情况，对服务内容进行优化、升级或调整，无需事先取得用户同意。</p>
+                <p>2.3 运营方仅提供本协议约定的服务，不保证所有用户的需求均能得到满足，也不保证服务完全无中断，但会尽合理努力保障服务的稳定性。</p>
+            </section>
+            <section id="section3">
+                <h2>三、用户资格</h2>
+                <div class="highlight-box">
+                    <p>用户须为年满18周岁的完全民事行为能力人。未成年人不得注册或使用本服务。</p>
+                </div>
+                <p>3.3 若您代表其他组织使用本服务，应确认已获得合法授权，并保证所代表的组织为合法设立且有效存续的主体。</p>
+                <p>3.4 若用户提供虚假年龄、身份信息或冒用他人身份注册使用本服务，运营方有权无需事先通知即暂停或终止相关服务，注销相关账号，并拒绝该用户现在和未来使用本服务之全部或任何功能。</p>
+                <p>3.5 如运营方发现未成年人谎报年龄并注册使用的，任何用户均有责任立即通知运营方；运营方在确认相关情况后，会设法尽快删除该未成年人的账号和相关数据。</p>
+            </section>
+
+            <section id="section4">
+                <h2>四、账户注册与使用</h2>
+                <p>4.1 用户在使用本服务前需注册"月光茧"账号，运营方可根据用户需求或产品需要对账号注册和绑定的方式进行变更。</p>
+                <p>4.2 用户应使用真实且可验证的联系方式（如手机号码、电子邮箱等）注册账号，并确保今后更新的登录邮箱、名号、头像及手机号码等资料的真实性、有效性和合法性。</p>
+                <p>4.3 账号为用户专属，不得出租、转让、共享或借用。账号的所有权归运营方所有，用户仅获得账号的使用权，该使用权仅属于初始申请注册人。</p>
+                <p>4.4 用户须妥善保存密码及登录方式，对所有使用该账号的行为负完全责任。因个人保管不当导致账号被盗用、信息泄露或产生其他损失的，由用户自行承担责任。</p>
+                <p>4.5 如出现异常登录、被盗号等情况，用户应立即联系客服，并配合运营方进行身份验证等相关操作。用户未及时通知或未配合验证导致损失扩大的，运营方不承担责任。</p>
+                <p>4.6 用户同意不可利用技术手段批量建立虚假账号，或使用非法手段获取、使用他人账号。</p>
+                <p>4.7 运营方无须对用户的任何注册或登记资料承担任何责任，包括但不限于鉴别、核实任何注册或登记资料的真实性、正确性、完整性、适用性及/或是否为最新资料的责任。</p>
+                <p>4.8 如用户违反本协议中关于账号使用的任何条款，运营方在通知用户后有权依据协议中断或终止对违约用户账号提供服务。同时，运营方保留在任何时候收回账号、用户名的权利。</p>
+            </section>
+            <section id="section5">
+                <h2>五、用户行为规范</h2>
+                <p>5.1 用户应遵守相关法律法规及本协议约定，并同意对以任何方式使用登录账号而使用本服务的任何行为及其结果承担全部责任。如用户的行为违反国家法律，将依法承担全部法律责任；如涉嫌构成犯罪，司法机关将追究刑事责任，运营方将严格按照法律规定的义务及司法机关的要求进行配合。</p>
+                <p>5.2 用户承诺将不会利用"月光茧"账号或服务进行任何违法或不正当的活动，包括但不限于下列行为：</p>
+
+                <h3>5.2.1 内容相关违规</h3>
+                <ul>
+                    <li>发布或以其他方式传送含有下列内容之一的信息：反对宪法所确定的基本原则的；危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；损害国家荣誉和利益的；煽动民族仇恨、民族歧视，破坏民族团结的；破坏国家宗教政策，宣扬邪教和封建迷信的；散布谣言，扰乱社会秩序，破坏社会稳定的；散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的；侮辱或者诽谤他人，侵害他人合法权益的；含有虚假、诈骗、有害、胁迫、侵害他人隐私、骚扰、侵害、中伤、粗俗、猥亵或其他道德上令人反感的内容；含有法律、法规、部门规章以及任何具有法律效力之规范所限制或禁止的其他内容的；含有运营方认为不适合在月光茧上展示的内容</li>
+                    <li>上传未经授权的图片、音频、角色形象等受知识产权保护的内容，侵害他人著作权、专利权、商标权、商业秘密或其他专属权利的内容</li>
+                    <li>使用平台生成内容误导他人，或用于商业用途、传播虚假信息，或未经平台或运营方授权的其他行为，或用于其他违法的用途</li>
+                </ul>
+
+                <h3>5.2.2 技术行为违规</h3>
+                <ul>
+                    <li>对月光茧客户端、服务器端或相关协议进行反向工程、破解、篡改、编译、调试等操作</li>
+                    <li>使用机器人、脚本、爬虫等自动化工具模拟或干扰正常使用流程，批量获取或操作服务内容</li>
+                    <li>未经授权连接、修改或操作非官方设备，或使用非官方配件、未经认证的第三方程序控制官方设备</li>
+                    <li>干扰或破坏本服务或与本服务相连线之服务器和网络，或违反任何关于本服务连线网络之规定、程序、政策或规范</li>
+                    <li>制作、发布、传播设计目的在于干扰、破坏或限制任何计算机软件、硬件或通讯设备功能之计算机病毒、木马、恶意代码或其他任何有害程序</li>
+                </ul>
+                <h3>5.2.3 互动行为违规</h3>
+                <ul>
+                    <li>盗用他人头像或资料，冒充、利用他人名义，冒充其他任何人或机构使用本服务</li>
+                    <li>以任何方式危害他人的合法权益，包括但不限于跟踪、人肉搜索或以其他方式骚扰他人</li>
+                    <li>强制、诱导其他用户关注、点击链接页面或分享信息</li>
+                    <li>使用设备于未授权场景、不安全环境，或在使用设备的过程中忽略官方安全提示</li>
+                    <li>使用服务损害自己或他人的财产与安全，或从事其他违反法律法规规定、侵犯其他用户合法权益、干扰"月光茧"正常运营或未明示授权的行为</li>
+                </ul>
+
+                <p>5.3 如用户违反上述内容，运营方有权采取包括但不限于警告、限制功能、冻结账号、永久封禁、设备封禁等措施，且有权删除相关违规内容。</p>
+                <p>5.4 用户通过本服务提供、发布或传送之内容、与本服务连线、违反本使用协议或侵害他人任何权利因而衍生或导致任何第三人提出任何索赔或请求，包括但不限于合理的律师费、诉讼费，用户需赔偿运营方及其子公司、关联公司、高级职员、代理人、品牌共有人或其他合作伙伴及员工，并使其免受损害，并承担由此引发的全部法律责任。</p>
+                <p>5.5 用户不可对本服务任何部分或本服务之使用或获得，进行复制、拷贝、出售、转售或用于任何其他商业目的。</p>
+            </section>
+
+            <section id="section6">
+                <h2>六、数字内容（AIGC）与虚拟角色互动说明</h2>
+                <p>6.1 月光茧提供的部分文本、图片、语音等内容可能由AI模型生成（以下简称"生成内容"）。</p>
+                <p>6.2 生成内容仅作为体验的一部分，不构成专业建议、事实陈述或任何形式的承诺，用户应自行判断其真实性和适用性，因使用生成内容导致的任何损失，运营方不承担责任。</p>
+                <p>6.3 用户输入的内容可能被匿名化、去标识化处理，该等处理后的数据可用于改进模型能力、优化服务体验，但运营方会严格遵守隐私保护相关法律法规及本协议约定。</p>
+                <p>6.4 用户不得将生成内容用于商业用途、传播虚假信息，或从事任何违法违规、侵害他人合法权益的行为。</p>
+                <p>6.5 用户在使用虚拟角色互动服务时，应遵守公序良俗，不得利用该服务从事低俗、恶意互动等不当行为，运营方有权对该等行为进行干预和处理。</p>
+            </section>
+            <section id="section7">
+                <h2>七、设备连接与安全使用须知</h2>
+                <p>7.1 月光茧支持与官方互动设备进行蓝牙连接。设备可通过提示性触感反馈、动作反应和传感器数据为用户提供增强体验。</p>
+                <p>7.2 用户在使用设备前，应确保：</p>
+                <ul>
+                    <li>已仔细阅读并理解官方使用说明书及安全警示内容</li>
+                    <li>在安全、适宜的环境中使用设备，避免在可能造成设备损坏或人身伤害的场景下使用</li>
+                    <li>自身状况适合体验互动反馈，如有特殊健康问题应避免使用相关功能</li>
+                </ul>
+                <p>7.3 禁止以下不安全行为：</p>
+                <ul>
+                    <li>在极端环境中使用设备（高温、低温、水下、高压、剧烈运动中等）</li>
+                    <li>擅自拆解、改装、维修设备或更换非官方配件</li>
+                    <li>使用非官方配件或未经认证的第三方程序控制设备</li>
+                    <li>将设备用于危险活动或可能对他人造成伤害的场景</li>
+                </ul>
+                <p>7.4 因用户个人使用不当、未遵守官方使用说明或安全提示导致的任何风险与损害（包括但不限于设备损坏、人身伤害、财产损失等），运营方不承担责任。</p>
+                <p>7.5 运营方对官方设备提供符合相关标准的质量保障，但不承担因用户保管不当、意外损坏、自然灾害等非产品质量问题导致的损失。</p>
+            </section>
+
+            <section id="section8">
+                <h2>八、付费内容与订阅服务</h2>
+                <p>8.1 本产品提供虚拟内容购买、会员订阅、设备扩展功能等付费服务，具体服务内容、价格以App内显示及相关服务页面说明为准。</p>
+                <p>8.2 虚拟内容通常不提供退款，除非法律另有规定或相关服务页面明确说明有退款政策。用户在购买前应仔细确认相关信息，一旦完成支付，即视为认可该等内容或服务。</p>
+                <p>8.3 若用户开启自动续费，则视为授权应用商店（如App Store、Google Play等）从其绑定的支付账户中直接扣费。自动续费周期、金额以用户开通时的约定为准，用户可在系统设置或App内相关页面随时取消续费，取消后下一个计费周期将不再扣费。</p>
+                <p>8.4 所有价格以App内显示及商店政策为准，运营方有权根据市场情况调整价格，但会对已付费用户的现有服务权益予以保障，不会因价格调整而减少已提供的服务内容。</p>
+                <p>8.5 如因运营方原因导致付费服务无法正常提供，运营方将根据实际情况为用户提供等值的替代性服务或办理相应退款；如因用户自身原因（如账号封禁、设备故障等）导致无法使用付费服务，不予退款。</p>
+            </section>
+            <section id="section9">
+                <h2>九、用户数据与隐私保护</h2>
+                <p>9.1 保护用户个人信息安全既是法律要求，也是运营方长期坚持的一项基本原则。运营方将严格遵守《月光茧（LunaKoru）隐私政策》及相关法律法规的规定，对用户信息进行收集、存储、使用、加工、传输、提供、公开等处理。</p>
+                <p>9.2 运营方处理的用户信息包括但不限于：</p>
+                <ul>
+                    <li>注册信息（如手机号码、电子邮箱、用户名、头像等）</li>
+                    <li>使用记录（如登录记录、服务使用日志、互动记录等）</li>
+                    <li>设备交互数据（如传感器状态、连接情况、设备型号、系统版本等）</li>
+                    <li>对话内容与体验日志（用于提供服务与提升算法效果）</li>
+                </ul>
+                <p>9.3 运营方不会出售用户个人数据，并将采取加密存储、访问控制、安全审计等合理的安全措施对用户信息进行保护，防止信息泄露、篡改、丢失。</p>
+                <p>9.4 用户可以通过App中提示的操作来查询、更改、删除"月光茧"帐户上的个人资料、注册信息及传送内容等，但出于安全性和身份识别的考虑，部分核心注册信息（如注册手机号码）可能无法直接修改，用户需联系客服并提供有效证明材料后方可申请修改。此外，删除有关信息的同时也会删除用户储存在系统中的相关文字、图片及互动记录，用户需承担该风险。</p>
+                <p>9.5 若发生数据安全事件，运营方将依法履行告知义务，采取相应的补救措施，并配合有关部门进行调查处理。</p>
+                <p>9.6 针对不同地区用户，运营方将根据当地适用的隐私保护法规（如GDPR/PDPA/CCPA等）提供相应的隐私保护服务，具体以相关地区的隐私政策版本为准。</p>
+            </section>
+            <section id="section10">
+                <h2>十、风险提示与免责声明</h2>
+                <p>在法律允许范围内，运营方对以下情况免责：</p>
+
+                <h3>10.1 用户自身原因导致的风险</h3>
+                <ul>
+                    <li>未按说明使用设备或服务，或违反本协议约定的使用规则</li>
+                    <li>身体状况不适合使用互动反馈功能却强行使用</li>
+                    <li>使用第三方设备、软件或配件导致的损害</li>
+                    <li>因个人保管不当导致账号被盗用、信息泄露产生的损失</li>
+                </ul>
+
+                <h3>10.2 AI内容造成的误解或偏差</h3>
+                <p>AI内容可能包含不准确或不完整信息，用户应自行判断。因依赖该等内容导致的任何损失，运营方不承担责任。</p>
+
+                <h3>10.3 第三方服务问题</h3>
+                <p>如支付服务故障、云存储中断、网络服务提供商问题、第三方软件兼容问题等非运营方控制范围内的因素导致服务异常或用户损失的，运营方不承担责任，但会尽力协助用户联系相关方解决问题。</p>
+
+                <h3>10.4 不可抗力因素</h3>
+                <p>不可抗力是指不能预见、不能克服并不能避免且对一方或双方造成重大影响的客观事件，包括但不限于自然灾害如洪水、地震、瘟疫流行和风暴等以及社会事件如战争、动乱、政府行为、政策调整等。因不可抗力导致服务中断或用户损失的，运营方在法律允许的范围内免责。</p>
+
+                <p>10.5 运营方需要定期或不定期地对"月光茧"平台或相关的设备进行检修或者维护，如因此类情况而造成服务在合理时间内的中断，运营方无需为此承担任何责任，但应事先进行通告。</p>
+                <p>10.6 依据法律法规、本协议约定获得处理违法违规或违约内容的权利，该权利不构成运营方的义务或承诺，运营方不能保证及时发现违法违规或违约行为或进行相应处理。</p>
+                <p>10.7 对于向用户提供的下列产品或者服务的质量缺陷及其引发的任何损失，运营方无需承担任何责任：</p>
+                <ul>
+                    <li>向用户免费提供的服务</li>
+                    <li>向用户赠送的任何产品或者服务</li>
+                </ul>
+                <p>10.8 本服务同大多数互联网服务一样，受包括但不限于用户原因、网络服务质量、社会环境等因素的差异影响，可能受到各种安全问题的侵扰，用户应加强信息安全及使用者资料的保护意识，注意加强密码保护，以免遭致损失和骚扰。运营方对该等安全问题导致的损失不承担责任。</p>
+            </section>
+            <section id="section11">
+                <h2>十一、服务变更、中断、终止</h2>
+                <p>11.1 运营方有权根据实际情况变更产品功能、调整服务内容或暂停、终止部分或全部服务。</p>
+                <p>11.2 鉴于网络服务的特殊性，用户同意运营方有权随时变更、中断或终止部分或全部的服务（包括收费服务）。运营方变更、中断或终止收费服务的，将通过App公告、站内信等方式通知用户，并对用户已支付但未使用的服务费用予以退还或提供等值替代性服务。</p>
+                <p>11.3 如发生下列任何一种情形，运营方有权变更、中断或终止向用户提供的免费服务或收费服务，而无需对用户或任何第三方承担任何责任：</p>
+                <ul>
+                    <li>根据法律规定用户应提交真实信息，而用户提供的个人资料不真实、或与注册时信息不一致又未能提供合理证明</li>
+                    <li>用户违反相关法律法规或本协议的约定，经运营方通知后仍未改正</li>
+                    <li>按照法律规定或有权机关的要求</li>
+                    <li>出于安全的原因或其他必要的情形（如服务器故障、不可抗力等）</li>
+                    <li>用户长期未使用账号，运营方已按相关规则进行公示后</li>
+                    <li>为保护用户或第三方的合法权益免受侵害</li>
+                </ul>
+                <p>11.4 服务终止后，运营方有权删除或匿名化用户的相关数据，不再保留用户的账号信息和使用记录，但法律法规另有规定的除外。</p>
+            </section>
+
+            <section id="section12">
+                <h2>十二、法律适用与争议解决</h2>
+                <p>12.1 本协议适用月光茧（LunaKoru）运营方注册地的法律（不含冲突法规则）。</p>
+                <p>12.2 如双方就本协议的订立、履行、解释或争议解决等事宜发生任何争议，双方应首先友好协商解决；协商不成的，任何一方均有权提交至运营方所在地有管辖权的人民法院诉讼解决。</p>
+            </section>
+            <section id="section13">
+                <h2>十三、其他条款</h2>
+                <p>13.1 运营方尊重他人合法权益（包括知识产权、名誉权、商誉权等），呼吁用户也尊重他人合法权益。如用户认为他人使用本服务的行为侵犯了其合法权益，可通过本协议约定的联系方式向运营方投诉，运营方将依法进行处理。</p>
+                <p>13.2 如果用户违反法律法规的禁止性规定、对他人合法权益或公众利益造成了侵害，运营方将依国家法律法规的规定，或在适当的情形下，依本协议或其相关规定，删除特定内容或终止其对账户的使用。</p>
+                <p>13.3 本协议的任何条款被认定为无效、不具有强制执行力的，不影响其他条款的效力。</p>
+                <p>13.4 运营方未行使或延迟行使本协议项下的任何权利，不构成对该权利的放弃。</p>
+                <p>13.5 本协议构成双方关于本协议标的事项的完整约定，取代双方此前就此达成的任何口头或书面协议、谅解或安排。</p>
+            </section>
+
+            <section id="section14">
+                <h2>十四、联系我们</h2>
+                <p>若对本协议或产品有任何疑问、投诉或建议，请通过以下方式联系我们：</p>
+
+                <div class="contact-card">
+                    <div class="contact-item">
+                        <span class="contact-label">公司邮箱</span>
+                        <a href="mailto:feedback@heabo.cn" class="contact-value">feedback@heabo.cn</a>
+                    </div>
+                </div>
+
+                <div class="response-note">
+                    <p>您也可以通过 <strong>App 内在线客服</strong> 联系我们，运营方将在合理时间内对您的咨询或投诉进行处理和回复。</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 月光茧（LunaKoru）版权所有</p>
+        </footer>
+    </div>
+</body>
+</html>
