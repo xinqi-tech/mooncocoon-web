@@ -101,7 +101,7 @@ function mockFetch(payload, { ok: okFlag = true, status = 200, reject = false } 
     : Promise.resolve({
         ok: okFlag,
         status,
-        json: () => Promise.resolve(payload),
+        json: () => Promise.resolve({ result: 0, data: payload }),
       });
 }
 
@@ -224,7 +224,7 @@ async function testBehaviors() {
   // revisit: pre-seeded beta_phone auto-queries on first panel open
   {
     let fetchCalls = 0, lastUrl = '';
-    const w = await boot((url) => { fetchCalls++; lastUrl = url; return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ status: 'APPROVED', groupQrUrl: 'https://cdn.lunakoru.com/qr/x.png' }) }); });
+    const w = await boot((url) => { fetchCalls++; lastUrl = url; return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ result: 0, data: { status: 'APPROVED', groupQrUrl: 'https://cdn.lunakoru.com/qr/x.png' } }) }); });
     w.localStorage.setItem('beta_phone', '13800138000');
     w.document.querySelector('[data-beta-open]').click();
     await tick(0); await tick(0); await tick(0);

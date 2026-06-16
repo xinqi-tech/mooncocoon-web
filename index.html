@@ -1349,11 +1349,14 @@ addPressAnim('.scroll-hint-icon','is-pressing');
         if(!res.ok) throw new Error('HTTP '+res.status);
         return res.json();
       })
-      .then(data=>{
+      .then(json=>{
         setLoading(false);
-        const status = data && data.status;
+        // 后端返回仓库通用 Result<T> 信封：{ result, data:{ status, groupQrUrl } }
+        // 取 data 层；兼容裸对象兜底（万一某环境未包信封）
+        const payload = (json && typeof json.data === 'object' && json.data) ? json.data : json;
+        const status = payload && payload.status;
         if(status==='PENDING' || status==='APPROVED' || status==='NOT_SELECTED'){
-          renderResult(status, data);
+          renderResult(status, payload);
         }else{
           renderResult('ERROR');
         }
