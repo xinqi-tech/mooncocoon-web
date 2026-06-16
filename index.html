@@ -68,7 +68,17 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:110px var(--page-x) 40px;max-width:1440px;margin:0 auto;contain:paint layout}
 .hero-logo{width:360px;margin-bottom:8px;filter:drop-shadow(0 0 30px rgba(191,227,255,0.68))}
 .hero-title{font-family:var(--font-serif);font-size:54px;letter-spacing:0.05em;line-height:1.18;margin-bottom:16px;text-shadow:0 0 24px rgba(210,235,255,0.62);font-weight:300}
-.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:48px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
+.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:32px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
+/* HERO CTA — primary beta-reservation entry (mobile-reachable) */
+.hero-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-bottom:44px;padding:14px 34px;border-radius:var(--rounded-pill);font-family:var(--font-sans);font-size:16px;font-weight:500;letter-spacing:0.08em;color:var(--night-990);background:linear-gradient(135deg,#ffffff 0%,#dcf0ff 55%,#9ccbff 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 24px rgba(150,205,255,0.45),0 8px 28px rgba(30,80,150,0.28),inset 0 1px 6px rgba(255,255,255,0.6);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s;position:relative;animation:heroSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.4s both}
+.hero-cta i,.hero-cta svg{color:var(--night-920);width:18px;height:18px}
+.hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 36px rgba(150,205,255,0.7),0 12px 36px rgba(30,80,150,0.36),inset 0 1px 8px rgba(255,255,255,0.7)}
+.hero-cta.is-pressing{transform:scale(0.95)}
+body.is-loading .hero-cta{animation:none!important;opacity:0}
+/* NAV beta link — subtle emphasis vs plain nav links */
+.nav-links a.nav-beta{color:var(--ice-340);font-weight:500}
+.nav-links a.nav-beta::before{opacity:1;background:rgba(156,203,255,0.14);box-shadow:0 0 14px rgba(150,205,255,0.28)}
+.nav-links a.nav-beta:hover{color:var(--moon-000)}
 .hero-video{width:100%;max-width:680px;border-radius:var(--rounded-xxl);background:transparent;overflow:visible;cursor:pointer;position:relative;aspect-ratio:16/9}
 .hero-video::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-xxl) + 2px);background:linear-gradient(135deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.65) 20%,rgba(255,255,255,0.35) 50%,rgba(255,255,255,0.1) 80%,rgba(255,255,255,0.03) 100%);z-index:1;box-shadow:0 0 18px rgba(255,255,255,0.35),-4px -4px 24px rgba(255,255,255,0.2)}
 .hero-video::after{content:'';position:absolute;inset:2px;border-radius:var(--rounded-xxl);background:var(--night-960);z-index:2}
@@ -198,6 +208,54 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 .nav-links a.is-pressing{transform:scale(0.94);color:#fff;text-shadow:0 0 12px rgba(150,205,255,0.9),0 0 24px rgba(150,205,255,0.5)}
 .scroll-hint-icon{transition:box-shadow .3s,transform .25s cubic-bezier(0.34,1.56,0.64,1)}
 .scroll-hint-icon.is-pressing{transform:scale(0.82)}
+/* ===== BETA RESERVATION MODAL ===== */
+.beta-overlay{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,10,28,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease}
+.beta-overlay.open{opacity:1;visibility:visible}
+.beta-panel{position:relative;width:100%;max-width:440px;max-height:calc(100vh - 48px);overflow-y:auto;border-radius:var(--rounded-panel);padding:36px 32px 32px;background:linear-gradient(160deg,rgba(18,45,99,0.92) 0%,rgba(8,30,72,0.94) 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 40px rgba(150,205,255,0.28),0 24px 60px rgba(3,13,32,0.6),inset 0 1px 14px rgba(255,255,255,0.08);transform:translateY(18px) scale(0.97);opacity:0;transition:transform .4s cubic-bezier(0.22,1,0.36,1),opacity .4s ease}
+.beta-overlay.open .beta-panel{transform:translateY(0) scale(1);opacity:1}
+.beta-panel::-webkit-scrollbar{width:6px}
+.beta-panel::-webkit-scrollbar-thumb{background:rgba(220,240,255,0.2);border-radius:3px}
+.beta-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--glass-fill);border:1px solid var(--glass-border);color:var(--text-secondary);transition:border-color .3s,color .3s,transform .2s}
+.beta-close:hover{border-color:var(--glass-border-bright);color:var(--moon-000);transform:rotate(90deg)}
+.beta-close i,.beta-close svg{width:18px;height:18px}
+.beta-title{font-family:var(--font-serif);font-size:26px;font-weight:300;letter-spacing:0.05em;text-align:center;margin-bottom:8px;text-shadow:0 0 18px rgba(210,235,255,0.4)}
+.beta-subtitle{text-align:center;color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:26px}
+.beta-primary-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px 20px;border-radius:var(--rounded-pill);font-family:var(--font-sans);font-size:16px;font-weight:500;letter-spacing:0.06em;color:var(--night-990);background:linear-gradient(135deg,#ffffff 0%,#dcf0ff 55%,#9ccbff 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 22px rgba(150,205,255,0.4),inset 0 1px 6px rgba(255,255,255,0.6);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s}
+.beta-primary-btn i,.beta-primary-btn svg{width:18px;height:18px;color:var(--night-920)}
+.beta-primary-btn:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(150,205,255,0.6),inset 0 1px 8px rgba(255,255,255,0.7)}
+.beta-primary-btn.is-pressing{transform:scale(0.97)}
+.beta-divider{display:flex;align-items:center;gap:14px;margin:24px 0 20px;color:var(--text-faint);font-size:12px;letter-spacing:0.08em}
+.beta-divider::before,.beta-divider::after{content:'';flex:1;height:1px;background:var(--divider-soft)}
+.beta-query-label{font-size:14px;color:var(--text-secondary);margin-bottom:12px;letter-spacing:0.02em}
+.beta-applied-note{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.7;color:var(--ice-340);background:rgba(156,203,255,0.10);border:1px solid rgba(156,203,255,0.22);border-radius:14px;padding:12px 14px;margin-bottom:18px}
+.beta-applied-note i,.beta-applied-note svg{width:16px;height:16px;flex-shrink:0;margin-top:3px;color:var(--ice-420)}
+.beta-input-row{display:flex;gap:10px;align-items:stretch}
+.beta-input{flex:1;min-width:0;padding:13px 16px;border-radius:14px;font-family:var(--font-sans);font-size:15px;letter-spacing:0.04em;color:var(--text-primary);background:rgba(130,174,230,0.12);border:1px solid var(--glass-border);transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;appearance:none}
+.beta-input::placeholder{color:var(--text-faint)}
+.beta-input:focus{outline:none;border-color:var(--glass-border-bright);box-shadow:0 0 16px rgba(150,205,255,0.25)}
+.beta-query-btn{flex-shrink:0;padding:0 22px;border-radius:14px;font-family:var(--font-sans);font-size:15px;font-weight:500;letter-spacing:0.04em;color:var(--text-primary);background:rgba(180,215,255,0.20);border:1px solid var(--glass-border-bright);transition:background .3s,box-shadow .3s,transform .2s}
+.beta-query-btn:hover:not(:disabled){background:rgba(180,215,255,0.30);box-shadow:0 0 18px rgba(150,205,255,0.3)}
+.beta-query-btn:disabled{opacity:0.55}
+.beta-query-btn.is-pressing{transform:scale(0.96)}
+.beta-error{font-size:13px;color:#ffb4b4;margin-top:10px;min-height:1em;line-height:1.6}
+/* Result block */
+.beta-result{margin-top:20px;border-radius:18px;padding:22px 20px;text-align:center;border:1px solid var(--glass-border);background:rgba(130,174,230,0.10);animation:tabContentIn .35s ease both}
+.beta-result-icon{width:48px;height:48px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.beta-result-icon i,.beta-result-icon svg{width:38px;height:38px}
+.beta-result.pending .beta-result-icon i{color:var(--ice-340)}
+.beta-result.approved .beta-result-icon i{color:#9fffca}
+.beta-result.not-selected .beta-result-icon i{color:var(--text-muted)}
+.beta-result.error .beta-result-icon i{color:#ffb4b4}
+.beta-result-title{font-family:var(--font-serif);font-size:20px;font-weight:300;letter-spacing:0.04em;margin-bottom:8px;color:var(--text-primary)}
+.beta-result-desc{font-size:14px;line-height:1.8;color:var(--text-secondary)}
+.beta-qr-wrap{margin:18px auto 6px;width:180px;height:180px;border-radius:16px;overflow:hidden;background:#fff;padding:8px;box-shadow:0 0 20px rgba(150,205,255,0.3)}
+.beta-qr-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.beta-qr-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
+.beta-result-actions{margin-top:18px;display:flex;justify-content:center}
+.beta-link-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;letter-spacing:0.04em;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;transition:color .3s;padding:6px}
+.beta-link-btn:hover{color:var(--ice-340)}
+.beta-loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:betaSpin .7s linear infinite;vertical-align:middle}
+@keyframes betaSpin{to{transform:rotate(360deg)}}
 /* RESPONSIVE */
 @media(max-width:768px){
   :root{--page-x:20px}
@@ -208,8 +266,14 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
   .hero{padding:100px var(--page-x) 20px;min-height:100dvh}
   .hero-logo{width:200px;margin-bottom:30px}
   .hero-title{font-size:26px;margin-bottom:30px}
-  .hero-slogan{font-size:14px;margin-bottom:30px;line-height:1.5}
+  .hero-slogan{font-size:14px;margin-bottom:22px;line-height:1.5}
+  .hero-cta{margin-bottom:30px;padding:12px 26px;font-size:15px}
   .hero-video{max-width:100%}
+  .beta-overlay{padding:16px;align-items:flex-end}
+  .beta-panel{max-width:100%;max-height:88vh;padding:30px 22px 26px;border-radius:24px}
+  .beta-title{font-size:23px}
+  .beta-input-row{flex-direction:column}
+  .beta-query-btn{padding:13px 22px}
   .scroll-hint{margin-top:24px}
   .module{min-height:auto;padding:40px 0 16px}
   .module-content{grid-template-columns:1fr;grid-template-rows:auto auto auto;gap:22px}
@@ -382,6 +446,7 @@ body.is-loading{overflow:hidden}
     <a href="#hero">首页</a>
     <a href="#modules">产品介绍</a>
     <a href="#about">关于我们</a>
+    <a href="#" class="nav-beta" data-beta-open>内测预约</a>
   </div>
 </nav>
 </div>
@@ -400,6 +465,10 @@ body.is-loading{overflow:hidden}
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
   <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
+  <button class="hero-cta" type="button" data-beta-open>
+    <i data-lucide="sparkles" width="18" height="18"></i>
+    <span>抢先内测预约</span>
+  </button>
   <div class="hero-video" id="pvVideo">
     <video src="videos/pv.mp4" muted playsinline autoplay loop></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
@@ -512,6 +581,38 @@ body.is-loading{overflow:hidden}
 </div>
 <div class="footer-bottom">© 2025 LunaKoru. 保留所有权利.</div>
 </footer>
+
+<!-- BETA RESERVATION MODAL -->
+<div class="beta-overlay" id="betaOverlay" role="dialog" aria-modal="true" aria-labelledby="betaTitle" hidden>
+  <div class="beta-panel" role="document">
+    <button class="beta-close" type="button" id="betaClose" aria-label="关闭">
+      <i data-lucide="x"></i>
+    </button>
+    <h2 class="beta-title" id="betaTitle">内测预约</h2>
+    <p class="beta-subtitle">月光茧内测招募中，提交预约即有机会抢先体验。</p>
+
+    <button class="beta-primary-btn" type="button" id="betaFormBtn">
+      <i data-lucide="clipboard-pen-line"></i>
+      <span>去填写预约问卷</span>
+    </button>
+
+    <div class="beta-divider">已经预约过？</div>
+
+    <div class="beta-applied-note" id="betaAppliedNote" hidden>
+      <i data-lucide="heart"></i>
+      <span>感谢预约！名单公布后可在此用手机号查询结果。</span>
+    </div>
+
+    <p class="beta-query-label">输入预约时填写的手机号查看结果</p>
+    <div class="beta-input-row">
+      <input class="beta-input" id="betaPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="20" placeholder="请输入手机号">
+      <button class="beta-query-btn" type="button" id="betaQueryBtn">查询</button>
+    </div>
+    <div class="beta-error" id="betaError" role="alert"></div>
+
+    <div id="betaResult"></div>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
@@ -1073,6 +1174,207 @@ addPressAnim('.scroll-hint-icon','is-pressing');
     requestAnimationFrame(drawTrail);
   }
   drawTrail();
+})();
+
+/* ===== BETA RESERVATION ===== */
+(function(){
+  // TODO(操作员): 替换为真实飞书预约问卷链接（问卷须含「手机号」必填项）
+  const BETA_FORM_URL = 'https://example.feishu.cn/share/base/form/REPLACE_ME';
+  // TODO(操作员): 替换为生产 Aildo-JAVA 后端 base URL（无尾斜杠），如 https://api.lunakoru.com
+  const API_BASE = 'https://REPLACE_ME.api-base.example.com';
+
+  const overlay   = document.getElementById('betaOverlay');
+  if(!overlay) return; // markup 未就绪时安全退出
+  const panel     = overlay.querySelector('.beta-panel');
+  const closeBtn  = document.getElementById('betaClose');
+  const formBtn   = document.getElementById('betaFormBtn');
+  const appliedNote = document.getElementById('betaAppliedNote');
+  const phoneInput  = document.getElementById('betaPhone');
+  const queryBtn  = document.getElementById('betaQueryBtn');
+  const errEl     = document.getElementById('betaError');
+  const resultEl  = document.getElementById('betaResult');
+
+  // —— 手机号归一化（与后端规则保持一致）：去空格/分隔符、去前导 +86/86、保留数字、取 11 位 ——
+  function normalizePhone(raw){
+    if(raw==null) return '';
+    let s = String(raw).replace(/\s+/g,'');      // 去所有空白
+    s = s.replace(/[-()（）.]/g,'');              // 去常见分隔符
+    if(s.indexOf('+86')===0) s = s.slice(3);      // 去 +86 前缀
+    s = s.replace(/\D/g,'');                       // 仅保留数字（顺带处理残留的 86 前缀情形）
+    if(s.length>11 && s.indexOf('86')===0) s = s.slice(2); // 去裸 86 国码前缀
+    return s.slice(0,11);                          // 保留 11 位
+  }
+  function isValidPhone(p){ return /^\d{11}$/.test(p); }
+  // 暴露给测试（仅用于 jsdom 无头测试，浏览器侧无副作用）
+  if(typeof window!=='undefined') window.__betaNormalizePhone = normalizePhone;
+
+  // —— 面板开关 ——
+  let lastFocused = null;
+  function openPanel(){
+    lastFocused = document.activeElement;
+    overlay.hidden = false;
+    // 触发 transition 需在下一帧加 open 类
+    requestAnimationFrame(()=>overlay.classList.add('open'));
+    document.body.style.overflow = 'hidden';
+    syncAppliedState();
+    if(window.lucide) lucide.createIcons();
+    setTimeout(()=>{ if(phoneInput) phoneInput.focus(); }, 380);
+  }
+  function closePanel(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    const onEnd = ()=>{ overlay.hidden = true; overlay.removeEventListener('transitionend', onEnd); };
+    overlay.addEventListener('transitionend', onEnd);
+    // 兜底：transitionend 未触发时强制隐藏
+    setTimeout(()=>{ if(!overlay.classList.contains('open')) overlay.hidden = true; }, 450);
+    if(lastFocused && lastFocused.focus){ try{ lastFocused.focus(); }catch(e){} }
+  }
+
+  // 入口（导航 + Hero CTA，均带 data-beta-open）
+  document.querySelectorAll('[data-beta-open]').forEach(el=>{
+    el.addEventListener('click', e=>{ e.preventDefault(); openPanel(); });
+  });
+  if(closeBtn) closeBtn.addEventListener('click', closePanel);
+  // 点击面板外部关闭
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) closePanel(); });
+  // Esc 关闭
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && overlay.classList.contains('open')) closePanel();
+  });
+
+  // —— 去填写问卷：打开飞书问卷 + 标记乐观「已预约」 ——
+  if(formBtn){
+    formBtn.addEventListener('click', ()=>{
+      try{ localStorage.setItem('beta_applied','1'); }catch(e){}
+      window.open(BETA_FORM_URL, '_blank', 'noopener');
+      syncAppliedState();
+    });
+  }
+
+  // 面板打开时：若已预约，展示感谢提示并默认聚焦查询区
+  function syncAppliedState(){
+    let applied = false;
+    try{ applied = localStorage.getItem('beta_applied')==='1'; }catch(e){}
+    if(appliedNote) appliedNote.hidden = !applied;
+    // 回访自动回填手机号并自动查询
+    let savedPhone = '';
+    try{ savedPhone = localStorage.getItem('beta_phone') || ''; }catch(e){}
+    if(savedPhone && phoneInput && !phoneInput.value){
+      phoneInput.value = savedPhone;
+      // 已有持久化手机号 → 自动查询一次（仅首次打开时）
+      if(!overlay.dataset.autoQueried){
+        overlay.dataset.autoQueried = '1';
+        doQuery(true);
+      }
+    }
+  }
+
+  // —— 查询逻辑 ——
+  let querying = false;
+  function setError(msg){ if(errEl) errEl.textContent = msg || ''; }
+
+  function renderResult(state, data){
+    if(!resultEl) return;
+    let cls='', icon='', title='', desc='', extra='';
+    if(state==='PENDING'){
+      cls='pending'; icon='hourglass';
+      title='审核中';
+      desc='已收到你的预约，名单审核中，公布后可在此查看。';
+    }else if(state==='APPROVED'){
+      cls='approved'; icon='party-popper';
+      title='🎉 恭喜入选内测！';
+      desc='扫描下方二维码加入内测群，抢先体验月光茧。';
+      const qr = data && data.groupQrUrl ? data.groupQrUrl : '';
+      if(qr){
+        extra = '<div class="beta-qr-wrap"><img src="'+escapeAttr(qr)+'" alt="内测群二维码"></div>'+
+                '<div class="beta-qr-hint">长按或扫码加入内测群</div>';
+      }
+    }else if(state==='NOT_SELECTED'){
+      cls='not-selected'; icon='moon';
+      title='本批未入选';
+      desc='很遗憾本批未入选，后续还有更多批次，敬请关注。';
+    }else{ // error / 网络异常
+      cls='error'; icon='wifi-off';
+      title='查询失败';
+      desc='暂时查询失败，稍后再试。';
+    }
+    resultEl.innerHTML =
+      '<div class="beta-result '+cls+'">'+
+        '<div class="beta-result-icon"><i data-lucide="'+icon+'"></i></div>'+
+        '<div class="beta-result-title">'+title+'</div>'+
+        '<div class="beta-result-desc">'+desc+'</div>'+
+        extra+
+        '<div class="beta-result-actions">'+
+          '<button class="beta-link-btn" type="button" id="betaResetBtn">换手机号 / 清除</button>'+
+        '</div>'+
+      '</div>';
+    if(window.lucide) lucide.createIcons();
+    const resetBtn = document.getElementById('betaResetBtn');
+    if(resetBtn) resetBtn.addEventListener('click', resetQuery);
+  }
+
+  function escapeAttr(s){
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+                    .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function resetQuery(){
+    if(resultEl) resultEl.innerHTML='';
+    setError('');
+    try{ localStorage.removeItem('beta_phone'); }catch(e){}
+    if(phoneInput){ phoneInput.value=''; phoneInput.focus(); }
+  }
+
+  function setLoading(on){
+    querying = on;
+    if(!queryBtn) return;
+    queryBtn.disabled = on;
+    queryBtn.innerHTML = on ? '<span class="beta-loading"></span>' : '查询';
+  }
+
+  function doQuery(silent){
+    if(querying) return;
+    const norm = normalizePhone(phoneInput ? phoneInput.value : '');
+    if(!isValidPhone(norm)){
+      if(!silent) setError('请输入正确的 11 位手机号');
+      return;
+    }
+    setError('');
+    if(resultEl) resultEl.innerHTML='';
+    try{ localStorage.setItem('beta_phone', norm); }catch(e){}
+    setLoading(true);
+    const url = API_BASE + '/api/beta-reservation/result?phone=' + encodeURIComponent(norm);
+    fetch(url, { method:'GET', headers:{ 'Accept':'application/json' } })
+      .then(res=>{
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        return res.json();
+      })
+      .then(data=>{
+        setLoading(false);
+        const status = data && data.status;
+        if(status==='PENDING' || status==='APPROVED' || status==='NOT_SELECTED'){
+          renderResult(status, data);
+        }else{
+          renderResult('ERROR');
+        }
+      })
+      .catch(()=>{
+        setLoading(false);
+        renderResult('ERROR');
+      });
+  }
+
+  if(queryBtn) queryBtn.addEventListener('click', ()=>doQuery(false));
+  if(phoneInput){
+    phoneInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); doQuery(false); } });
+    phoneInput.addEventListener('input', ()=>{ if(errEl && errEl.textContent) setError(''); });
+  }
+
+  // 复用站点既有按压动效
+  if(typeof addPressAnim==='function'){
+    addPressAnim('.beta-primary-btn','is-pressing');
+    addPressAnim('.beta-query-btn','is-pressing');
+  }
 })();
 </script>
 </body>
