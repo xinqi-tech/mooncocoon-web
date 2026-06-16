@@ -250,6 +250,7 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 .beta-result-desc{font-size:14px;line-height:1.8;color:var(--text-secondary)}
 .beta-qr-wrap{margin:18px auto 6px;width:180px;height:180px;border-radius:16px;overflow:hidden;background:#fff;padding:8px;box-shadow:0 0 20px rgba(150,205,255,0.3)}
 .beta-qr-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.beta-qr-wrap.is-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(130,174,230,0.12);color:var(--text-secondary);font-size:13px;line-height:1.6;padding:12px}
 .beta-qr-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
 .beta-result-actions{margin-top:18px;display:flex;justify-content:center}
 .beta-link-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;letter-spacing:0.04em;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;transition:color .3s;padding:6px}
@@ -1194,28 +1195,63 @@ addPressAnim('.scroll-hint-icon','is-pressing');
   const errEl     = document.getElementById('betaError');
   const resultEl  = document.getElementById('betaResult');
 
-  // —— 手机号归一化（与后端规则保持一致）：去空格/分隔符、去前导 +86/86、保留数字、取 11 位 ——
+  // —— 手机号归一化（必须与后端 PhoneNormalizer 逐条等价；导入/查询两侧同规则）——
+  //  1. 剔除所有非数字字符（空格 / +86 / -() 等分隔符全部去掉）
+  //  2. 去前导国码 86：仅当结果恰为 13 位且以 86 开头时剥（避免误伤本身以 86 起头的串）
+  //  3. 结果须恰为 11 位且以 1 开头才视为合法，否则判非法返回 ''（不做「截取后 11 位」宽松兜底）
   function normalizePhone(raw){
     if(raw==null) return '';
-    let s = String(raw).replace(/\s+/g,'');      // 去所有空白
-    s = s.replace(/[-()（）.]/g,'');              // 去常见分隔符
-    if(s.indexOf('+86')===0) s = s.slice(3);      // 去 +86 前缀
-    s = s.replace(/\D/g,'');                       // 仅保留数字（顺带处理残留的 86 前缀情形）
-    if(s.length>11 && s.indexOf('86')===0) s = s.slice(2); // 去裸 86 国码前缀
-    return s.slice(0,11);                          // 保留 11 位
+    let d = String(raw).replace(/\D/g,'');          // 1. 仅保留数字
+    if(d.length===13 && d.indexOf('86')===0) d = d.slice(2); // 2. 去 86 国码（仅当恰 13 位）
+    if(d.length!==11 || d.charAt(0)!=='1') return ''; // 3. 非法（非 11 位 / 不以 1 开头）→ 空串
+    return d;
   }
-  function isValidPhone(p){ return /^\d{11}$/.test(p); }
+  function isValidPhone(p){ return /^1\d{10}$/.test(p); }
   // 暴露给测试（仅用于 jsdom 无头测试，浏览器侧无副作用）
   if(typeof window!=='undefined') window.__betaNormalizePhone = normalizePhone;
 
-  // —— 面板开关 ——
+  // —— 面板开关 + 焦点陷阱（modal 打开时 Tab 焦点环绕在面板内，背景设 inert 不可 Tab）——
   let lastFocused = null;
+  // 把面板外的同级根节点设为 inert（无障碍 + 不可聚焦），关闭时复原
+  function setBackgroundInert(on){
+    var kids = document.body.children;
+    for(var i=0;i<kids.length;i++){
+      var el = kids[i];
+      if(el===overlay || el.tagName==='SCRIPT') continue;
+      if(on){ el.setAttribute('inert',''); el.setAttribute('aria-hidden','true'); }
+      else { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
+    }
+  }
+  function getFocusable(){
+    var all = Array.prototype.slice.call(
+      panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')
+    ).filter(function(el){ return !el.hidden; });
+    // 是否拿得到真实布局：任一元素有非零几何即认为布局已生成
+    var hasLayout = all.some(function(el){
+      return el.offsetWidth>0 || el.offsetHeight>0 || el.getClientRects().length>0;
+    });
+    if(!hasLayout) return all; // 首帧前 / 无布局引擎：别按 offset 误判全不可见
+    return all.filter(function(el){
+      return el.offsetWidth>0 || el.offsetHeight>0 || el.getClientRects().length>0 || el===document.activeElement;
+    });
+  }
+  function trapTab(e){
+    if(e.key!=='Tab' || !overlay.classList.contains('open')) return;
+    var f = getFocusable();
+    if(!f.length){ e.preventDefault(); return; }
+    var first = f[0], last = f[f.length-1], active = document.activeElement;
+    // 焦点已逃出面板（理论上 inert 已挡住，这里兜底）→ 拉回首元素
+    if(!panel.contains(active)){ e.preventDefault(); first.focus(); return; }
+    if(e.shiftKey && active===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && active===last){ e.preventDefault(); first.focus(); }
+  }
   function openPanel(){
     lastFocused = document.activeElement;
     overlay.hidden = false;
     // 触发 transition 需在下一帧加 open 类
     requestAnimationFrame(()=>overlay.classList.add('open'));
     document.body.style.overflow = 'hidden';
+    setBackgroundInert(true);
     syncAppliedState();
     if(window.lucide) lucide.createIcons();
     setTimeout(()=>{ if(phoneInput) phoneInput.focus(); }, 380);
@@ -1223,6 +1259,7 @@ addPressAnim('.scroll-hint-icon','is-pressing');
   function closePanel(){
     overlay.classList.remove('open');
     document.body.style.overflow = '';
+    setBackgroundInert(false);
     const onEnd = ()=>{ overlay.hidden = true; overlay.removeEventListener('transitionend', onEnd); };
     overlay.addEventListener('transitionend', onEnd);
     // 兜底：transitionend 未触发时强制隐藏
@@ -1237,9 +1274,10 @@ addPressAnim('.scroll-hint-icon','is-pressing');
   if(closeBtn) closeBtn.addEventListener('click', closePanel);
   // 点击面板外部关闭
   overlay.addEventListener('click', e=>{ if(e.target===overlay) closePanel(); });
-  // Esc 关闭
+  // Esc 关闭 + Tab 焦点陷阱（限制在面板内环绕）
   document.addEventListener('keydown', e=>{
-    if(e.key==='Escape' && overlay.classList.contains('open')) closePanel();
+    if(e.key==='Escape' && overlay.classList.contains('open')){ closePanel(); return; }
+    trapTab(e);
   });
 
   // —— 去填写问卷：打开飞书问卷 + 标记乐观「已预约」 ——
@@ -1286,7 +1324,10 @@ addPressAnim('.scroll-hint-icon','is-pressing');
       desc='扫描下方二维码加入内测群，抢先体验月光茧。';
       const qr = data && data.groupQrUrl ? data.groupQrUrl : '';
       if(qr){
-        extra = '<div class="beta-qr-wrap"><img src="'+escapeAttr(qr)+'" alt="内测群二维码"></div>'+
+        // 群码死链兜底：onerror 时把二维码框替换为文字提示，避免空白裂图
+        extra = '<div class="beta-qr-wrap"><img src="'+escapeAttr(qr)+'" alt="内测群二维码" '+
+                'onerror="this.onerror=null;this.parentNode.classList.add(\'is-broken\');'+
+                'this.parentNode.innerHTML=\'二维码加载失败，请联系客服\';"></div>'+
                 '<div class="beta-qr-hint">长按或扫码加入内测群</div>';
       }
     }else if(state==='NOT_SELECTED'){

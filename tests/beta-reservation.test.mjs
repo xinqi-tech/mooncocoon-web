@@ -77,19 +77,35 @@ async function testNormalize() {
   ok('normalize fn is exposed on window', typeof n === 'function');
   if (typeof n !== 'function') return;
 
+  // --- Valid forms (must normalize to the canonical 11-digit number) ---
   eq('plain 11-digit',            n('13800138000'), '13800138000');
   eq('with spaces',               n('138 0013 8000'), '13800138000');
   eq('leading +86',               n('+8613800138000'), '13800138000');
-  eq('bare 86 country code',      n('8613800138000'), '13800138000');
+  eq('bare 86 country code (13d)',n('8613800138000'), '13800138000');
   eq('+86 with spaces',           n(' +86 138 0013 8000 '), '13800138000');
   eq('dashes',                    n('138-0013-8000'), '13800138000');
   eq('parens + dashes',           n('(138)0013-8000'), '13800138000');
   eq('dotted',                    n('138.0013.8000'), '13800138000');
-  eq('trailing junk truncated',  n('13800138000999'), '13800138000');
-  eq('null input',                n(null), '');
-  eq('empty input',               n(''), '');
   eq('letters stripped',          n('abc13800138000'), '13800138000');
   eq('numeric input type',        n(13800138000), '13800138000');
+
+  // --- Normalization-hole regressions (backend PhoneNormalizer parity) ---
+  // Extra digits must NOT be silently truncated to a different valid number — reject.
+  eq('extra trailing digits -> reject (no truncate)', n('13800138000999'), '');
+  eq('one extra digit -> reject',                     n('138001380001'), '');
+  // First digit not 1 -> reject (China mainland mobile must start with 1).
+  eq('first digit != 1 -> reject',                    n('23800138000'), '');
+  // 0086 prefix => 15 digits after stripping, not exactly 13, so 86 is NOT stripped -> reject.
+  eq('0086 prefix -> reject (len!=13)',               n('008613800138000'), '');
+  eq('0086 + spaces -> reject',                       n('00 86 138 0013 8000'), '');
+  // A literal "86" + 11-digit number that does NOT start with 1: still 13 digits, 86 stripped,
+  // result starts with 9 -> reject.
+  eq('86 + non-1 number -> reject',                   n('8693800138000'), '');
+  // Too short.
+  eq('too short -> reject',                           n('138'), '');
+  // null / empty -> empty string (treated as invalid by isValidPhone).
+  eq('null input',                n(null), '');
+  eq('empty input',               n(''), '');
 }
 
 // =====================================================================
@@ -248,11 +264,112 @@ async function testBehaviors() {
   }
 }
 
+// =====================================================================
+// (d) Focus trap + background inert when modal is open.
+// =====================================================================
+async function testFocusTrap() {
+  console.log('\n[d] focus trap + background inert');
+
+  // Background siblings become inert/aria-hidden while open, restored on close.
+  {
+    const w = await boot();
+    const nav = w.document.querySelector('.nav-wrap');
+    const overlay = w.document.getElementById('betaOverlay');
+    ok('nav not inert before open', !nav.hasAttribute('inert'));
+    w.document.querySelector('[data-beta-open]').click();
+    await tick(0);
+    ok('overlay open', overlay.classList.contains('open'));
+    ok('background nav set inert when open', nav.hasAttribute('inert'));
+    ok('background nav aria-hidden when open', nav.getAttribute('aria-hidden') === 'true');
+    ok('overlay itself NOT inert', !overlay.hasAttribute('inert'));
+    // close restores
+    w.document.getElementById('betaClose').click();
+    await tick(0); await tick(500);
+    ok('nav inert removed after close', !nav.hasAttribute('inert'));
+    ok('nav aria-hidden removed after close', !nav.hasAttribute('aria-hidden'));
+  }
+
+  // Tab on last focusable wraps to first; Shift+Tab on first wraps to last.
+  {
+    const w = await boot();
+    const panel = w.document.querySelector('.beta-panel');
+    w.document.querySelector('[data-beta-open]').click();
+    await tick(0); await tick(400); // let the 380ms focus timer fire
+    // jsdom has no layout engine (offset* === 0), so mirror the page's getFocusable:
+    // when NO element reports real geometry, skip the offset filter entirely.
+    const all = Array.prototype.slice.call(
+      panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')
+    ).filter((el) => !el.hidden);
+    const hasLayout = all.some((el) => el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0);
+    const focusables = hasLayout
+      ? all.filter((el) => el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0 || el === w.document.activeElement)
+      : all;
+    ok('panel has >=2 focusable elements', focusables.length >= 2, 'count=' + focusables.length);
+    if (focusables.length >= 2) {
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      // Tab from last -> first
+      last.focus();
+      w.document.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+      await tick(0);
+      ok('Tab on last wraps to first', w.document.activeElement === first,
+         'active=' + (w.document.activeElement && w.document.activeElement.id || w.document.activeElement && w.document.activeElement.className));
+      // Shift+Tab from first -> last
+      first.focus();
+      w.document.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }));
+      await tick(0);
+      ok('Shift+Tab on first wraps to last', w.document.activeElement === last,
+         'active=' + (w.document.activeElement && w.document.activeElement.id || w.document.activeElement && w.document.activeElement.className));
+    }
+  }
+
+  // Focus that escaped the panel is pulled back to the first focusable on Tab.
+  {
+    const w = await boot();
+    const panel = w.document.querySelector('.beta-panel');
+    w.document.querySelector('[data-beta-open]').click();
+    await tick(0); await tick(400);
+    // Force focus onto a background element (simulating a stray focus), then Tab.
+    const navLink = w.document.querySelector('.nav-brand') || w.document.body;
+    if (navLink.focus) navLink.focus();
+    w.document.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+    await tick(0);
+    ok('stray focus pulled back into panel on Tab', panel.contains(w.document.activeElement),
+       'active=' + (w.document.activeElement && (w.document.activeElement.id || w.document.activeElement.tagName)));
+  }
+}
+
+// =====================================================================
+// (e) APPROVED group-QR <img> onerror fallback (dead link -> text, no blank).
+// =====================================================================
+async function testQrFallback() {
+  console.log('\n[e] group QR img onerror fallback');
+  const w = await boot(mockFetch({ status: 'APPROVED', groupQrUrl: 'https://cdn.lunakoru.com/qr/dead.png' }));
+  w.document.querySelector('[data-beta-open]').click();
+  await tick(0);
+  await runQuery(w);
+  const img = w.document.querySelector('.beta-qr-wrap img');
+  ok('QR img rendered', !!img);
+  if (!img) return;
+  ok('QR img has onerror handler', !!img.getAttribute('onerror'),
+     'onerror=' + img.getAttribute('onerror'));
+  // Simulate the broken image by firing the error event (jsdom does not load images).
+  const wrap = img.parentNode;
+  img.dispatchEvent(new w.Event('error'));
+  await tick(0);
+  ok('wrap marked is-broken after error', wrap.classList.contains('is-broken'),
+     'class=' + wrap.className);
+  ok('fallback shows text hint (not blank/img)', /二维码加载失败/.test(wrap.textContent),
+     'text=' + JSON.stringify(wrap.textContent));
+  ok('broken image element removed', !wrap.querySelector('img'));
+}
+
 (async () => {
   try {
     await testNormalize();
     await testStates();
     await testBehaviors();
+    await testFocusTrap();
+    await testQrFallback();
   } catch (e) {
     console.error('\nTEST HARNESS ERROR:', e && e.stack || e);
     process.exit(2);
