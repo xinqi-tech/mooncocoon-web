@@ -1179,10 +1179,10 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 
 /* ===== BETA RESERVATION ===== */
 (function(){
-  // TODO(操作员): 替换为真实飞书预约问卷链接（问卷须含「手机号」必填项）
-  const BETA_FORM_URL = 'https://example.feishu.cn/share/base/form/REPLACE_ME';
-  // TODO(操作员): 替换为生产 Aildo-JAVA 后端 base URL（无尾斜杠），如 https://api.lunakoru.com
-  const API_BASE = 'https://REPLACE_ME.api-base.example.com';
+  // 飞书内测预约问卷链接（问卷含「手机号」必填项）
+  const BETA_FORM_URL = 'https://pcni5ldjg9t4.feishu.cn/share/base/form/shrcnsyycONXPwMljrf707gwAXe';
+  // 生产 Aildo-JAVA 后端 base URL（无尾斜杠；前端再拼 /api/...）
+  const API_BASE = 'https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
 
   const overlay   = document.getElementById('betaOverlay');
   if(!overlay) return; // markup 未就绪时安全退出
