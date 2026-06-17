@@ -282,6 +282,12 @@ async function testFocusTrap() {
     ok('background nav set inert when open', nav.hasAttribute('inert'));
     ok('background nav aria-hidden when open', nav.getAttribute('aria-hidden') === 'true');
     ok('overlay itself NOT inert', !overlay.hasAttribute('inert'));
+    // 回归（弹窗点不动 bug）：overlay 必须是 body 直接子节点，否则祖先(.page-ui)被 inert → 面板整体不可点。
+    // jsdom 不真实现 inert 的点击拦截，故必须显式断言「面板不在 inert 子树内」。
+    ok('overlay hoisted to body (clickable)', overlay.parentElement === w.document.body);
+    let _anc = overlay.parentElement, _ancInert = false;
+    while(_anc){ if(_anc.nodeType===1 && _anc.hasAttribute('inert')){ _ancInert = true; break; } _anc = _anc.parentElement; }
+    ok('no inert ancestor over open panel', !_ancInert);
     // close restores
     w.document.getElementById('betaClose').click();
     await tick(0); await tick(500);
