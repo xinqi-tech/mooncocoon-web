@@ -1186,6 +1186,9 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 
   const overlay   = document.getElementById('betaOverlay');
   if(!overlay) return; // markup 未就绪时安全退出
+  // 提升 overlay 为 body 直接子节点（modal portal）：否则它嵌在 .page-ui 内，
+  // setBackgroundInert 把 .page-ui 设为 inert 时，面板作为其后代会整体不可点（弹窗点不动 bug）。
+  if(overlay.parentElement !== document.body) document.body.appendChild(overlay);
   const panel     = overlay.querySelector('.beta-panel');
   const closeBtn  = document.getElementById('betaClose');
   const formBtn   = document.getElementById('betaFormBtn');
