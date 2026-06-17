@@ -75,10 +75,6 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 36px rgba(150,205,255,0.7),0 12px 36px rgba(30,80,150,0.36),inset 0 1px 8px rgba(255,255,255,0.7)}
 .hero-cta.is-pressing{transform:scale(0.95)}
 body.is-loading .hero-cta{animation:none!important;opacity:0}
-/* NAV beta link — subtle emphasis vs plain nav links */
-.nav-links a.nav-beta{color:var(--ice-340);font-weight:500}
-.nav-links a.nav-beta::before{opacity:1;background:rgba(156,203,255,0.14);box-shadow:0 0 14px rgba(150,205,255,0.28)}
-.nav-links a.nav-beta:hover{color:var(--moon-000)}
 .hero-video{width:100%;max-width:680px;border-radius:var(--rounded-xxl);background:transparent;overflow:visible;cursor:pointer;position:relative;aspect-ratio:16/9}
 .hero-video::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-xxl) + 2px);background:linear-gradient(135deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.65) 20%,rgba(255,255,255,0.35) 50%,rgba(255,255,255,0.1) 80%,rgba(255,255,255,0.03) 100%);z-index:1;box-shadow:0 0 18px rgba(255,255,255,0.35),-4px -4px 24px rgba(255,255,255,0.2)}
 .hero-video::after{content:'';position:absolute;inset:2px;border-radius:var(--rounded-xxl);background:var(--night-960);z-index:2}
@@ -447,7 +443,6 @@ body.is-loading{overflow:hidden}
     <a href="#hero">首页</a>
     <a href="#modules">产品介绍</a>
     <a href="#about">关于我们</a>
-    <a href="#" class="nav-beta" data-beta-open>内测预约</a>
   </div>
 </nav>
 </div>
