@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#06142f">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>月光茧 - 虚实有别，爱意无界</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
@@ -59,6 +61,18 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .nav-links a.active::after{content:none}
 .nav-brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,0.5));transition:transform .3s,filter .3s}
 .nav-brand:hover img{transform:scale(1.08);filter:drop-shadow(0 0 14px rgba(191,227,255,0.8))}
+/* BGM toggle */
+.bgm-toggle{margin-left:18px;width:38px;height:38px;flex-shrink:0;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(220,240,255,0.18);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:color .3s,border-color .3s,box-shadow .3s,transform .2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.bgm-toggle:hover{color:var(--moon-000);border-color:rgba(235,248,255,0.4);box-shadow:0 0 14px rgba(150,205,255,0.35);transform:translateY(-1px)}
+.bgm-toggle svg{width:18px;height:18px;display:block;pointer-events:none}
+.bgm-toggle .bgm-on{display:none}
+.bgm-toggle .bgm-off{display:block}
+.bgm-toggle.playing{color:var(--moon-000);border-color:rgba(235,248,255,0.45);box-shadow:0 0 16px rgba(150,205,255,0.4)}
+.bgm-toggle.playing .bgm-on{display:block}
+.bgm-toggle.playing .bgm-off{display:none}
+.bgm-toggle.playing .bgm-wave{animation:bgmWave 1.1s ease-in-out infinite}
+.bgm-toggle.playing .bgm-wave2{animation:bgmWave 1.1s ease-in-out .35s infinite}
+@keyframes bgmWave{0%,100%{opacity:0.45}50%{opacity:1}}
 /* HERO SOCIAL SIDEBAR */
 .hero-social{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:14px;align-items:center}
 .hero-social a{width:56px;height:56px;border-radius:50%;background:var(--glass-fill);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;font-size:11px;letter-spacing:0;transition:border-color .3s,color .3s,box-shadow .3s;backdrop-filter:blur(8px)}
@@ -274,10 +288,10 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
   .scroll-hint{margin-top:24px}
   .module{min-height:auto;padding:40px 0 16px}
   .module-content{grid-template-columns:1fr;grid-template-rows:auto auto auto;gap:22px}
-  .module-title{grid-column:1;grid-row:2;margin-bottom:8px}
+  .module-title{grid-column:1;grid-row:1;margin-bottom:8px}
   .module-title .char{font-size:1.2rem!important}
   .module-title .char.first-word{font-size:1.8rem!important}
-  .tab-video-wrap{grid-column:1;grid-row:1;align-self:center}
+  .tab-video-wrap{grid-column:1;grid-row:2;align-self:center}
   .video-carousel{min-height:280px}
   .video-card.center{width:140px}
   .video-card.side{width:100px}
@@ -444,6 +458,11 @@ body.is-loading{overflow:hidden}
     <a href="#modules">产品介绍</a>
     <a href="#about">关于我们</a>
   </div>
+  <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="播放背景音乐" aria-pressed="false" title="背景音乐">
+    <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+  <audio id="bgmAudio" src="audio/bgm_login.mp3" loop preload="none"></audio>
 </nav>
 </div>
 <canvas id="particles"></canvas>
@@ -612,7 +631,7 @@ body.is-loading{overflow:hidden}
 <script>
 document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
 const moduleData = [
-  {subs:["人设定制","外观定制","拟真语音"],descs:["结合用户性格与喜好，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],[]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["待补充","待补充","待补充"]]},
+  {subs:["人设定制","外观定制","拟真语音"],descs:["结合用户性格与喜好，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
   {subs:["独家记忆","独立生活","情绪反馈"],descs:["根据聊天内容，日积月累形成专属记忆库，\n记忆库可编辑可删减，制造你们独一无二的回忆\n在日常聊天里主动提起曾经的回忆","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表","待补充"],["有自己的脾气"]]},
   {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家\n从喝水提醒到游戏陪玩一应俱全\n可自定义底层规则","用户共创共享，海量剧本机制\n你的选择，决定着下一步的发展\n剧情千变，他始终陪你","支持文字，语音，图片，文件，链接等多种畅聊方式\n拍照送礼，将心意打破次元传递\n智能硬件加持，双向体感互动，他也能给予你现实的快乐"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4",""],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4",""]],captions:[["灵赋市场","表情互动","待补充"],["剧场入口","剧情演示","待补充"],["图文聊天","体感互动","待补充"]]}
 ];
@@ -636,8 +655,14 @@ window.addEventListener('scroll',()=>{
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
 pvWrap.addEventListener('click',()=>{
-  if(pvVideo.requestFullscreen)pvVideo.requestFullscreen();
+  // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
+  // and requires playback; ensure it's playing then request fullscreen with fallbacks.
+  const p=pvVideo.play();
+  if(p&&p.catch)p.catch(()=>{});
+  if(pvVideo.requestFullscreen)pvVideo.requestFullscreen().catch(()=>{});
   else if(pvVideo.webkitRequestFullscreen)pvVideo.webkitRequestFullscreen();
+  else if(pvVideo.webkitEnterFullscreen)pvVideo.webkitEnterFullscreen();
+  else if(pvWrap.requestFullscreen)pvWrap.requestFullscreen().catch(()=>{});
 });
 // Module tabs
 document.querySelectorAll('.module').forEach((mod,mi)=>{
@@ -879,6 +904,27 @@ if(aboutValues){
 // Nav scroll mask
 const navWrap=document.querySelector('.nav-wrap');
 window.addEventListener('scroll',()=>{navWrap.classList.toggle('scrolled',window.scrollY>80);},{passive:true});
+// BGM toggle (default paused)
+(function(){
+  const btn=document.getElementById('bgmToggle');
+  const audio=document.getElementById('bgmAudio');
+  if(!btn||!audio)return;
+  audio.volume=0.55;
+  btn.addEventListener('click',()=>{
+    if(audio.paused){
+      audio.play().then(()=>{
+        btn.classList.add('playing');
+        btn.setAttribute('aria-pressed','true');
+        btn.setAttribute('aria-label','暂停背景音乐');
+      }).catch(()=>{});
+    }else{
+      audio.pause();
+      btn.classList.remove('playing');
+      btn.setAttribute('aria-pressed','false');
+      btn.setAttribute('aria-label','播放背景音乐');
+    }
+  });
+})();
 // Nav active state on scroll
 const navLinks=document.querySelectorAll('.nav-links a');
 const navSections=document.querySelectorAll('section[id]');

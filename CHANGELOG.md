@@ -8,8 +8,17 @@
 
 ## [2026-06-19]
 
+### 新功能
+- 导航栏右上新增背景音乐播放/静音按钮：播放 `audio/bgm_login.mp3`（登录 BGM，循环），**默认不播放**（`preload=none` + 无 autoplay，需用户点击触发，符合浏览器自动播放策略）；按钮在桌面/移动端均常驻可见（独立于会在移动端隐藏的 nav-links）。
+
 ### 调整
-- 替换首页主宣传片 `videos/pv.mp4`（首屏 hero 自动循环 + 媒体网格共用）：新素材 4K HEVC 源（2:43）转码为 Web 友好的 H.264 720p / ~1.42 Mbps / `+faststart`，与原片画质档位一致。
+- 替换首页主宣传片 `videos/pv.mp4`（首屏 hero 自动循环 + 媒体网格共用）：新素材 4K HEVC 源（2:43）转码为 Web 友好的 H.264 1080p / ~2.6 Mbps / `+faststart`。
+- 「打造独一无二的初次相遇」模块「拟真语音」子项补入演示视频 `videos/07_voice_customization/voice_emotion_tts.mp4`（HEVC 源转 H.264），caption 由「待补充」改为「情绪语音」。
+
+### 移动端修复
+- 模块内容在移动端的顺序修正：标题置于视频**上方**（此前 grid-row 颠倒致视频在标题之上）。标题 → 视频 → 子标签的自上而下流。
+- 首页 PV 视频在移动端可点击全屏：iOS Safari 仅允许对 `<video>` 元素本身调用 `webkitEnterFullscreen()` 且需正在播放，补全 `play()` + `webkitEnterFullscreen` 兜底链。
+- 顶部状态栏区域出现深色分层（色块割裂）修复：viewport 补 `viewport-fit=cover` 使固定背景图延伸到 iOS 安全区下方，消除状态栏处露出的纯色 body 底色缝隙；同时补 `theme-color` / `apple-mobile-web-app-status-bar-style` 元信息。
 
 ## [2026-06-17]
 
