@@ -241,8 +241,6 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 .beta-qr-wrap img{width:100%;height:100%;object-fit:contain;display:block}
 .beta-qr-wrap.is-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(130,174,230,0.12);color:var(--text-secondary);font-size:13px;line-height:1.6;padding:12px}
 .beta-qr-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
-.beta-pending-hint{font-size:13px;color:var(--text-muted);margin-top:12px}
-.beta-pending-hint a{color:var(--ice-340);text-decoration:underline;text-underline-offset:2px}
 .beta-result-actions{margin-top:18px;display:flex;justify-content:center}
 .beta-link-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;letter-spacing:0.04em;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;transition:color .3s;padding:6px}
 .beta-link-btn:hover{color:var(--ice-340)}
@@ -1332,9 +1330,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
       cls='pending'; icon='hourglass';
       title='名单审核中';
       desc='内测名单审核中，公布后可在此用手机号查询是否入选。';
-      // 软上线期后端对所有手机号统一返回 PENDING，无法区分是否已预约，
-      // 故不预设「已收到你的预约」，并提示未预约者先填问卷。
-      extra = '<div class="beta-pending-hint">还没预约？<a href="'+escapeAttr(BETA_FORM_URL)+'" target="_blank" rel="noopener">先填写预约问卷</a></div>';
     }else if(state==='APPROVED'){
       cls='approved'; icon='party-popper';
       title='🎉 恭喜入选内测！';
