@@ -12,6 +12,7 @@
 - 导航栏右上新增背景音乐播放/静音按钮：播放 `audio/bgm_login.mp3`（登录 BGM，循环），**默认不播放**（`preload=none` + 无 autoplay，需用户点击触发，符合浏览器自动播放策略）；按钮在桌面/移动端均常驻可见（独立于会在移动端隐藏的 nav-links）。
 
 ### 调整
+- 「关于我们」section 移除 愿景 / 使命 / 我们相信 三段文案块及右侧角色立绘（`.about-values`），仅保留居中的 IP logo；同步去掉 header 多余下边距使 logo 垂直居中。
 - 替换首页主宣传片 `videos/pv.mp4`（首屏 hero 自动循环 + 媒体网格共用）：新素材 4K HEVC 源（2:43）转码为 Web 友好的 H.264 1080p / ~2.6 Mbps / `+faststart`。
 - 「打造独一无二的初次相遇」模块「拟真语音」子项补入演示视频 `videos/07_voice_customization/voice_emotion_tts.mp4`（HEVC 源转 H.264），caption 由「待补充」改为「情绪语音」。
 
