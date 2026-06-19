@@ -12,6 +12,7 @@
 - 导航栏右上新增背景音乐播放/静音按钮：播放 `audio/bgm_login.mp3`（登录 BGM，循环），**默认不播放**（`preload=none` + 无 autoplay，需用户点击触发，符合浏览器自动播放策略）；按钮在桌面/移动端均常驻可见（独立于会在移动端隐藏的 nav-links）。
 
 ### 调整
+- 跨次元互动子项补入「拍照送礼」演示视频 `videos/03_intimate_interaction/cross_dimension_interaction.mp4`（微信 HEVC 源 592×1280 转 H.264 + 首帧封面图），caption 由「待补充」改为「拍照送礼」。
 - 灵赋生态子项移除末尾「待补充」占位视频槽（轮播由 3 个减为 2 个：灵赋市场 / 娱乐互动）；第二个视频 caption 由「表情互动」改为「娱乐互动」（内容为五子棋等游戏陪玩）。
 - Footer 精简：删除「产品」整列（硬件设备 / 视觉小说 / AI陪伴 / 定制服务）及底部版权行「© 2025 LunaKoru. 保留所有权利.」；footer-grid 由三列 `2fr 1fr 1fr` 调整为两列 `2fr 1fr`（品牌 + 联系我们），底部内边距并入 footer-grid，清理 `.footer-bottom` 死样式。
 - 移除整个「关于我们」section（`<section class="about">`）及导航栏「关于我们」入口链接：此前已删除愿景 / 使命 / 我们相信文案块与角色立绘，本次进一步删除仅剩的 IP logo 区块、`#about` 锚点、`.about*` / `.value-item*` 全部样式、loader 中 `about.jpg` 预加载项及 value-item 滚动动画 JS（一并消除 logo 上下因 `min-height:100vh` 撑出的多余空白）。
