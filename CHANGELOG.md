@@ -12,6 +12,7 @@
 - 导航栏右上新增背景音乐播放/静音按钮：播放 `audio/bgm_login.mp3`（登录 BGM，循环），**默认不播放**（`preload=none` + 无 autoplay，需用户点击触发，符合浏览器自动播放策略）；按钮在桌面/移动端均常驻可见（独立于会在移动端隐藏的 nav-links）。
 
 ### 调整
+- 视频 caption 文案优化：跨次元互动「图文聊天」改为「随手分享」、情绪反馈「有自己的脾气」改为「真实情绪」。
 - 跨次元互动子项补入「拍照送礼」演示视频 `videos/03_intimate_interaction/cross_dimension_interaction.mp4`（微信 HEVC 源 592×1280 转 H.264 + 首帧封面图），caption 由「待补充」改为「拍照送礼」。
 - 灵赋生态子项移除末尾「待补充」占位视频槽（轮播由 3 个减为 2 个：灵赋市场 / 娱乐互动）；第二个视频 caption 由「表情互动」改为「娱乐互动」（内容为五子棋等游戏陪玩）。
 - Footer 精简：删除「产品」整列（硬件设备 / 视觉小说 / AI陪伴 / 定制服务）及底部版权行「© 2025 LunaKoru. 保留所有权利.」；footer-grid 由三列 `2fr 1fr 1fr` 调整为两列 `2fr 1fr`（品牌 + 联系我们），底部内边距并入 footer-grid，清理 `.footer-bottom` 死样式。
