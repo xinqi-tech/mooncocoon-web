@@ -17,6 +17,10 @@
 - 「打造独一无二的初次相遇」模块「拟真语音」子项补入演示视频 `videos/07_voice_customization/voice_emotion_tts.mp4`（HEVC 源转 H.264），caption 由「待补充」改为「情绪语音」。
 
 ### 移动端修复
+- **首页 PV 视频在移动端不显示修复**：根因是 1080p 文件 50.9MB 太大，手机流量下加载器 9 秒硬上限到点结束时视频仍未缓冲完，且 hero 视频无封面图，显示为深色空盒子。修复三管齐下：
+  - 新增封面图 `images/pv_poster.jpg`（视频首帧），hero 区**立即显示静态画面**，视频缓冲好再自动接上，绝不黑盒；
+  - 新增移动端轻量版 `videos/pv_720.mp4`（720p / ~27.5MB，约为 1080p 一半），按视口 `max-width:768px` 自动选择：手机加载 720p、桌面加载 1080p；
+  - 加载器预加载逻辑同步按视口选源，手机不再白下 53MB。
 - 模块内容在移动端的顺序修正：标题置于视频**上方**（此前 grid-row 颠倒致视频在标题之上）。标题 → 视频 → 子标签的自上而下流。
 - 首页 PV 视频在移动端可点击全屏：iOS Safari 仅允许对 `<video>` 元素本身调用 `webkitEnterFullscreen()` 且需正在播放，补全 `play()` + `webkitEnterFullscreen` 兜底链。
 - 顶部状态栏区域出现深色分层（色块割裂）修复：viewport 补 `viewport-fit=cover` 使固定背景图延伸到 iOS 安全区下方，消除状态栏处露出的纯色 body 底色缝隙；同时补 `theme-color` / `apple-mobile-web-app-status-bar-style` 元信息。

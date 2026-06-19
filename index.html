@@ -370,6 +370,9 @@ body.is-loading{overflow:hidden}
   <div class="loader-label">月 光 茧 · 载入中</div>
 </div>
 <script>
+// Pick PV source by viewport: mobile gets the lighter 720p file (faster on cellular).
+// Used by both the loader preloader and the hero <video> so they stay in sync.
+window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)?'videos/pv_720.mp4':'videos/pv.mp4';
 (function(){
   var loader=document.getElementById('loader');
   var ringFill=document.getElementById('loaderRingFill');
@@ -380,7 +383,8 @@ body.is-loading{overflow:hidden}
   // First-screen assets weighted by approx download cost
   var assets=[
     {src:'images/banner_bg.jpg',w:40,type:'img'},
-    {src:'videos/pv.mp4',w:34,type:'video'},
+    {src:window.__PV_SRC,w:34,type:'video'},
+    {src:'images/pv_poster.jpg',w:2,type:'img'},
     {src:'images/bg.png',w:8,type:'img'},
     {src:'images/app-logo.jpg',w:7,type:'img'},
     {src:'images/title.jpg',w:4,type:'img'},
@@ -484,7 +488,7 @@ body.is-loading{overflow:hidden}
     <span>抢先内测预约</span>
   </button>
   <div class="hero-video" id="pvVideo">
-    <video src="videos/pv.mp4" muted playsinline autoplay loop></video>
+    <video muted playsinline autoplay loop poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
   </div>
   <button class="scroll-hint" onclick="setTimeout(()=>{const target=document.getElementById('modules').getBoundingClientRect().top+window.scrollY;const start=window.scrollY;const dist=target-start;const duration=600;let t0=null;function step(ts){if(!t0)t0=ts;const p=Math.min((ts-t0)/duration,1);const ease=p<0.5?4*p*p*p:(1-Math.pow(-2*p+2,3)/2);window.scrollTo(0,start+dist*ease);if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)},300)">
@@ -646,6 +650,12 @@ window.addEventListener('scroll',()=>{
 // PV Video fullscreen
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
+// Set the right source for this viewport (mobile=720p, desktop=1080p). Poster shows
+// immediately so the hero is never an empty box while the video buffers.
+if(!pvVideo.src){
+  pvVideo.src=window.__PV_SRC||pvVideo.getAttribute('data-src-desktop')||'videos/pv.mp4';
+  const pp=pvVideo.play(); if(pp&&pp.catch)pp.catch(()=>{});
+}
 pvWrap.addEventListener('click',()=>{
   // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
   // and requires playback; ensure it's playing then request fullscreen with fallbacks.
