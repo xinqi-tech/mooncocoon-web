@@ -694,6 +694,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       card.dataset.idx=i;
       const v=document.createElement('video');
       v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
+      v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
       card.appendChild(v);
       const overlay=document.createElement('div');
       overlay.className='card-overlay';
