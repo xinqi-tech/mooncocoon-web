@@ -12,7 +12,9 @@
 - 导航栏右上新增背景音乐播放/静音按钮：播放 `audio/bgm_login.mp3`（登录 BGM，循环），**默认不播放**（`preload=none` + 无 autoplay，需用户点击触发，符合浏览器自动播放策略）；按钮在桌面/移动端均常驻可见（独立于会在移动端隐藏的 nav-links）。
 
 ### 调整
-- 「关于我们」section 移除 愿景 / 使命 / 我们相信 三段文案块及右侧角色立绘（`.about-values`），仅保留居中的 IP logo；同步去掉 header 多余下边距使 logo 垂直居中。
+- 移除整个「关于我们」section（`<section class="about">`）及导航栏「关于我们」入口链接：此前已删除愿景 / 使命 / 我们相信文案块与角色立绘，本次进一步删除仅剩的 IP logo 区块、`#about` 锚点、`.about*` / `.value-item*` 全部样式、loader 中 `about.jpg` 预加载项及 value-item 滚动动画 JS（一并消除 logo 上下因 `min-height:100vh` 撑出的多余空白）。
+- 内测预约「审核中」文案修正：软上线期后端对所有手机号统一返回 `PENDING`（不校验手机号、无法区分是否已预约），原文案「已收到你的预约」对未预约者是无法兑现的断言。改为中性的「名单审核中，公布后可在此用手机号查询是否入选」，并补「还没预约？先填写预约问卷」链接引导未预约用户。
+- 模块功能展示轮播视频不播放修复：此前仅依赖 `autoplay` 属性，对动态创建 / 初始隐藏的 video 在移动端不可靠；改为在 `applyPositions` 中对当前显示卡片显式调 `.play()`、对隐藏卡片 `.pause()`。
 - 替换首页主宣传片 `videos/pv.mp4`（首屏 hero 自动循环 + 媒体网格共用）：新素材 4K HEVC 源（2:43）转码为 Web 友好的 H.264 1080p / ~2.6 Mbps / `+faststart`。
 - 「打造独一无二的初次相遇」模块「拟真语音」子项补入演示视频 `videos/07_voice_customization/voice_emotion_tts.mp4`（HEVC 源转 H.264），caption 由「待补充」改为「情绪语音」。
 
