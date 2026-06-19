@@ -153,8 +153,8 @@ body.is-loading .hero-cta{animation:none!important;opacity:0}
 @keyframes butterflyEnter{0%{opacity:0;transform:translateX(50px) scale(0.2) rotate(-35deg);filter:drop-shadow(0 0 4px rgba(150,205,255,0.5)) drop-shadow(0 0 10px rgba(255,255,255,0.3))}100%{opacity:1;transform:translateX(0) scale(1) rotate(-35deg);filter:drop-shadow(0 0 10px rgba(150,205,255,0.8)) drop-shadow(0 0 20px rgba(255,255,255,0.6))}}
 @keyframes butterflyGlow{0%{opacity:1;transform:translateX(0) scale(1) rotate(-35deg);filter:drop-shadow(0 0 6px rgba(150,205,255,0.7)) drop-shadow(0 0 14px rgba(255,255,255,0.5))}100%{opacity:1;transform:translateX(0) scale(1.2) rotate(-35deg);filter:drop-shadow(0 0 16px rgba(255,255,255,1)) drop-shadow(0 0 28px rgba(150,205,255,0.9))}}
 /* FOOTER */
-.footer{border-top:1px solid var(--divider-soft);background:rgba(3,10,28,0.72);width:100%}.footer>.footer-grid,.footer>.footer-bottom{max-width:1440px;margin-left:auto;margin-right:auto;padding-left:var(--page-x);padding-right:var(--page-x)}.footer>.footer-grid{padding-top:60px}.footer>.footer-bottom{padding-bottom:60px}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:40px}
+.footer{border-top:1px solid var(--divider-soft);background:rgba(3,10,28,0.72);width:100%}.footer>.footer-grid{max-width:1440px;margin-left:auto;margin-right:auto;padding-left:var(--page-x);padding-right:var(--page-x);padding-top:60px;padding-bottom:60px;margin-bottom:0}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr;gap:60px;margin-bottom:40px}
 .footer-brand h3{font-family:var(--font-serif);font-size:20px;margin-bottom:12px}
 .footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.8}
 .footer-col h4{font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text-primary)}
@@ -163,7 +163,6 @@ body.is-loading .hero-cta{animation:none!important;opacity:0}
 .footer-social{display:flex;gap:16px;margin-bottom:24px;justify-content:center}
 .footer-social a{width:36px;height:36px;border-radius:50%;background:var(--glass-fill);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:11px;text-decoration:none;transition:border-color .3s}
 .footer-social a:hover{border-color:var(--glass-border-bright)}
-.footer-bottom{text-align:center;padding-top:24px;border-top:1px solid var(--divider-soft);font-size:12px;color:var(--text-faint)}
 /* ANIMATIONS */
 @keyframes heroFadeIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
 @keyframes heroTitleIn{from{opacity:0;filter:blur(12px);transform:translateY(20px) scale(1.15)}to{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}
@@ -550,15 +549,10 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <p>虚实有别，爱意无界</p>
   </div>
   <div class="footer-col">
-    <h4>产品</h4>
-    <ul><li>硬件设备</li><li>视觉小说</li><li>AI陪伴</li><li>定制服务</li></ul>
-  </div>
-  <div class="footer-col">
     <h4>联系我们</h4>
     <ul><li>邮箱：hello@heabo.cn</li><li>地址：上海市徐汇区</li></ul>
   </div>
 </div>
-<div class="footer-bottom">© 2025 LunaKoru. 保留所有权利.</div>
 </footer>
 
 <!-- BETA RESERVATION MODAL -->
@@ -598,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.c
 const moduleData = [
   {subs:["人设定制","外观定制","拟真语音"],descs:["结合用户性格与喜好，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
   {subs:["独家记忆","独立生活","情绪反馈"],descs:["根据聊天内容，日积月累形成专属记忆库，\n记忆库可编辑可删减，制造你们独一无二的回忆\n在日常聊天里主动提起曾经的回忆","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表","待补充"],["有自己的脾气"]]},
-  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家\n从喝水提醒到游戏陪玩一应俱全\n可自定义底层规则","用户共创共享，海量剧本机制\n你的选择，决定着下一步的发展\n剧情千变，他始终陪你","支持文字，语音，图片，文件，链接等多种畅聊方式\n拍照送礼，将心意打破次元传递\n智能硬件加持，双向体感互动，他也能给予你现实的快乐"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4",""],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4",""]],captions:[["灵赋市场","表情互动","待补充"],["剧场入口","剧情演示","待补充"],["图文聊天","体感互动","待补充"]]}
+  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家\n从喝水提醒到游戏陪玩一应俱全\n可自定义底层规则","用户共创共享，海量剧本机制\n你的选择，决定着下一步的发展\n剧情千变，他始终陪你","支持文字，语音，图片，文件，链接等多种畅聊方式\n拍照送礼，将心意打破次元传递\n智能硬件加持，双向体感互动，他也能给予你现实的快乐"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4"],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4",""]],captions:[["灵赋市场","表情互动"],["剧场入口","剧情演示","待补充"],["图文聊天","体感互动","待补充"]]}
 ];
 // BG switch on scroll
 const bgLower=document.querySelector('.page-bg-lower');
