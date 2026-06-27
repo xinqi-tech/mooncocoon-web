@@ -240,6 +240,12 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 .beta-qr-wrap img{width:100%;height:100%;object-fit:contain;display:block}
 .beta-qr-wrap.is-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(130,174,230,0.12);color:var(--text-secondary);font-size:13px;line-height:1.6;padding:12px}
 .beta-qr-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
+.beta-greeting{margin-top:14px;padding:14px 14px 12px;border-radius:14px;background:rgba(156,203,255,0.10);border:1px solid rgba(156,203,255,0.22);font-size:13px;line-height:1.7;color:var(--text-secondary)}
+.beta-greeting-label{display:block;margin-bottom:9px}
+.beta-greeting-code{display:inline-block;font-family:var(--font-sans);font-size:16px;font-weight:600;letter-spacing:0.04em;color:var(--moon-000);background:rgba(130,174,230,0.16);border-radius:10px;padding:7px 12px;vertical-align:middle}
+.beta-copy-btn{margin-left:8px;padding:7px 14px;border-radius:10px;font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);background:rgba(180,215,255,0.20);border:1px solid var(--glass-border-bright);vertical-align:middle;transition:background .3s,color .3s}
+.beta-copy-btn:hover{background:rgba(180,215,255,0.30)}
+.beta-copy-btn.copied{color:#9fffca;border-color:rgba(159,255,202,0.5)}
 .beta-result-actions{margin-top:18px;display:flex;justify-content:center}
 .beta-link-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;letter-spacing:0.04em;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;transition:color .3s;padding:6px}
 .beta-link-btn:hover{color:var(--ice-340)}
@@ -1317,7 +1323,7 @@ addPressAnim('.scroll-hint-icon','is-pressing');
   let querying = false;
   function setError(msg){ if(errEl) errEl.textContent = msg || ''; }
 
-  function renderResult(state, data){
+  function renderResult(state, data, phone){
     if(!resultEl) return;
     let cls='', icon='', title='', desc='', extra='';
     if(state==='PENDING'){
@@ -1327,15 +1333,18 @@ addPressAnim('.scroll-hint-icon','is-pressing');
     }else if(state==='APPROVED'){
       cls='approved'; icon='party-popper';
       title='🎉 恭喜入选内测！';
-      desc='扫描下方二维码加入内测群，抢先体验月光茧。';
-      const qr = data && data.groupQrUrl ? data.groupQrUrl : '';
-      if(qr){
-        // 群码死链兜底：onerror 时把二维码框替换为文字提示，避免空白裂图
-        extra = '<div class="beta-qr-wrap"><img src="'+escapeAttr(qr)+'" alt="内测群二维码" '+
-                'onerror="this.onerror=null;this.parentNode.classList.add(\'is-broken\');'+
-                'this.parentNode.innerHTML=\'二维码加载失败，请联系客服\';"></div>'+
-                '<div class="beta-qr-hint">长按或扫码加入内测群</div>';
-      }
+      desc='扫码添加小月微信，开测第一时间通知你。';
+      // 暗号 = 月光茧内测 + 本人手机号后四位（由所查手机号自动生成，用户无需自己算）
+      const last4 = String(phone||'').replace(/\D/g,'').slice(-4);
+      const greeting = '月光茧内测' + last4;
+      // 二维码死链兜底：onerror 时把二维码框替换为文字提示，避免空白裂图
+      extra = '<div class="beta-qr-wrap"><img src="images/beta-wechat-xiaoyue.jpg" alt="小月微信二维码" '+
+              'onerror="this.onerror=null;this.parentNode.classList.add(\'is-broken\');'+
+              'this.parentNode.innerHTML=\'二维码加载失败，请联系客服\';"></div>'+
+              '<div class="beta-qr-hint">扫码添加小月微信</div>'+
+              '<div class="beta-greeting"><span class="beta-greeting-label">添加时「验证消息 / 打招呼」请填：</span>'+
+              '<span class="beta-greeting-code" id="betaGreetingCode">'+escapeAttr(greeting)+'</span>'+
+              '<button type="button" class="beta-copy-btn" id="betaCopyBtn">复制</button></div>';
     }else if(state==='NOT_SELECTED'){
       cls='not-selected'; icon='moon';
       title='本批未入选';
@@ -1358,11 +1367,32 @@ addPressAnim('.scroll-hint-icon','is-pressing');
     if(window.lucide) lucide.createIcons();
     const resetBtn = document.getElementById('betaResetBtn');
     if(resetBtn) resetBtn.addEventListener('click', resetQuery);
+    const copyBtn = document.getElementById('betaCopyBtn');
+    if(copyBtn) copyBtn.addEventListener('click', function(){
+      const codeEl = document.getElementById('betaGreetingCode');
+      const txt = codeEl ? codeEl.textContent : '';
+      const done = function(){
+        copyBtn.textContent='已复制'; copyBtn.classList.add('copied');
+        setTimeout(function(){ copyBtn.textContent='复制'; copyBtn.classList.remove('copied'); }, 1800);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(function(){ fallbackCopy(txt); done(); });
+      }else{ fallbackCopy(txt); done(); }
+    });
   }
 
   function escapeAttr(s){
     return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;')
                     .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function fallbackCopy(txt){
+    try{
+      const t=document.createElement('textarea');
+      t.value=txt; t.style.position='fixed'; t.style.top='-9999px'; t.style.opacity='0';
+      document.body.appendChild(t); t.focus(); t.select();
+      document.execCommand('copy'); document.body.removeChild(t);
+    }catch(e){}
   }
 
   function resetQuery(){
@@ -1403,7 +1433,7 @@ addPressAnim('.scroll-hint-icon','is-pressing');
         const payload = (json && typeof json.data === 'object' && json.data) ? json.data : json;
         const status = payload && payload.status;
         if(status==='PENDING' || status==='APPROVED' || status==='NOT_SELECTED'){
-          renderResult(status, payload);
+          renderResult(status, payload, norm);
         }else{
           renderResult('ERROR');
         }
