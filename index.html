@@ -82,13 +82,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:110px var(--page-x) 40px;max-width:1440px;margin:0 auto;contain:paint layout}
 .hero-logo{width:360px;margin-bottom:8px;filter:drop-shadow(0 0 30px rgba(191,227,255,0.68))}
 .hero-title{font-family:var(--font-serif);font-size:54px;letter-spacing:0.05em;line-height:1.18;margin-bottom:16px;text-shadow:0 0 24px rgba(210,235,255,0.62);font-weight:300}
-.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:32px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
-/* HERO CTA — primary beta-reservation entry (mobile-reachable) */
-.hero-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-bottom:44px;padding:14px 34px;border-radius:var(--rounded-pill);font-family:var(--font-sans);font-size:16px;font-weight:500;letter-spacing:0.08em;color:var(--night-990);background:linear-gradient(135deg,#ffffff 0%,#dcf0ff 55%,#9ccbff 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 24px rgba(150,205,255,0.45),0 8px 28px rgba(30,80,150,0.28),inset 0 1px 6px rgba(255,255,255,0.6);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s;position:relative;animation:heroSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.4s both}
-.hero-cta i,.hero-cta svg{color:var(--night-920);width:18px;height:18px}
-.hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 36px rgba(150,205,255,0.7),0 12px 36px rgba(30,80,150,0.36),inset 0 1px 8px rgba(255,255,255,0.7)}
-.hero-cta.is-pressing{transform:scale(0.95)}
-body.is-loading .hero-cta{animation:none!important;opacity:0}
+.hero-slogan{font-size:19px;color:var(--text-secondary);letter-spacing:0.04em;margin-bottom:56px;line-height:2;text-shadow:0 2px 8px rgba(0,0,0,0.5),0 0 20px rgba(3,13,32,0.8);font-weight:300}
 .hero-video{width:100%;max-width:680px;border-radius:var(--rounded-xxl);background:transparent;overflow:visible;cursor:pointer;position:relative;aspect-ratio:16/9}
 .hero-video::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--rounded-xxl) + 2px);background:linear-gradient(135deg,rgba(255,255,255,0.92) 0%,rgba(255,255,255,0.65) 20%,rgba(255,255,255,0.35) 50%,rgba(255,255,255,0.1) 80%,rgba(255,255,255,0.03) 100%);z-index:1;box-shadow:0 0 18px rgba(255,255,255,0.35),-4px -4px 24px rgba(255,255,255,0.2)}
 .hero-video::after{content:'';position:absolute;inset:2px;border-radius:var(--rounded-xxl);background:var(--night-960);z-index:2}
@@ -196,61 +190,6 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 .nav-links a.is-pressing{transform:scale(0.94);color:#fff;text-shadow:0 0 12px rgba(150,205,255,0.9),0 0 24px rgba(150,205,255,0.5)}
 .scroll-hint-icon{transition:box-shadow .3s,transform .25s cubic-bezier(0.34,1.56,0.64,1)}
 .scroll-hint-icon.is-pressing{transform:scale(0.82)}
-/* ===== BETA RESERVATION MODAL ===== */
-.beta-overlay{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(3,10,28,0.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease}
-.beta-overlay.open{opacity:1;visibility:visible}
-.beta-panel{position:relative;width:100%;max-width:440px;max-height:calc(100vh - 48px);overflow-y:auto;border-radius:var(--rounded-panel);padding:36px 32px 32px;background:linear-gradient(160deg,rgba(18,45,99,0.92) 0%,rgba(8,30,72,0.94) 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 40px rgba(150,205,255,0.28),0 24px 60px rgba(3,13,32,0.6),inset 0 1px 14px rgba(255,255,255,0.08);transform:translateY(18px) scale(0.97);opacity:0;transition:transform .4s cubic-bezier(0.22,1,0.36,1),opacity .4s ease}
-.beta-overlay.open .beta-panel{transform:translateY(0) scale(1);opacity:1}
-.beta-panel::-webkit-scrollbar{width:6px}
-.beta-panel::-webkit-scrollbar-thumb{background:rgba(220,240,255,0.2);border-radius:3px}
-.beta-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--glass-fill);border:1px solid var(--glass-border);color:var(--text-secondary);transition:border-color .3s,color .3s,transform .2s}
-.beta-close:hover{border-color:var(--glass-border-bright);color:var(--moon-000);transform:rotate(90deg)}
-.beta-close i,.beta-close svg{width:18px;height:18px}
-.beta-title{font-family:var(--font-serif);font-size:26px;font-weight:300;letter-spacing:0.05em;text-align:center;margin-bottom:8px;text-shadow:0 0 18px rgba(210,235,255,0.4)}
-.beta-subtitle{text-align:center;color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:26px}
-.beta-primary-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px 20px;border-radius:var(--rounded-pill);font-family:var(--font-sans);font-size:16px;font-weight:500;letter-spacing:0.06em;color:var(--night-990);background:linear-gradient(135deg,#ffffff 0%,#dcf0ff 55%,#9ccbff 100%);border:1px solid var(--glass-border-bright);box-shadow:0 0 22px rgba(150,205,255,0.4),inset 0 1px 6px rgba(255,255,255,0.6);transition:transform .25s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s}
-.beta-primary-btn i,.beta-primary-btn svg{width:18px;height:18px;color:var(--night-920)}
-.beta-primary-btn:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(150,205,255,0.6),inset 0 1px 8px rgba(255,255,255,0.7)}
-.beta-primary-btn.is-pressing{transform:scale(0.97)}
-.beta-divider{display:flex;align-items:center;gap:14px;margin:24px 0 20px;color:var(--text-faint);font-size:12px;letter-spacing:0.08em}
-.beta-divider::before,.beta-divider::after{content:'';flex:1;height:1px;background:var(--divider-soft)}
-.beta-query-label{font-size:14px;color:var(--text-secondary);margin-bottom:12px;letter-spacing:0.02em}
-.beta-applied-note{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.7;color:var(--ice-340);background:rgba(156,203,255,0.10);border:1px solid rgba(156,203,255,0.22);border-radius:14px;padding:12px 14px;margin-bottom:18px}
-.beta-applied-note i,.beta-applied-note svg{width:16px;height:16px;flex-shrink:0;margin-top:3px;color:var(--ice-420)}
-.beta-input-row{display:flex;gap:10px;align-items:stretch}
-.beta-input{flex:1;min-width:0;padding:13px 16px;border-radius:14px;font-family:var(--font-sans);font-size:15px;letter-spacing:0.04em;color:var(--text-primary);background:rgba(130,174,230,0.12);border:1px solid var(--glass-border);transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;appearance:none}
-.beta-input::placeholder{color:var(--text-faint)}
-.beta-input:focus{outline:none;border-color:var(--glass-border-bright);box-shadow:0 0 16px rgba(150,205,255,0.25)}
-.beta-query-btn{flex-shrink:0;padding:0 22px;border-radius:14px;font-family:var(--font-sans);font-size:15px;font-weight:500;letter-spacing:0.04em;color:var(--text-primary);background:rgba(180,215,255,0.20);border:1px solid var(--glass-border-bright);transition:background .3s,box-shadow .3s,transform .2s}
-.beta-query-btn:hover:not(:disabled){background:rgba(180,215,255,0.30);box-shadow:0 0 18px rgba(150,205,255,0.3)}
-.beta-query-btn:disabled{opacity:0.55}
-.beta-query-btn.is-pressing{transform:scale(0.96)}
-.beta-error{font-size:13px;color:#ffb4b4;margin-top:10px;min-height:1em;line-height:1.6}
-/* Result block */
-.beta-result{margin-top:20px;border-radius:18px;padding:22px 20px;text-align:center;border:1px solid var(--glass-border);background:rgba(130,174,230,0.10);animation:tabContentIn .35s ease both}
-.beta-result-icon{width:48px;height:48px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px}
-.beta-result-icon i,.beta-result-icon svg{width:38px;height:38px}
-.beta-result.pending .beta-result-icon i{color:var(--ice-340)}
-.beta-result.approved .beta-result-icon i{color:#9fffca}
-.beta-result.not-selected .beta-result-icon i{color:var(--text-muted)}
-.beta-result.error .beta-result-icon i{color:#ffb4b4}
-.beta-result-title{font-family:var(--font-serif);font-size:20px;font-weight:300;letter-spacing:0.04em;margin-bottom:8px;color:var(--text-primary)}
-.beta-result-desc{font-size:14px;line-height:1.8;color:var(--text-secondary)}
-.beta-qr-wrap{margin:18px auto 6px;width:180px;height:180px;border-radius:16px;overflow:hidden;background:#fff;padding:8px;box-shadow:0 0 20px rgba(150,205,255,0.3)}
-.beta-qr-wrap img{width:100%;height:100%;object-fit:contain;display:block}
-.beta-qr-wrap.is-broken{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(130,174,230,0.12);color:var(--text-secondary);font-size:13px;line-height:1.6;padding:12px}
-.beta-qr-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
-.beta-greeting{margin-top:14px;padding:14px 14px 12px;border-radius:14px;background:rgba(156,203,255,0.10);border:1px solid rgba(156,203,255,0.22);font-size:13px;line-height:1.7;color:var(--text-secondary)}
-.beta-greeting-label{display:block;margin-bottom:9px}
-.beta-greeting-code{display:inline-block;font-family:var(--font-sans);font-size:16px;font-weight:600;letter-spacing:0.04em;color:var(--moon-000);background:rgba(130,174,230,0.16);border-radius:10px;padding:7px 12px;vertical-align:middle}
-.beta-copy-btn{margin-left:8px;padding:7px 14px;border-radius:10px;font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);background:rgba(180,215,255,0.20);border:1px solid var(--glass-border-bright);vertical-align:middle;transition:background .3s,color .3s}
-.beta-copy-btn:hover{background:rgba(180,215,255,0.30)}
-.beta-copy-btn.copied{color:#9fffca;border-color:rgba(159,255,202,0.5)}
-.beta-result-actions{margin-top:18px;display:flex;justify-content:center}
-.beta-link-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;letter-spacing:0.04em;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;transition:color .3s;padding:6px}
-.beta-link-btn:hover{color:var(--ice-340)}
-.beta-loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:betaSpin .7s linear infinite;vertical-align:middle}
-@keyframes betaSpin{to{transform:rotate(360deg)}}
 /* RESPONSIVE */
 @media(max-width:768px){
   :root{--page-x:20px}
@@ -261,14 +200,8 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
   .hero{padding:100px var(--page-x) 20px;min-height:100dvh}
   .hero-logo{width:200px;margin-bottom:30px}
   .hero-title{font-size:26px;margin-bottom:30px}
-  .hero-slogan{font-size:14px;margin-bottom:22px;line-height:1.5}
-  .hero-cta{margin-bottom:30px;padding:12px 26px;font-size:15px}
+  .hero-slogan{font-size:14px;margin-bottom:38px;line-height:1.5}
   .hero-video{max-width:100%}
-  .beta-overlay{padding:16px;align-items:flex-end}
-  .beta-panel{max-width:100%;max-height:88vh;padding:30px 22px 26px;border-radius:24px}
-  .beta-title{font-size:23px}
-  .beta-input-row{flex-direction:column}
-  .beta-query-btn{padding:13px 22px}
   .scroll-hint{margin-top:24px}
   .module{min-height:auto;padding:40px 0 16px}
   .module-content{grid-template-columns:1fr;grid-template-rows:auto auto auto;gap:22px}
@@ -465,9 +398,6 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
   <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
-  <button class="hero-cta" type="button" data-beta-open>
-    <span>抢先内测预约</span>
-  </button>
   <div class="hero-video" id="pvVideo">
     <video muted playsinline autoplay loop poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
@@ -560,38 +490,6 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
 </div>
 </footer>
-
-<!-- BETA RESERVATION MODAL -->
-<div class="beta-overlay" id="betaOverlay" role="dialog" aria-modal="true" aria-labelledby="betaTitle" hidden>
-  <div class="beta-panel" role="document">
-    <button class="beta-close" type="button" id="betaClose" aria-label="关闭">
-      <i data-lucide="x"></i>
-    </button>
-    <h2 class="beta-title" id="betaTitle">内测预约</h2>
-    <p class="beta-subtitle">月光茧内测招募中，提交预约即有机会抢先体验。</p>
-
-    <button class="beta-primary-btn" type="button" id="betaFormBtn">
-      <i data-lucide="clipboard-pen-line"></i>
-      <span>去填写预约问卷</span>
-    </button>
-
-    <div class="beta-divider">已经预约过？</div>
-
-    <div class="beta-applied-note" id="betaAppliedNote" hidden>
-      <i data-lucide="heart"></i>
-      <span>感谢预约！名单公布后可在此用手机号查询结果。</span>
-    </div>
-
-    <p class="beta-query-label">输入预约时填写的手机号查看结果</p>
-    <div class="beta-input-row">
-      <input class="beta-input" id="betaPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="20" placeholder="请输入手机号">
-      <button class="beta-query-btn" type="button" id="betaQueryBtn">查询</button>
-    </div>
-    <div class="beta-error" id="betaError" role="alert"></div>
-
-    <div id="betaResult"></div>
-  </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
@@ -1184,277 +1082,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
     requestAnimationFrame(drawTrail);
   }
   drawTrail();
-})();
-
-/* ===== BETA RESERVATION ===== */
-(function(){
-  // 飞书内测预约问卷链接（问卷含「手机号」必填项）
-  const BETA_FORM_URL = 'https://pcni5ldjg9t4.feishu.cn/share/base/form/shrcnWWxriL2EpOHc9hUWZcNC0f';
-  // 生产 Aildo-JAVA 后端 base URL（无尾斜杠；前端再拼 /api/...）
-  const API_BASE = 'https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
-
-  const overlay   = document.getElementById('betaOverlay');
-  if(!overlay) return; // markup 未就绪时安全退出
-  // 提升 overlay 为 body 直接子节点（modal portal）：否则它嵌在 .page-ui 内，
-  // setBackgroundInert 把 .page-ui 设为 inert 时，面板作为其后代会整体不可点（弹窗点不动 bug）。
-  if(overlay.parentElement !== document.body) document.body.appendChild(overlay);
-  const panel     = overlay.querySelector('.beta-panel');
-  const closeBtn  = document.getElementById('betaClose');
-  const formBtn   = document.getElementById('betaFormBtn');
-  const appliedNote = document.getElementById('betaAppliedNote');
-  const phoneInput  = document.getElementById('betaPhone');
-  const queryBtn  = document.getElementById('betaQueryBtn');
-  const errEl     = document.getElementById('betaError');
-  const resultEl  = document.getElementById('betaResult');
-
-  // —— 手机号归一化（必须与后端 PhoneNormalizer 逐条等价；导入/查询两侧同规则）——
-  //  1. 剔除所有非数字字符（空格 / +86 / -() 等分隔符全部去掉）
-  //  2. 去前导国码 86：仅当结果恰为 13 位且以 86 开头时剥（避免误伤本身以 86 起头的串）
-  //  3. 结果须恰为 11 位且以 1 开头才视为合法，否则判非法返回 ''（不做「截取后 11 位」宽松兜底）
-  function normalizePhone(raw){
-    if(raw==null) return '';
-    let d = String(raw).replace(/\D/g,'');          // 1. 仅保留数字
-    if(d.length===13 && d.indexOf('86')===0) d = d.slice(2); // 2. 去 86 国码（仅当恰 13 位）
-    if(d.length!==11 || d.charAt(0)!=='1') return ''; // 3. 非法（非 11 位 / 不以 1 开头）→ 空串
-    return d;
-  }
-  function isValidPhone(p){ return /^1\d{10}$/.test(p); }
-  // 暴露给测试（仅用于 jsdom 无头测试，浏览器侧无副作用）
-  if(typeof window!=='undefined') window.__betaNormalizePhone = normalizePhone;
-
-  // —— 面板开关 + 焦点陷阱（modal 打开时 Tab 焦点环绕在面板内，背景设 inert 不可 Tab）——
-  let lastFocused = null;
-  // 把面板外的同级根节点设为 inert（无障碍 + 不可聚焦），关闭时复原
-  function setBackgroundInert(on){
-    var kids = document.body.children;
-    for(var i=0;i<kids.length;i++){
-      var el = kids[i];
-      if(el===overlay || el.tagName==='SCRIPT') continue;
-      if(on){ el.setAttribute('inert',''); el.setAttribute('aria-hidden','true'); }
-      else { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
-    }
-  }
-  function getFocusable(){
-    var all = Array.prototype.slice.call(
-      panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')
-    ).filter(function(el){ return !el.hidden; });
-    // 是否拿得到真实布局：任一元素有非零几何即认为布局已生成
-    var hasLayout = all.some(function(el){
-      return el.offsetWidth>0 || el.offsetHeight>0 || el.getClientRects().length>0;
-    });
-    if(!hasLayout) return all; // 首帧前 / 无布局引擎：别按 offset 误判全不可见
-    return all.filter(function(el){
-      return el.offsetWidth>0 || el.offsetHeight>0 || el.getClientRects().length>0 || el===document.activeElement;
-    });
-  }
-  function trapTab(e){
-    if(e.key!=='Tab' || !overlay.classList.contains('open')) return;
-    var f = getFocusable();
-    if(!f.length){ e.preventDefault(); return; }
-    var first = f[0], last = f[f.length-1], active = document.activeElement;
-    // 焦点已逃出面板（理论上 inert 已挡住，这里兜底）→ 拉回首元素
-    if(!panel.contains(active)){ e.preventDefault(); first.focus(); return; }
-    if(e.shiftKey && active===first){ e.preventDefault(); last.focus(); }
-    else if(!e.shiftKey && active===last){ e.preventDefault(); first.focus(); }
-  }
-  function openPanel(){
-    lastFocused = document.activeElement;
-    overlay.hidden = false;
-    // 触发 transition 需在下一帧加 open 类
-    requestAnimationFrame(()=>overlay.classList.add('open'));
-    document.body.style.overflow = 'hidden';
-    setBackgroundInert(true);
-    syncAppliedState();
-    if(window.lucide) lucide.createIcons();
-    setTimeout(()=>{ if(phoneInput) phoneInput.focus(); }, 380);
-  }
-  function closePanel(){
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    setBackgroundInert(false);
-    const onEnd = ()=>{ overlay.hidden = true; overlay.removeEventListener('transitionend', onEnd); };
-    overlay.addEventListener('transitionend', onEnd);
-    // 兜底：transitionend 未触发时强制隐藏
-    setTimeout(()=>{ if(!overlay.classList.contains('open')) overlay.hidden = true; }, 450);
-    if(lastFocused && lastFocused.focus){ try{ lastFocused.focus(); }catch(e){} }
-  }
-
-  // 入口（导航 + Hero CTA，均带 data-beta-open）
-  document.querySelectorAll('[data-beta-open]').forEach(el=>{
-    el.addEventListener('click', e=>{ e.preventDefault(); openPanel(); });
-  });
-  if(closeBtn) closeBtn.addEventListener('click', closePanel);
-  // 点击面板外部关闭
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) closePanel(); });
-  // Esc 关闭 + Tab 焦点陷阱（限制在面板内环绕）
-  document.addEventListener('keydown', e=>{
-    if(e.key==='Escape' && overlay.classList.contains('open')){ closePanel(); return; }
-    trapTab(e);
-  });
-
-  // —— 去填写问卷：打开飞书问卷 + 标记乐观「已预约」 ——
-  if(formBtn){
-    formBtn.addEventListener('click', ()=>{
-      try{ localStorage.setItem('beta_applied','1'); }catch(e){}
-      window.open(BETA_FORM_URL, '_blank', 'noopener');
-      syncAppliedState();
-    });
-  }
-
-  // 面板打开时：若已预约，展示感谢提示并默认聚焦查询区
-  function syncAppliedState(){
-    let applied = false;
-    try{ applied = localStorage.getItem('beta_applied')==='1'; }catch(e){}
-    if(appliedNote) appliedNote.hidden = !applied;
-    // 回访自动回填手机号并自动查询
-    let savedPhone = '';
-    try{ savedPhone = localStorage.getItem('beta_phone') || ''; }catch(e){}
-    if(savedPhone && phoneInput && !phoneInput.value){
-      phoneInput.value = savedPhone;
-      // 已有持久化手机号 → 自动查询一次（仅首次打开时）
-      if(!overlay.dataset.autoQueried){
-        overlay.dataset.autoQueried = '1';
-        doQuery(true);
-      }
-    }
-  }
-
-  // —— 查询逻辑 ——
-  let querying = false;
-  function setError(msg){ if(errEl) errEl.textContent = msg || ''; }
-
-  function renderResult(state, data, phone){
-    if(!resultEl) return;
-    let cls='', icon='', title='', desc='', extra='';
-    if(state==='PENDING'){
-      cls='pending'; icon='hourglass';
-      title='名单审核中';
-      desc='内测名单审核中，公布后可在此用手机号查询是否入选。';
-    }else if(state==='APPROVED'){
-      cls='approved'; icon='party-popper';
-      title='🎉 恭喜入选内测！';
-      desc='扫码添加小月微信，开测第一时间通知你。';
-      // 暗号 = 月光茧内测 + 本人手机号后四位（由所查手机号自动生成，用户无需自己算）
-      const last4 = String(phone||'').replace(/\D/g,'').slice(-4);
-      const greeting = '月光茧内测' + last4;
-      // 二维码死链兜底：onerror 时把二维码框替换为文字提示，避免空白裂图
-      extra = '<div class="beta-qr-wrap"><img src="images/beta-wechat-xiaoyue.jpg" alt="小月微信二维码" '+
-              'onerror="this.onerror=null;this.parentNode.classList.add(\'is-broken\');'+
-              'this.parentNode.innerHTML=\'二维码加载失败，请联系客服\';"></div>'+
-              '<div class="beta-qr-hint">扫码添加小月微信</div>'+
-              '<div class="beta-greeting"><span class="beta-greeting-label">添加时「验证消息 / 打招呼」请填：</span>'+
-              '<span class="beta-greeting-code" id="betaGreetingCode">'+escapeAttr(greeting)+'</span>'+
-              '<button type="button" class="beta-copy-btn" id="betaCopyBtn">复制</button></div>';
-    }else if(state==='NOT_SELECTED'){
-      cls='not-selected'; icon='moon';
-      title='本批未入选';
-      desc='很遗憾本批未入选，后续还有更多批次，敬请关注。';
-    }else{ // error / 网络异常
-      cls='error'; icon='wifi-off';
-      title='查询失败';
-      desc='暂时查询失败，稍后再试。';
-    }
-    resultEl.innerHTML =
-      '<div class="beta-result '+cls+'">'+
-        '<div class="beta-result-icon"><i data-lucide="'+icon+'"></i></div>'+
-        '<div class="beta-result-title">'+title+'</div>'+
-        '<div class="beta-result-desc">'+desc+'</div>'+
-        extra+
-        '<div class="beta-result-actions">'+
-          '<button class="beta-link-btn" type="button" id="betaResetBtn">换手机号 / 清除</button>'+
-        '</div>'+
-      '</div>';
-    if(window.lucide) lucide.createIcons();
-    const resetBtn = document.getElementById('betaResetBtn');
-    if(resetBtn) resetBtn.addEventListener('click', resetQuery);
-    const copyBtn = document.getElementById('betaCopyBtn');
-    if(copyBtn) copyBtn.addEventListener('click', function(){
-      const codeEl = document.getElementById('betaGreetingCode');
-      const txt = codeEl ? codeEl.textContent : '';
-      const done = function(){
-        copyBtn.textContent='已复制'; copyBtn.classList.add('copied');
-        setTimeout(function(){ copyBtn.textContent='复制'; copyBtn.classList.remove('copied'); }, 1800);
-      };
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(txt).then(done).catch(function(){ fallbackCopy(txt); done(); });
-      }else{ fallbackCopy(txt); done(); }
-    });
-  }
-
-  function escapeAttr(s){
-    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;')
-                    .replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  function fallbackCopy(txt){
-    try{
-      const t=document.createElement('textarea');
-      t.value=txt; t.style.position='fixed'; t.style.top='-9999px'; t.style.opacity='0';
-      document.body.appendChild(t); t.focus(); t.select();
-      document.execCommand('copy'); document.body.removeChild(t);
-    }catch(e){}
-  }
-
-  function resetQuery(){
-    if(resultEl) resultEl.innerHTML='';
-    setError('');
-    try{ localStorage.removeItem('beta_phone'); }catch(e){}
-    if(phoneInput){ phoneInput.value=''; phoneInput.focus(); }
-  }
-
-  function setLoading(on){
-    querying = on;
-    if(!queryBtn) return;
-    queryBtn.disabled = on;
-    queryBtn.innerHTML = on ? '<span class="beta-loading"></span>' : '查询';
-  }
-
-  function doQuery(silent){
-    if(querying) return;
-    const norm = normalizePhone(phoneInput ? phoneInput.value : '');
-    if(!isValidPhone(norm)){
-      if(!silent) setError('请输入正确的 11 位手机号');
-      return;
-    }
-    setError('');
-    if(resultEl) resultEl.innerHTML='';
-    try{ localStorage.setItem('beta_phone', norm); }catch(e){}
-    setLoading(true);
-    const url = API_BASE + '/api/beta-reservation/result?phone=' + encodeURIComponent(norm);
-    fetch(url, { method:'GET', headers:{ 'Accept':'application/json' } })
-      .then(res=>{
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        return res.json();
-      })
-      .then(json=>{
-        setLoading(false);
-        // 后端返回仓库通用 Result<T> 信封：{ result, data:{ status, groupQrUrl } }
-        // 取 data 层；兼容裸对象兜底（万一某环境未包信封）
-        const payload = (json && typeof json.data === 'object' && json.data) ? json.data : json;
-        const status = payload && payload.status;
-        if(status==='PENDING' || status==='APPROVED' || status==='NOT_SELECTED'){
-          renderResult(status, payload, norm);
-        }else{
-          renderResult('ERROR');
-        }
-      })
-      .catch(()=>{
-        setLoading(false);
-        renderResult('ERROR');
-      });
-  }
-
-  if(queryBtn) queryBtn.addEventListener('click', ()=>doQuery(false));
-  if(phoneInput){
-    phoneInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); doQuery(false); } });
-    phoneInput.addEventListener('input', ()=>{ if(errEl && errEl.textContent) setError(''); });
-  }
-
-  // 复用站点既有按压动效
-  if(typeof addPressAnim==='function'){
-    addPressAnim('.beta-primary-btn','is-pressing');
-    addPressAnim('.beta-query-btn','is-pressing');
-  }
 })();
 </script>
 </body>
