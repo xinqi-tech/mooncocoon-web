@@ -6,6 +6,14 @@
 
 ---
 
+## [2026-08-06]
+
+### 移除
+- **内测预约整套功能下线**：删除首屏「抢先内测预约」CTA 按钮、预约弹窗（`#betaOverlay`）、`.beta-*` 样式与约 270 行预约逻辑（手机号归一化、焦点陷阱 / `inert` 背景、飞书问卷跳转、PENDING / APPROVED / NOT_SELECTED 三态结果渲染、二维码兜底、暗号复制、`localStorage` 的 `beta_phone` / `beta_applied`），并删除 `tests/beta-reservation.test.mjs` 与仅该弹窗引用的 `images/beta-wechat-xiaoyue.jpg`。**已预约用户此后无法在官网查询入选结果**（弹窗是唯一查询入口）。后端 `betareservation` 接口与 prod 名单数据均未改动，如需恢复 revert 前端 commit 即可。
+
+### 调整
+- 首屏标语下边距补偿（配合上条删除）：`.hero-slogan` 的 `margin-bottom` 桌面由 32px 改 56px、移动端由 22px 改 38px——原按钮自带 44px 下边距，直接删除会让标语与 PV 视频贴到一起。
+
 ## [2026-06-28]
 
 ### 调整
