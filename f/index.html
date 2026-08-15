@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+  AI Context
+  -----------
+  本文件是什么: 捏脸分享二维码的官网短入口，校验分享码后跳转已有 H5。
+
+  关联文件:
+  - 上游: Android CustomizationShareLink — 生成 /f/?c=<code> 二维码链接
+  - 下游: redirect.js — 执行纯函数校验并构造固定 H5 目标
+  - 下游: Aildo-JAVA live2d-share 静态页 — 展示分享详情并提供 App 唤起入口
+
+  核心概念:
+  - 短入口: 只负责安全跳转，不复制分享详情 UI，也不请求业务接口
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#06142f">
+  <title>打开月光茧捏脸分享</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background: #06142f;
+      color: #f6fbff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(111, 160, 214, 0.28), transparent 42%),
+        #06142f;
+    }
+    main {
+      width: min(100%, 420px);
+      padding: 32px 28px;
+      border: 1px solid rgba(220, 240, 255, 0.3);
+      border-radius: 24px;
+      background: rgba(130, 174, 230, 0.12);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+    h1 { margin: 0 0 12px; font-size: 24px; font-weight: 500; }
+    p { margin: 0; color: rgba(236, 247, 255, 0.78); line-height: 1.7; }
+    a {
+      display: inline-block;
+      margin-top: 24px;
+      color: #c7e5ff;
+      text-underline-offset: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>正在打开捏脸分享</h1>
+    <p id="status" role="status" aria-live="polite">请稍候…</p>
+    <a href="../">返回月光茧官网</a>
+    <noscript><p>请启用 JavaScript 后重新打开此链接。</p></noscript>
+  </main>
+
+  <script src="redirect.js"></script>
+  <script>
+    (function redirectToSharePage() {
+      const status = document.getElementById("status");
+      const helper = window.FaceShareRedirect;
+      const target = helper && helper.resolveRedirectTarget(window.location.search);
+
+      if (!target) {
+        document.querySelector("h1").textContent = "无法打开捏脸分享";
+        status.textContent = "分享链接缺少有效的分享码，请向分享者重新获取二维码。";
+        return;
+      }
+
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>
