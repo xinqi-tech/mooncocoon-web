@@ -140,6 +140,7 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
   const product = await readFile(new URL("../jp/product/index.html", import.meta.url), "utf8");
   const styles = await readFile(new URL("../jp/styles.css", import.meta.url), "utf8");
+  const siteJs = await readFile(new URL("../jp/site.js", import.meta.url), "utf8");
   assert.doesNotMatch(domestic, /href="jp\//);
   assert.match(home, /class="loader"/);
   assert.match(home, /sessionStorage\.getItem\('lunakoru\.jp\.loader\.seen'\)/);
@@ -183,6 +184,11 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(styles, /\.product-page \.nav\s*\{[\s\S]*?max-width:\s*1440px;[\s\S]*?padding:\s*0 var\(--page-x\)/);
   assert.match(styles, /\.product-page\s*\{\s*--page-x:\s*18px;\s*line-height:\s*1\.72/);
   assert.match(styles, /\.product-page \.site-header\.scrolled::after\s*\{\s*opacity:\s*1/);
+  assert.match(product, /class="product-title"/);
+  assert.match(product, /class="title-initial">想<\/span>/);
+  assert.match(styles, /@keyframes product-halo/);
+  assert.match(styles, /\.product-page\.motion-ready \[data-reveal\]\.is-visible/);
+  assert.match(siteJs, /function initProductMotion/);
   assert.match(product, /data-bgm-toggle/);
   assert.match(product, /data-bgm-audio/);
   assert.match(product, /manual-white\.png/);

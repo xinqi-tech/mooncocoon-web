@@ -70,6 +70,40 @@
     update();
   }
 
+  function initProductMotion(doc, viewport) {
+    const body = doc.body;
+    if (!body || !body.classList || !body.classList.contains("product-page")) return;
+    const win = viewport || root;
+    const targets = doc.querySelectorAll([
+      ".product-page-hero > *",
+      "main > .section:not(.product-page-hero) .section-heading",
+      ".card-grid > *",
+      ".angle-gallery > *",
+      ".specs",
+      ".product-policy-card",
+      ".manual-card"
+    ].join(","));
+    targets.forEach(function (element, index) {
+      element.setAttribute("data-reveal", "");
+      element.style.setProperty("--reveal-delay", String((index % 3) * 90) + "ms");
+    });
+    body.classList.add("motion-ready");
+
+    const reduceMotion = win.matchMedia && win.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion || typeof win.IntersectionObserver !== "function") {
+      targets.forEach(function (element) { element.classList.add("is-visible"); });
+      return;
+    }
+    const observer = new win.IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px 80px 0px" });
+    targets.forEach(function (element) { observer.observe(element); });
+  }
+
   function initVariants(doc) {
     const image = doc.querySelector("[data-product-image]");
     const input = doc.querySelector("[name='variantInterest']");
@@ -210,6 +244,7 @@
     initMenu(doc);
     initBgm(doc);
     initScrollMask(doc);
+    initProductMotion(doc);
     initVariants(doc);
     initModal(doc);
     initForms(doc, fetchImpl || root.fetch.bind(root));
@@ -220,5 +255,5 @@
     document.addEventListener("DOMContentLoaded", function () { init(document); });
   }
 
-  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist, initBgm, initScrollMask };
+  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist, initBgm, initScrollMask, initProductMotion };
 });
