@@ -68,7 +68,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .nav-links a:hover::before{opacity:1}
 .nav-links a:hover{color:var(--moon-000);transform:translateY(-1px)}
 .nav-links a.active{color:var(--moon-000)}
-.nav-links a.active::before{opacity:1;inset:auto;left:50%;top:50%;width:135px;height:100px;transform:translate(-50%,-50%);border-radius:0;background:transparent url('assets/tab-selected-frame.png') center/contain no-repeat;box-shadow:none}
+.nav-links a.active::before{opacity:1;inset:auto;left:calc(50% + 5px);top:50%;width:135px;height:100px;transform:translate(-50%,-50%);border-radius:0;background:transparent url('assets/tab-selected-frame.png') center/contain no-repeat;box-shadow:none}
 .nav-links a.active::after{content:none}
 .nav-brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,0.5));transition:transform .3s,filter .3s}
 .nav-brand:hover img{transform:scale(1.08);filter:drop-shadow(0 0 14px rgba(191,227,255,0.8))}
