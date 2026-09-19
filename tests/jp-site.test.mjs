@@ -30,8 +30,13 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(home, /class="loader"/);
   assert.match(home, /id="hero"/);
   assert.match(home, /id="modules"/);
-  assert.match(home, /href="product\/"/);
+  assert.match(home, /href="product\/index\.html"/);
   assert.match(home, /<html lang="ja">/);
+  const homeNav = home.match(/<div class="nav-links">([\s\S]*?)<\/div>/)?.[1] || "";
+  const productNav = product.match(/<div class="nav-links"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
+  assert.equal((homeNav.match(/<a\b/g) || []).length, 2);
+  assert.equal((productNav.match(/<a\b/g) || []).length, 2);
+  assert.match(productNav, /href="\.\.\/index\.html"/);
   assert.match(product, /ホワイト/);
   assert.match(product, /パープル/);
   assert.match(product, /product-angle-01\.png/);

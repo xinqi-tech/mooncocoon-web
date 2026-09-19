@@ -61,8 +61,6 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .nav-links a.active::after{content:none}
 .nav-brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,0.5));transition:transform .3s,filter .3s}
 .nav-brand:hover img{transform:scale(1.08);filter:drop-shadow(0 0 14px rgba(191,227,255,0.8))}
-.product-entry{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:40px;margin-right:10px;padding:0 16px;border:1px solid var(--glass-border);border-radius:9999px;color:var(--text-primary);background:rgba(180,215,255,.16);text-decoration:none;font-size:14px;letter-spacing:.08em;transition:background .3s,border-color .3s,box-shadow .3s}
-.product-entry:hover,.product-entry:focus-visible{background:rgba(199,229,255,.25);border-color:var(--glass-border-bright);box-shadow:0 0 18px rgba(150,205,255,.24);outline:none}
 /* BGM toggle */
 .bgm-toggle{margin-left:18px;width:38px;height:38px;flex-shrink:0;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(220,240,255,0.18);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);transition:color .3s,border-color .3s,box-shadow .3s,transform .2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .bgm-toggle:hover{color:var(--moon-000);border-color:rgba(235,248,255,0.4);box-shadow:0 0 14px rgba(150,205,255,0.35);transform:translateY(-1px)}
@@ -197,8 +195,10 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
   :root{--page-x:20px}
   *{cursor:auto!important}
   .custom-cursor,.cursor-trail,canvas#cursor-particles{display:none!important}
-  .nav-links,.nav-divider{display:none}
-  .product-entry{height:44px;margin-left:auto;margin-right:8px}
+  .nav-links{position:static;transform:none;margin-left:auto;gap:2px}
+  .nav-links a{padding:8px 10px}
+  .nav-brand span{display:none}
+  .bgm-toggle{margin-left:6px}
   .nav-wrap{position:absolute}
   .hero{padding:100px var(--page-x) 20px;min-height:100dvh}
   .hero-logo{width:200px;margin-bottom:30px}
@@ -376,10 +376,9 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <span>LunaKoru</span>
   </div>
   <div class="nav-links">
-    <a href="#hero">ホーム</a>
-    <a href="#modules">アプリ紹介</a>
+    <a href="#hero" class="active">ホーム</a>
+    <a href="product/index.html">商品</a>
   </div>
-  <a class="product-entry" href="product/">商品</a>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="BGMを再生" aria-pressed="false" title="BGM">
     <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
     <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
