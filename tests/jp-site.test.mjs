@@ -149,6 +149,9 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(home, /id="hero"/);
   assert.match(home, /id="modules"/);
   assert.match(home, /href="product\/index\.html"/);
+  assert.match(home, /href="https:\/\/www\.instagram\.com\/"[\s\S]*?src="assets\/instagram\.png"/);
+  assert.match(home, /href="https:\/\/x\.com\/"[\s\S]*?src="assets\/x\.png"/);
+  assert.equal((home.match(/src="\.\.\/images\/icon_douyin\.png"/g) || []).length, 1);
   assert.match(home, /<html lang="ja">/);
   const homeNav = home.match(/<div class="nav-links">([\s\S]*?)<\/div>/)?.[1] || "";
   const productNav = product.match(/<div class="nav-links"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
@@ -208,7 +211,7 @@ test("补充的品牌、商品角度和说明书素材均已接入", async () =>
     "brand-logo.png", "product-white.png", "product-purple.png",
     "product-angle-01.png", "product-angle-02.png", "product-angle-03.png",
     "product-angle-04.png", "product-angle-05.png", "manual-white.png", "manual-purple.png",
-    "tab-selected-frame.png"
+    "tab-selected-frame.png", "instagram.png", "x.png"
   ];
   const files = await Promise.all(assets.map((name) => stat(new URL(`../jp/assets/${name}`, import.meta.url))));
   assert.equal(files.every((file) => file.isFile() && file.size > 0), true);
