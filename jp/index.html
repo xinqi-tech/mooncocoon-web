@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#06142f">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+(function(){
+  try {
+    window.__LUNAKORU_SKIP_LOADER=sessionStorage.getItem('lunakoru.jp.loader.seen')==='1';
+  } catch (error) {
+    window.__LUNAKORU_SKIP_LOADER=false;
+  }
+  if(window.__LUNAKORU_SKIP_LOADER) document.documentElement.classList.add('loader-seen');
+})();
+</script>
 <title>LunaKoru - 想いがつながる場所</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
@@ -52,12 +62,13 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .nav-brand .logo-reflection img{width:32px;height:32px;border-radius:8px;transform:scaleY(-1);-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,0.4),transparent);mask-image:linear-gradient(to bottom,rgba(0,0,0,0.4),transparent)}
 .nav-brand span{font-family:var(--font-serif);font-size:18px;letter-spacing:0.06em;color:var(--text-primary)}
 .nav-links{position:static;margin-left:auto;display:flex;gap:6px}
-.nav-links a{width:90px;height:40px;color:var(--text-muted);text-decoration:none;font-size:14px;letter-spacing:0.02em;transition:color .3s,transform .2s;position:relative;padding:8px 14px;text-shadow:0 1px 4px rgba(0,0,0,0.6);display:inline-flex;align-items:center;justify-content:center}
-.nav-links a::before{content:'';position:absolute;inset:0;border-radius:8px;background:rgba(255,255,255,0.06);opacity:0;transition:opacity .3s;box-shadow:0 0 12px rgba(150,205,255,0.15)}
+.nav-links a{width:90px;height:40px;color:var(--text-muted);text-decoration:none;font-size:14px;letter-spacing:0.02em;transition:color .3s,transform .2s;position:relative;padding:8px 14px;text-shadow:0 1px 4px rgba(0,0,0,0.6);display:inline-flex;align-items:center;justify-content:center;overflow:visible;isolation:isolate}
+.nav-links a>span{position:relative;z-index:2}
+.nav-links a::before{content:'';position:absolute;z-index:1;inset:0;border-radius:8px;background:rgba(255,255,255,0.06);opacity:0;transition:opacity .3s;box-shadow:0 0 12px rgba(150,205,255,0.15);pointer-events:none}
 .nav-links a:hover::before{opacity:1}
 .nav-links a:hover{color:var(--moon-000);transform:translateY(-1px)}
 .nav-links a.active{color:var(--moon-000)}
-.nav-links a.active::before{opacity:1;inset:0;background:transparent url('assets/tab-selected-frame.png') center/159.26% 266.67% no-repeat;box-shadow:none}
+.nav-links a.active::before{opacity:1;inset:auto;left:50%;top:50%;width:135px;height:100px;transform:translate(-50%,-50%);border-radius:0;background:transparent url('assets/tab-selected-frame.png') center/contain no-repeat;box-shadow:none}
 .nav-links a.active::after{content:none}
 .nav-brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,0.5));transition:transform .3s,filter .3s}
 .nav-brand:hover img{transform:scale(1.08);filter:drop-shadow(0 0 14px rgba(191,227,255,0.8))}
@@ -230,6 +241,7 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 }
 /* ===== LOADER ===== */
 body.is-loading{overflow:hidden}
+.loader-seen .loader{display:none!important}
 .loader{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .6s ease,visibility .6s ease}
 .loader.is-done{opacity:0;visibility:hidden;pointer-events:none}
 .loader-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,rgba(120,170,235,0.30),transparent 58%),radial-gradient(circle at 78% 76%,rgba(150,205,255,0.16),transparent 52%),linear-gradient(180deg,#081e48 0%,#06142f 56%,#030d20 100%)}
@@ -294,6 +306,11 @@ body.is-loading{overflow:hidden}
 window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)?'../videos/pv_720.mp4':'../videos/pv.mp4';
 (function(){
   var loader=document.getElementById('loader');
+  if(window.__LUNAKORU_SKIP_LOADER){
+    document.body.classList.remove('is-loading');
+    if(loader&&loader.parentNode) loader.parentNode.removeChild(loader);
+    return;
+  }
   var ringFill=document.getElementById('loaderRingFill');
   var numEl=document.getElementById('loaderNum');
   var CIRC=289.03; // 2*pi*46
@@ -341,6 +358,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 
   function finish(){
     if(done)return; done=true;
+    try { sessionStorage.setItem('lunakoru.jp.loader.seen','1'); } catch (error) {}
     loader.setAttribute('aria-valuenow','100');
     setTimeout(function(){
       loader.classList.add('is-done');
@@ -376,8 +394,8 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <span>LunaKoru</span>
   </div>
   <div class="nav-links">
-    <a href="#hero" class="active">ホーム</a>
-    <a href="product/index.html">商品</a>
+    <a href="#hero" class="active"><span>ホーム</span></a>
+    <a href="product/index.html"><span>商品</span></a>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="BGMを再生" aria-pressed="false" title="BGM">
     <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>

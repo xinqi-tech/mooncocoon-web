@@ -29,6 +29,9 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   const styles = await readFile(new URL("../jp/styles.css", import.meta.url), "utf8");
   assert.doesNotMatch(domestic, /href="jp\//);
   assert.match(home, /class="loader"/);
+  assert.match(home, /sessionStorage\.getItem\('lunakoru\.jp\.loader\.seen'\)/);
+  assert.match(home, /sessionStorage\.setItem\('lunakoru\.jp\.loader\.seen','1'\)/);
+  assert.match(home, /window\.__LUNAKORU_SKIP_LOADER/);
   assert.match(home, /id="hero"/);
   assert.match(home, /id="modules"/);
   assert.match(home, /href="product\/index\.html"/);
@@ -37,6 +40,8 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   const productNav = product.match(/<div class="nav-links"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
   assert.equal((homeNav.match(/<a\b/g) || []).length, 2);
   assert.equal((productNav.match(/<a\b/g) || []).length, 2);
+  assert.equal((homeNav.match(/<span>/g) || []).length, 2);
+  assert.equal((productNav.match(/<span>/g) || []).length, 2);
   assert.match(productNav, /href="\.\.\/index\.html"/);
   assert.match(product, /<body class="product-page">/);
   assert.doesNotMatch(product, /data-menu-button/);
@@ -47,6 +52,8 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(styles, /grid-template-columns:\s*repeat\(6,/);
   assert.match(styles, /\.angle-card:nth-child\(-n \+ 2\)\s*\{\s*grid-column:\s*span 3/);
   assert.match(styles, /\.angle-card:nth-child\(n \+ 3\)\s*\{\s*grid-column:\s*span 2/);
+  assert.match(styles, /\.product-page \.nav-links a\[aria-current="page"\]::before/);
+  assert.match(styles, /background:\s*transparent url\("assets\/tab-selected-frame\.png"\) center \/ contain no-repeat/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
   assert.equal((product.match(/class="manual-card"/g) || []).length, 2);
