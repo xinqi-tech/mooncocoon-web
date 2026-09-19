@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LunaKoru PRODUCT_01。ホワイトとパープルの2色、アプリ連携と圧力感知に対応したプレローンチ商品です。">
+  <title>PRODUCT_01 | LunaKoru</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="メインナビゲーション">
+      <a class="brand" href="../"><img src="../../images/app-logo.jpg" alt=""><span>LunaKoru</span></a>
+      <button class="menu-button" type="button" data-menu-button aria-expanded="false" aria-controls="main-nav" aria-label="メニューを開く">☰</button>
+      <div class="nav-links" id="main-nav" data-nav-links><a href="../">ホーム</a><a href="./" aria-current="page">商品</a><a href="#specs">仕様</a><a href="#waitlist">発売通知</a></div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="section product-layout product-page-hero">
+      <div class="product-gallery">
+        <div class="product-media"><img data-product-image src="../assets/product-white.png" alt="PRODUCT_01 ホワイト"></div>
+        <div class="variant-switcher" aria-label="カラーを選択">
+          <button class="variant-button" type="button" data-variant="WHITE" data-image="../assets/product-white.png" data-alt="PRODUCT_01 ホワイト" aria-pressed="true"><span class="swatch swatch-white"></span>ホワイト</button>
+          <button class="variant-button" type="button" data-variant="PURPLE" data-image="../assets/product-purple.png" data-alt="PRODUCT_01 パープル" aria-pressed="false"><span class="swatch swatch-purple"></span>パープル</button>
+        </div>
+      </div>
+      <div>
+        <span class="status-badge">PRE-LAUNCH · 発売準備中</span>
+        <p class="eyebrow" style="margin-top:24px">LUNAKORU PRODUCT_01</p>
+        <h1>想いに触れる、<br>新しいかたち。</h1>
+        <p class="lead">やわらかなフォルムの中に、圧力センサーと振動ユニットを搭載。LunaKoruアプリの物語やインタラクションと、現実の感覚をつなぎます。</p>
+        <div class="hero-actions"><a class="button button-primary" href="#waitlist">発売通知を受け取る</a><a class="button" href="#specs">仕様を見る</a></div>
+        <p class="disclaimer">商品名、発売日、価格は確定後にご案内します。現在は決済・注文を受け付けていません。</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><p class="eyebrow">THREE WAYS TO CONNECT</p><h2>小さなデバイスに、<br>親密な体験を。</h2></div>
+      <div class="card-grid">
+        <article class="romantic-card"><span class="card-number">01 · APP LINK</span><h3>アプリとつながる</h3><p>LunaKoruアプリに接続し、対応するストーリーやインタラクションと連動します。</p></article>
+        <article class="romantic-card"><span class="card-number">02 · PRESSURE</span><h3>触れ方に反応する</h3><p>内蔵した圧力センサーが操作の強さを感知し、振動の変化につなげます。</p></article>
+        <article class="romantic-card"><span class="card-number">03 · TWO STYLES</span><h3>2つの使い方</h3><p>やわらかな外装と着脱式の本体を組み合わせ、好みに合わせて使えます。</p></article>
+      </div>
+    </section>
+
+    <section class="narrow" id="specs">
+      <div class="section-heading"><p class="eyebrow">CONFIRMED SPECIFICATIONS</p><h2>製品仕様</h2><p>説明書で確認できた情報のみ掲載しています。</p></div>
+      <table class="specs">
+        <tbody>
+          <tr><th>製品コード</th><td>LUNA-A01</td></tr>
+          <tr><th>カラー</th><td>ホワイト / パープル</td></tr>
+          <tr><th>主な素材</th><td>液状シリコーン、ABS、金属</td></tr>
+          <tr><th>本体サイズ</th><td>163 × 35 × 36.8 mm</td></tr>
+          <tr><th>外装サイズ</th><td>75 × 74 × 59.2 mm</td></tr>
+          <tr><th>重量</th><td>本体 51 g / 組み合わせ時 130 g</td></tr>
+          <tr><th>バッテリー</th><td>130 mAh / 定格電圧 3.7 V / 充電電流 120 mA</td></tr>
+          <tr><th>充電・使用時間</th><td>充電 約1.5時間 / 使用 40分以上</td></tr>
+          <tr><th>操作</th><td>ボタン操作 / 圧力感知 / 対応アプリ連携</td></tr>
+          <tr><th>防水</th><td>日常生活防水（浸水・水中使用不可）</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="narrow" id="waitlist">
+      <div class="romantic-card waitlist-panel">
+        <p class="eyebrow">JOIN THE WAITLIST</p>
+        <h2>発売時にお知らせします。</h2>
+        <p>購入手続きではありません。価格、在庫、発売日は確定後にメールでご案内します。</p>
+        <form data-waitlist-form novalidate>
+          <div class="field"><label for="product-email">メールアドレス</label><input id="product-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+          <input type="hidden" name="variantInterest" value="WHITE">
+          <div class="honeypot" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <label class="consent"><input name="consent" type="checkbox" required><span>発売・入荷に関するメールを受け取ること、および<a href="../privacy/" target="_blank">プライバシーポリシー</a>に同意します。いつでも配信停止できます。</span></label>
+          <div class="form-actions"><button class="button button-primary" type="submit">登録する</button></div>
+          <p class="form-message" data-form-message role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="footer-inner"><div>© 2026 LunaKoru · 18歳以上</div><div class="footer-links"><a href="../privacy/">プライバシー</a><a href="mailto:support@lunakoru.com">お問い合わせ</a><a href="../">ホーム</a></div></div></footer>
+</body>
+</html>
