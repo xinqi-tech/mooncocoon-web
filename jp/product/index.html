@@ -23,8 +23,8 @@
       <div class="product-gallery">
         <div class="product-media"><img data-product-image src="../assets/product-white.png" alt="PRODUCT_01 ホワイト"></div>
         <div class="variant-switcher" aria-label="カラーを選択">
-          <button class="variant-button" type="button" data-variant="WHITE" data-image="../assets/product-white.png" data-alt="PRODUCT_01 ホワイト" aria-pressed="true"><span class="swatch swatch-white"></span>ホワイト</button>
-          <button class="variant-button" type="button" data-variant="PURPLE" data-image="../assets/product-purple.png" data-alt="PRODUCT_01 パープル" aria-pressed="false"><span class="swatch swatch-purple"></span>パープル</button>
+          <button class="variant-button" type="button" data-variant="WHITE" data-image="../assets/product-white.png" data-alt="PRODUCT_01 ホワイト" data-manual="../assets/manual-white.png" data-manual-alt="PRODUCT_01 ホワイト 取扱ガイド" aria-pressed="true"><span class="swatch swatch-white"></span>ホワイト</button>
+          <button class="variant-button" type="button" data-variant="PURPLE" data-image="../assets/product-purple.png" data-alt="PRODUCT_01 パープル" data-manual="../assets/manual-purple.png" data-manual-alt="PRODUCT_01 パープル 取扱ガイド" aria-pressed="false"><span class="swatch swatch-purple"></span>パープル</button>
         </div>
       </div>
       <div>
@@ -46,6 +46,17 @@
       </div>
     </section>
 
+    <section class="section" id="views">
+      <div class="section-heading"><p class="eyebrow">DETAIL VIEWS</p><h2>あらゆる角度から。</h2><p>本体とやわらかな外装、それぞれの形状を確認できます。</p></div>
+      <div class="angle-gallery">
+        <figure class="angle-card angle-card-wide"><img src="../assets/product-angle-01.png" alt="本体と外装を分けた状態" loading="lazy"><figcaption>本体と外装</figcaption></figure>
+        <figure class="angle-card"><img src="../assets/product-angle-02.png" alt="PRODUCT_01 正面" loading="lazy"><figcaption>正面</figcaption></figure>
+        <figure class="angle-card"><img src="../assets/product-angle-03.png" alt="PRODUCT_01 背面" loading="lazy"><figcaption>背面</figcaption></figure>
+        <figure class="angle-card"><img src="../assets/product-angle-04.png" alt="PRODUCT_01 外装側" loading="lazy"><figcaption>外装側</figcaption></figure>
+        <figure class="angle-card"><img src="../assets/product-angle-05.png" alt="PRODUCT_01 本体側" loading="lazy"><figcaption>本体側</figcaption></figure>
+      </div>
+    </section>
+
     <section class="narrow" id="specs">
       <div class="section-heading"><p class="eyebrow">CONFIRMED SPECIFICATIONS</p><h2>製品仕様</h2><p>説明書で確認できた情報のみ掲載しています。</p></div>
       <table class="specs">
@@ -62,6 +73,18 @@
           <tr><th>防水</th><td>日常生活防水（浸水・水中使用不可）</td></tr>
         </tbody>
       </table>
+    </section>
+
+    <section class="section guide-section" id="guide">
+      <div class="guide-copy">
+        <p class="eyebrow">PRODUCT GUIDE</p>
+        <h2>使い方を、ひと目で。</h2>
+        <p>装着方法、単体・組み合わせ使用、ボタン操作、充電表示をまとめた取扱ガイドです。上で選んだカラーに合わせて表示が切り替わります。</p>
+        <a class="button" data-manual-link href="../assets/manual-white.png" target="_blank" rel="noopener">取扱ガイドを拡大する</a>
+      </div>
+      <a class="guide-preview" data-manual-link href="../assets/manual-white.png" target="_blank" rel="noopener" aria-label="ホワイトの取扱ガイドを拡大表示">
+        <img data-manual-image src="../assets/manual-white.png" alt="PRODUCT_01 ホワイト 取扱ガイド" loading="lazy">
+      </a>
     </section>
 
     <section class="narrow" id="waitlist">

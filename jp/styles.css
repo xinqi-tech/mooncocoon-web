@@ -280,6 +280,58 @@ h3 { margin: 0; font-size: 24px; letter-spacing: 0.05em; }
 .swatch-purple { background: #c7b9eb; }
 .disclaimer { color: var(--text-muted); font-size: 13px; }
 
+.angle-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.angle-card {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(235, 244, 255, 0.18), transparent 40%),
+    linear-gradient(160deg, rgba(150, 190, 236, 0.16), rgba(3, 13, 32, 0.48));
+  box-shadow: inset 0 1px 14px rgba(255, 255, 255, 0.08), 0 20px 60px rgba(3, 13, 32, 0.2);
+}
+.angle-card-wide { grid-column: span 2; }
+.angle-card img { width: 100%; height: 100%; padding: 18px; object-fit: contain; }
+.angle-card figcaption {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  padding: 5px 11px;
+  border: 1px solid rgba(235, 248, 255, 0.22);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: rgba(3, 13, 32, 0.62);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+}
+
+.guide-section {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(320px, 1fr);
+  align-items: start;
+  gap: clamp(36px, 7vw, 96px);
+}
+.guide-copy { position: sticky; top: 118px; padding-top: 20px; }
+.guide-copy > p:not(.eyebrow) { margin: 24px 0 0; color: var(--text-secondary); }
+.guide-copy .button { margin-top: 30px; }
+.guide-preview {
+  display: block;
+  max-height: 760px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border-bright);
+  border-radius: 28px;
+  background: rgba(246, 251, 255, 0.92);
+  box-shadow: 0 28px 90px rgba(3, 13, 32, 0.34);
+}
+.guide-preview img { width: 100%; max-height: 760px; display: block; object-fit: contain; }
+
 .specs {
   width: 100%;
   border-collapse: collapse;
@@ -358,10 +410,12 @@ body.modal-open { overflow: hidden; }
   .nav-links { display: none; width: 100%; padding-top: 8px; flex-direction: column; align-items: stretch; }
   .nav-links.is-open { display: flex; }
   .nav-links a { justify-content: center; }
-  .hero, .product-teaser, .product-layout { grid-template-columns: 1fr; }
+  .hero, .product-teaser, .product-layout, .guide-section { grid-template-columns: 1fr; }
+  .guide-copy { position: static; padding-top: 0; }
   .hero { padding-top: 76px; }
   .hero-visual { max-width: 620px; margin: 0 auto; }
   .card-grid { grid-template-columns: 1fr; }
+  .angle-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-stack { min-height: min(620px, 120vw); }
   .footer-inner { flex-direction: column; }
 }
@@ -374,6 +428,8 @@ body.modal-open { overflow: hidden; }
   .product-stack { min-height: 410px; }
   .product-stack img { width: 76%; }
   .romantic-card { padding: 25px; }
+  .angle-gallery { grid-template-columns: 1fr; }
+  .angle-card-wide { grid-column: span 1; }
   .specs th, .specs td { display: block; width: 100%; padding: 12px 16px; }
   .specs th { padding-bottom: 0; border-bottom: 0; }
   .specs td { padding-top: 3px; }

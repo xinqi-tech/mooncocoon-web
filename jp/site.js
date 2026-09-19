@@ -40,6 +40,8 @@
 
   function initVariants(doc) {
     const image = doc.querySelector("[data-product-image]");
+    const manualImage = doc.querySelector("[data-manual-image]");
+    const manualLinks = doc.querySelectorAll("[data-manual-link]");
     const input = doc.querySelector("[name='variantInterest']");
     if (!image) return;
     doc.querySelectorAll("[data-variant]").forEach(function (button) {
@@ -49,6 +51,16 @@
         });
         image.src = button.dataset.image;
         image.alt = button.dataset.alt;
+        if (manualImage && button.dataset.manual) {
+          manualImage.src = button.dataset.manual;
+          manualImage.alt = button.dataset.manualAlt;
+        }
+        manualLinks.forEach(function (link) {
+          if (button.dataset.manual) link.href = button.dataset.manual;
+          if (link.classList.contains("guide-preview")) {
+            link.setAttribute("aria-label", button.dataset.manualAlt + "を拡大表示");
+          }
+        });
         if (input) input.value = button.dataset.variant;
       });
     });

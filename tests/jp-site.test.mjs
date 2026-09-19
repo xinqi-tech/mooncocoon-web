@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 const require = createRequire(import.meta.url);
@@ -34,9 +34,22 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(home, /<html lang="ja">/);
   assert.match(product, /ホワイト/);
   assert.match(product, /パープル/);
+  assert.match(product, /product-angle-01\.png/);
+  assert.match(product, /manual-white\.png/);
+  assert.match(product, /manual-purple\.png/);
   assert.match(product, /PRE-LAUNCH/);
   assert.match(product, /購入手続きではありません/);
   assert.doesNotMatch(product, /今すぐ購入/);
+});
+
+test("补充的品牌、商品角度和说明书素材均已接入", async () => {
+  const assets = [
+    "brand-logo.png", "product-white.png", "product-purple.png",
+    "product-angle-01.png", "product-angle-02.png", "product-angle-03.png",
+    "product-angle-04.png", "product-angle-05.png", "manual-white.png", "manual-purple.png"
+  ];
+  const files = await Promise.all(assets.map((name) => stat(new URL(`../jp/assets/${name}`, import.meta.url))));
+  assert.equal(files.every((file) => file.isFile() && file.size > 0), true);
 });
 
 test("隐私页说明邮箱用途、去重和退订", async () => {
