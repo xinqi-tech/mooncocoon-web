@@ -37,6 +37,9 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(product, /product-angle-01\.png/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
+  assert.equal((product.match(/class="manual-card"/g) || []).length, 2);
+  assert.equal((product.match(/data-waitlist-form/g) || []).length, 1);
+  assert.ok(product.indexOf('id="waitlist"') < product.indexOf("THREE WAYS TO CONNECT"));
   assert.match(product, /PRE-LAUNCH/);
   assert.match(product, /購入手続きではありません/);
   assert.doesNotMatch(product, /今すぐ購入/);

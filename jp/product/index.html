@@ -23,8 +23,8 @@
       <div class="product-gallery">
         <div class="product-media"><img data-product-image src="../assets/product-white.png" alt="PRODUCT_01 ホワイト"></div>
         <div class="variant-switcher" aria-label="カラーを選択">
-          <button class="variant-button" type="button" data-variant="WHITE" data-image="../assets/product-white.png" data-alt="PRODUCT_01 ホワイト" data-manual="../assets/manual-white.png" data-manual-alt="PRODUCT_01 ホワイト 取扱ガイド" aria-pressed="true"><span class="swatch swatch-white"></span>ホワイト</button>
-          <button class="variant-button" type="button" data-variant="PURPLE" data-image="../assets/product-purple.png" data-alt="PRODUCT_01 パープル" data-manual="../assets/manual-purple.png" data-manual-alt="PRODUCT_01 パープル 取扱ガイド" aria-pressed="false"><span class="swatch swatch-purple"></span>パープル</button>
+          <button class="variant-button" type="button" data-variant="WHITE" data-image="../assets/product-white.png" data-alt="PRODUCT_01 ホワイト" aria-pressed="true"><span class="swatch swatch-white"></span>ホワイト</button>
+          <button class="variant-button" type="button" data-variant="PURPLE" data-image="../assets/product-purple.png" data-alt="PRODUCT_01 パープル" aria-pressed="false"><span class="swatch swatch-purple"></span>パープル</button>
         </div>
       </div>
       <div>
@@ -34,6 +34,21 @@
         <p class="lead">やわらかなフォルムの中に、圧力センサーと振動ユニットを搭載。LunaKoruアプリの物語やインタラクションと、現実の感覚をつなぎます。</p>
         <div class="hero-actions"><a class="button button-primary" href="#waitlist">発売通知を受け取る</a><a class="button" href="#specs">仕様を見る</a></div>
         <p class="disclaimer">商品名、発売日、価格は確定後にご案内します。現在は決済・注文を受け付けていません。</p>
+      </div>
+      <div class="romantic-card hero-waitlist" id="waitlist">
+        <div class="waitlist-intro">
+          <p class="eyebrow">JOIN THE WAITLIST</p>
+          <h2>発売時にお知らせします。</h2>
+          <p>購入手続きではありません。価格、在庫、発売日は確定後にメールでご案内します。</p>
+        </div>
+        <form data-waitlist-form novalidate>
+          <div class="field"><label for="product-email">メールアドレス</label><input id="product-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+          <input type="hidden" name="variantInterest" value="WHITE">
+          <div class="honeypot" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <label class="consent"><input name="consent" type="checkbox" required><span>発売・入荷に関するメールを受け取ること、および<a href="../privacy/" target="_blank">プライバシーポリシー</a>に同意します。いつでも配信停止できます。</span></label>
+          <div class="form-actions"><button class="button button-primary" type="submit">登録する</button></div>
+          <p class="form-message" data-form-message role="status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
 
@@ -76,30 +91,20 @@
     </section>
 
     <section class="section guide-section" id="guide">
-      <div class="guide-copy">
-        <p class="eyebrow">PRODUCT GUIDE</p>
-        <h2>使い方を、ひと目で。</h2>
-        <p>装着方法、単体・組み合わせ使用、ボタン操作、充電表示をまとめた取扱ガイドです。上で選んだカラーに合わせて表示が切り替わります。</p>
-        <a class="button" data-manual-link href="../assets/manual-white.png" target="_blank" rel="noopener">取扱ガイドを拡大する</a>
+      <div class="section-heading">
+        <p class="eyebrow">PRODUCT GUIDES</p>
+        <h2>2つの取扱ガイド。</h2>
+        <p>ホワイトとパープル、それぞれの装着方法、ボタン操作、充電表示を確認できます。</p>
       </div>
-      <a class="guide-preview" data-manual-link href="../assets/manual-white.png" target="_blank" rel="noopener" aria-label="ホワイトの取扱ガイドを拡大表示">
-        <img data-manual-image src="../assets/manual-white.png" alt="PRODUCT_01 ホワイト 取扱ガイド" loading="lazy">
-      </a>
-    </section>
-
-    <section class="narrow" id="waitlist">
-      <div class="romantic-card waitlist-panel">
-        <p class="eyebrow">JOIN THE WAITLIST</p>
-        <h2>発売時にお知らせします。</h2>
-        <p>購入手続きではありません。価格、在庫、発売日は確定後にメールでご案内します。</p>
-        <form data-waitlist-form novalidate>
-          <div class="field"><label for="product-email">メールアドレス</label><input id="product-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
-          <input type="hidden" name="variantInterest" value="WHITE">
-          <div class="honeypot" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
-          <label class="consent"><input name="consent" type="checkbox" required><span>発売・入荷に関するメールを受け取ること、および<a href="../privacy/" target="_blank">プライバシーポリシー</a>に同意します。いつでも配信停止できます。</span></label>
-          <div class="form-actions"><button class="button button-primary" type="submit">登録する</button></div>
-          <p class="form-message" data-form-message role="status" aria-live="polite"></p>
-        </form>
+      <div class="manual-grid">
+        <article class="manual-card">
+          <div class="manual-card-heading"><h3>ホワイト</h3><a href="../assets/manual-white.png" target="_blank" rel="noopener">拡大する</a></div>
+          <a class="guide-preview" href="../assets/manual-white.png" target="_blank" rel="noopener" aria-label="ホワイトの取扱ガイドを拡大表示"><img src="../assets/manual-white.png" alt="PRODUCT_01 ホワイト 取扱ガイド" loading="lazy"></a>
+        </article>
+        <article class="manual-card">
+          <div class="manual-card-heading"><h3>パープル</h3><a href="../assets/manual-purple.png" target="_blank" rel="noopener">拡大する</a></div>
+          <a class="guide-preview" href="../assets/manual-purple.png" target="_blank" rel="noopener" aria-label="パープルの取扱ガイドを拡大表示"><img src="../assets/manual-purple.png" alt="PRODUCT_01 パープル 取扱ガイド" loading="lazy"></a>
+        </article>
       </div>
     </section>
   </main>
