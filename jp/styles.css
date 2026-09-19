@@ -296,6 +296,9 @@ img { max-width: 100%; }
 .product-page .footer-inner {
   width: min(1440px, 100%);
 }
+.product-page main > .section + .section {
+  border-top: 1px solid rgba(235, 248, 255, 0.24);
+}
 .narrow { width: min(900px, 100%); }
 .hero {
   min-height: calc(100vh - 72px);
@@ -351,6 +354,11 @@ h3 { margin: 0; font-size: 24px; letter-spacing: 0.05em; }
 .product-title-compact .title-initial { font-size: 1.46em; }
 .product-page-hero h1 { font-size: clamp(44px, 5vw, 72px); }
 .product-page-hero h1 .title-initial { font-size: 1.42em; }
+.product-page .section-heading > .eyebrow,
+.product-page-hero > div > .eyebrow,
+.product-page .waitlist-intro > .eyebrow {
+  margin-bottom: 32px;
+}
 .lead {
   max-width: 690px;
   margin: 24px 0 0;

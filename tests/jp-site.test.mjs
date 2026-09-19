@@ -188,6 +188,8 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(product, /class="title-initial">想<\/span>/);
   assert.match(styles, /@keyframes product-halo/);
   assert.match(styles, /\.product-page\.motion-ready \[data-reveal\]\.is-visible/);
+  assert.match(styles, /\.product-page main > \.section \+ \.section\s*\{[\s\S]*?border-top:\s*1px solid/);
+  assert.match(styles, /\.product-page \.section-heading > \.eyebrow,[\s\S]*?margin-bottom:\s*32px/);
   assert.match(siteJs, /function initProductMotion/);
   assert.match(product, /data-bgm-toggle/);
   assert.match(product, /data-bgm-audio/);
