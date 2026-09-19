@@ -144,8 +144,20 @@ img { max-width: 100%; }
   background: transparent;
   backdrop-filter: none;
 }
+.product-page .site-header::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 -80px;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(3,13,32,1) 0%, rgba(3,13,32,0.85) 30%, rgba(3,13,32,0.5) 60%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.product-page .site-header.scrolled::after { opacity: 1; }
 .product-page .nav {
   position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 1440px;
   min-height: 48px;

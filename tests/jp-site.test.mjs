@@ -112,6 +112,29 @@ test("商品ページのBGMボタンは再生と停止の状態を切り替え�
   assert.equal(attributes["aria-pressed"], "false");
 });
 
+test("商品ページはスクロール時にホームと同じ上部マスクを表示する", () => {
+  let scrollHandler;
+  const classes = new Set();
+  const header = {
+    classList: {
+      toggle(value, enabled) {
+        if (enabled) classes.add(value);
+        else classes.delete(value);
+      }
+    }
+  };
+  const viewport = {
+    scrollY: 0,
+    addEventListener(_name, handler) { scrollHandler = handler; }
+  };
+  site.initScrollMask({ querySelector: () => header }, viewport);
+  assert.equal(classes.has("scrolled"), false);
+
+  viewport.scrollY = 120;
+  scrollHandler();
+  assert.equal(classes.has("scrolled"), true);
+});
+
 test("国内站不链接日本站，日本站保留加载页、原首页结构和商品入口", async () => {
   const domestic = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
@@ -159,6 +182,7 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(styles, /\.product-page \.section,[\s\S]*?\.product-page \.footer-inner\s*\{\s*width:\s*min\(1440px, 100%\)/);
   assert.match(styles, /\.product-page \.nav\s*\{[\s\S]*?max-width:\s*1440px;[\s\S]*?padding:\s*0 var\(--page-x\)/);
   assert.match(styles, /\.product-page\s*\{\s*--page-x:\s*18px;\s*line-height:\s*1\.72/);
+  assert.match(styles, /\.product-page \.site-header\.scrolled::after\s*\{\s*opacity:\s*1/);
   assert.match(product, /data-bgm-toggle/);
   assert.match(product, /data-bgm-audio/);
   assert.match(product, /manual-white\.png/);

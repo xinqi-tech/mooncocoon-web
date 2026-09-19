@@ -59,6 +59,17 @@
     });
   }
 
+  function initScrollMask(doc, viewport) {
+    const header = doc.querySelector(".product-page .site-header");
+    const win = viewport || root;
+    if (!header || !win || typeof win.addEventListener !== "function") return;
+    const update = function () {
+      header.classList.toggle("scrolled", Number(win.scrollY || 0) > 80);
+    };
+    win.addEventListener("scroll", update, { passive: true });
+    update();
+  }
+
   function initVariants(doc) {
     const image = doc.querySelector("[data-product-image]");
     const input = doc.querySelector("[name='variantInterest']");
@@ -198,6 +209,7 @@
   function init(doc, fetchImpl) {
     initMenu(doc);
     initBgm(doc);
+    initScrollMask(doc);
     initVariants(doc);
     initModal(doc);
     initForms(doc, fetchImpl || root.fetch.bind(root));
@@ -208,5 +220,5 @@
     document.addEventListener("DOMContentLoaded", function () { init(document); });
   }
 
-  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist, initBgm };
+  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist, initBgm, initScrollMask };
 });
