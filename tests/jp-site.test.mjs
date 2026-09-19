@@ -158,7 +158,7 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.doesNotMatch(styles, /a\[aria-current="page"\] > span\s*\{\s*transform:/);
   assert.match(styles, /\.product-page \.section,[\s\S]*?\.product-page \.footer-inner\s*\{\s*width:\s*min\(1440px, 100%\)/);
   assert.match(styles, /\.product-page \.nav\s*\{[\s\S]*?max-width:\s*1440px;[\s\S]*?padding:\s*0 var\(--page-x\)/);
-  assert.match(styles, /\.product-page\s*\{\s*--page-x:\s*18px/);
+  assert.match(styles, /\.product-page\s*\{\s*--page-x:\s*18px;\s*line-height:\s*1\.72/);
   assert.match(product, /data-bgm-toggle/);
   assert.match(product, /data-bgm-audio/);
   assert.match(product, /manual-white\.png/);

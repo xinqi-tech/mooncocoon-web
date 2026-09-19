@@ -31,7 +31,10 @@ body {
   font-family: var(--sans);
   line-height: 1.8;
 }
-.product-page { --page-x: 18px; }
+.product-page {
+  --page-x: 18px;
+  line-height: 1.72;
+}
 body::before {
   content: "";
   position: fixed;
