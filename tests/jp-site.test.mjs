@@ -22,6 +22,31 @@ test("API baseは末尾スラッシュを除去し未設定時は本番SCFを使
   assert.equal(site.apiBase({ body: { dataset: {} } }), site.DEFAULT_API_BASE);
 });
 
+test("予約送信はfileプロトコルでもpreflight不要なフォーム形式を使う", async () => {
+  let captured;
+  const form = {
+    elements: {
+      email: { value: "USER@example.com" },
+      consent: { checked: true },
+      variantInterest: { value: "WHITE" },
+      website: { value: "" }
+    },
+    querySelector(selector) {
+      if (selector === "button[type='submit']") return { disabled: false };
+      if (selector === "[data-form-message]") return { textContent: "", dataset: {} };
+      return null;
+    }
+  };
+  const ok = await site.submitWaitlist(form, async (_url, options) => {
+    captured = options;
+    return { ok: true, json: async () => ({ result: 0 }) };
+  }, { body: { dataset: { apiBase: "https://example.test" } } });
+  assert.equal(ok, true);
+  assert.equal(captured.headers["Content-Type"], undefined);
+  assert.equal(captured.body instanceof URLSearchParams, true);
+  assert.equal(captured.body.get("email"), "user@example.com");
+});
+
 test("国内站不链接日本站，日本站保留加载页、原首页结构和商品入口", async () => {
   const domestic = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
@@ -62,6 +87,10 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(product, /安全な使用について/);
   assert.match(product, /保証について（1年保証）/);
   assert.match(product, /水深30cm以上/);
+  assert.doesNotMatch(product, /class="policy-alert"/);
+  assert.match(product, /<div class="product-media"><span class="status-badge">/);
+  assert.match(styles, /\.product-page \.nav-links a\s*\{[\s\S]*?justify-content:\s*center/);
+  assert.doesNotMatch(styles, /a\[aria-current="page"\] > span\s*\{\s*transform:/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
   assert.equal((product.match(/class="manual-card"/g) || []).length, 2);

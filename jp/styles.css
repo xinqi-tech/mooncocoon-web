@@ -188,6 +188,9 @@ img { max-width: 100%; }
   gap: 6px;
 }
 .product-page .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 90px;
   min-height: 40px;
   height: 40px;
@@ -330,9 +333,10 @@ h3 { margin: 0; font-size: 24px; letter-spacing: 0.05em; }
   background: rgba(6, 20, 47, 0.6);
   font-size: 12px;
   letter-spacing: 0.12em;
+  z-index: 2;
 }
 .status-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #dff4ff; box-shadow: 0 0 12px #9ccbff; }
-.hero-visual .status-badge { position: absolute; top: 22px; left: 22px; }
+.hero-visual .status-badge, .product-media .status-badge { position: absolute; top: 22px; left: 22px; }
 
 .section-heading { max-width: 760px; margin-bottom: 46px; }
 .section-heading p { color: var(--text-muted); }
@@ -504,17 +508,7 @@ h3 { margin: 0; font-size: 24px; letter-spacing: 0.05em; }
   color: var(--text-secondary);
 }
 .policy-list li::marker { color: var(--ice-420); }
-.policy-alert {
-  display: grid;
-  gap: 8px;
-  margin-top: 24px;
-  padding: 18px 20px;
-  border-left: 3px solid var(--ice-420);
-  border-radius: 0 16px 16px 0;
-  background: rgba(150,205,255,0.1);
-  color: var(--text-primary);
-}
-.policy-alert p, .policy-copy p { margin: 0; }
+.policy-copy p { margin: 0; }
 .policy-note {
   margin: 20px 0 0;
   color: var(--text-muted);

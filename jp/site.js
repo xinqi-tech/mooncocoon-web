@@ -114,10 +114,12 @@
     };
 
     try {
+      const formBody = new URLSearchParams();
+      Object.keys(payload).forEach(function (key) { formBody.set(key, String(payload[key])); });
       const response = await fetchImpl(apiBase(doc) + "/api/product-waitlist", {
         method: "POST",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        headers: { "Accept": "application/json" },
+        body: formBody
       });
       const body = await response.json().catch(function () { return null; });
       if (!response.ok || !body || body.result !== 0) throw new Error("request_failed");
@@ -152,10 +154,12 @@
       return;
     }
     try {
+      const formBody = new URLSearchParams();
+      formBody.set("token", token);
       const response = await fetchImpl(apiBase(doc) + "/api/product-waitlist/unsubscribe", {
         method: "POST",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ token: token })
+        headers: { "Accept": "application/json" },
+        body: formBody
       });
       const body = await response.json().catch(function () { return null; });
       if (!response.ok || !body || body.result !== 0) throw new Error("request_failed");
