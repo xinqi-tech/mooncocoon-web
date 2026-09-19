@@ -125,7 +125,11 @@
       if (!response.ok || !body || body.result !== 0) throw new Error("request_failed");
       form.elements.email.value = "";
       form.elements.consent.checked = false;
-      setFormMessage(form, "登録が完了しました。発売時にメールでお知らせします。", "success");
+      if (body.data && body.data.alreadyRegistered === true) {
+        setFormMessage(form, "このメールアドレスは登録済みです。再度ご登録いただく必要はありません。", "info");
+      } else {
+        setFormMessage(form, "登録が完了しました。発売時にメールでお知らせします。", "success");
+      }
       return true;
     } catch (error) {
       setFormMessage(form, "登録できませんでした。通信環境をご確認のうえ、もう一度お試しください。", "error");

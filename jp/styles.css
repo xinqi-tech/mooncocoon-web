@@ -248,6 +248,10 @@ img { max-width: 100%; }
   margin: 0 auto;
   padding: 112px var(--page-x);
 }
+.product-page .section,
+.product-page .footer-inner {
+  width: min(1440px, 100%);
+}
 .narrow { width: min(900px, 100%); }
 .hero {
   min-height: calc(100vh - 72px);

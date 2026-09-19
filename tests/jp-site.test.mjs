@@ -47,6 +47,32 @@ test("予約送信はfileプロトコルでもpreflight不要なフォーム形�
   assert.equal(captured.body.get("email"), "user@example.com");
 });
 
+test("登録済みメールには重複不要の案内を表示する", async () => {
+  const message = { textContent: "", dataset: {} };
+  const form = {
+    elements: {
+      email: { value: "user@example.com" },
+      consent: { checked: true },
+      variantInterest: { value: "WHITE" },
+      website: { value: "" }
+    },
+    querySelector(selector) {
+      if (selector === "button[type='submit']") return { disabled: false };
+      if (selector === "[data-form-message]") return message;
+      return null;
+    }
+  };
+
+  const ok = await site.submitWaitlist(form, async () => ({
+    ok: true,
+    json: async () => ({ result: 0, data: { accepted: true, alreadyRegistered: true } })
+  }), { body: { dataset: { apiBase: "https://example.test" } } });
+
+  assert.equal(ok, true);
+  assert.equal(message.textContent, "このメールアドレスは登録済みです。再度ご登録いただく必要はありません。");
+  assert.equal(message.dataset.kind, "info");
+});
+
 test("国内站不链接日本站，日本站保留加载页、原首页结构和商品入口", async () => {
   const domestic = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
@@ -91,6 +117,7 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(product, /<div class="product-media"><span class="status-badge">/);
   assert.match(styles, /\.product-page \.nav-links a\s*\{[\s\S]*?justify-content:\s*center/);
   assert.doesNotMatch(styles, /a\[aria-current="page"\] > span\s*\{\s*transform:/);
+  assert.match(styles, /\.product-page \.section,[\s\S]*?\.product-page \.footer-inner\s*\{\s*width:\s*min\(1440px, 100%\)/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
   assert.equal((product.match(/class="manual-card"/g) || []).length, 2);
