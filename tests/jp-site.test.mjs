@@ -26,6 +26,7 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   const domestic = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
   const product = await readFile(new URL("../jp/product/index.html", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../jp/styles.css", import.meta.url), "utf8");
   assert.doesNotMatch(domestic, /href="jp\//);
   assert.match(home, /class="loader"/);
   assert.match(home, /id="hero"/);
@@ -43,6 +44,9 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(product, /ホワイト/);
   assert.match(product, /パープル/);
   assert.match(product, /product-angle-01\.png/);
+  assert.match(styles, /grid-template-columns:\s*repeat\(6,/);
+  assert.match(styles, /\.angle-card:nth-child\(-n \+ 2\)\s*\{\s*grid-column:\s*span 3/);
+  assert.match(styles, /\.angle-card:nth-child\(n \+ 3\)\s*\{\s*grid-column:\s*span 2/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
   assert.equal((product.match(/class="manual-card"/g) || []).length, 2);
@@ -57,7 +61,8 @@ test("补充的品牌、商品角度和说明书素材均已接入", async () =>
   const assets = [
     "brand-logo.png", "product-white.png", "product-purple.png",
     "product-angle-01.png", "product-angle-02.png", "product-angle-03.png",
-    "product-angle-04.png", "product-angle-05.png", "manual-white.png", "manual-purple.png"
+    "product-angle-04.png", "product-angle-05.png", "manual-white.png", "manual-purple.png",
+    "tab-selected-frame.png"
   ];
   const files = await Promise.all(assets.map((name) => stat(new URL(`../jp/assets/${name}`, import.meta.url))));
   assert.equal(files.every((file) => file.isFile() && file.size > 0), true);
