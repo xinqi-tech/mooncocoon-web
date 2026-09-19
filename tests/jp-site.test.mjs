@@ -73,6 +73,45 @@ test("登録済みメールには重複不要の案内を表示する", async ()
   assert.equal(message.dataset.kind, "info");
 });
 
+test("商品ページのBGMボタンは再生と停止の状態を切り替える", async () => {
+  let clickHandler;
+  let paused = true;
+  const classes = new Set();
+  const attributes = {};
+  const button = {
+    classList: {
+      add(value) { classes.add(value); },
+      remove(value) { classes.delete(value); }
+    },
+    setAttribute(name, value) { attributes[name] = value; },
+    addEventListener(_name, handler) { clickHandler = handler; }
+  };
+  const audio = {
+    volume: 1,
+    get paused() { return paused; },
+    play() { paused = false; return Promise.resolve(); },
+    pause() { paused = true; }
+  };
+  site.initBgm({
+    querySelector(selector) {
+      if (selector === "[data-bgm-toggle]") return button;
+      if (selector === "[data-bgm-audio]") return audio;
+      return null;
+    }
+  });
+
+  clickHandler();
+  await Promise.resolve();
+  assert.equal(audio.volume, 0.55);
+  assert.equal(classes.has("playing"), true);
+  assert.equal(attributes["aria-pressed"], "true");
+
+  clickHandler();
+  assert.equal(paused, true);
+  assert.equal(classes.has("playing"), false);
+  assert.equal(attributes["aria-pressed"], "false");
+});
+
 test("国内站不链接日本站，日本站保留加载页、原首页结构和商品入口", async () => {
   const domestic = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const home = await readFile(new URL("../jp/index.html", import.meta.url), "utf8");
@@ -118,6 +157,10 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(styles, /\.product-page \.nav-links a\s*\{[\s\S]*?justify-content:\s*center/);
   assert.doesNotMatch(styles, /a\[aria-current="page"\] > span\s*\{\s*transform:/);
   assert.match(styles, /\.product-page \.section,[\s\S]*?\.product-page \.footer-inner\s*\{\s*width:\s*min\(1440px, 100%\)/);
+  assert.match(styles, /\.product-page \.nav\s*\{[\s\S]*?max-width:\s*1440px;[\s\S]*?padding:\s*0 var\(--page-x\)/);
+  assert.match(styles, /\.product-page\s*\{\s*--page-x:\s*18px/);
+  assert.match(product, /data-bgm-toggle/);
+  assert.match(product, /data-bgm-audio/);
   assert.match(product, /manual-white\.png/);
   assert.match(product, /manual-purple\.png/);
   assert.equal((product.match(/class="manual-card"/g) || []).length, 2);

@@ -14,6 +14,11 @@
     <nav class="nav" aria-label="メインナビゲーション">
       <a class="brand" href="../index.html"><img src="../../images/app-logo.jpg" alt="LunaKoru"><span class="logo-reflection" aria-hidden="true"><img src="../../images/app-logo.jpg" alt=""></span><span>LunaKoru</span></a>
       <div class="nav-links" id="main-nav" data-nav-links><a href="../index.html"><span>ホーム</span></a><a href="index.html" aria-current="page"><span>商品</span></a></div>
+      <button class="bgm-toggle" type="button" data-bgm-toggle aria-label="BGMを再生" aria-pressed="false" title="BGM">
+        <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <audio data-bgm-audio src="../../audio/bgm_login.mp3" loop preload="none"></audio>
     </nav>
   </header>
 

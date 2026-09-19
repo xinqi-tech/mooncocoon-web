@@ -38,6 +38,27 @@
     });
   }
 
+  function initBgm(doc) {
+    const button = doc.querySelector("[data-bgm-toggle]");
+    const audio = doc.querySelector("[data-bgm-audio]");
+    if (!button || !audio) return;
+    audio.volume = 0.55;
+    button.addEventListener("click", function () {
+      if (audio.paused) {
+        audio.play().then(function () {
+          button.classList.add("playing");
+          button.setAttribute("aria-pressed", "true");
+          button.setAttribute("aria-label", "BGMを一時停止");
+        }).catch(function () {});
+      } else {
+        audio.pause();
+        button.classList.remove("playing");
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-label", "BGMを再生");
+      }
+    });
+  }
+
   function initVariants(doc) {
     const image = doc.querySelector("[data-product-image]");
     const input = doc.querySelector("[name='variantInterest']");
@@ -176,6 +197,7 @@
 
   function init(doc, fetchImpl) {
     initMenu(doc);
+    initBgm(doc);
     initVariants(doc);
     initModal(doc);
     initForms(doc, fetchImpl || root.fetch.bind(root));
@@ -186,5 +208,5 @@
     document.addEventListener("DOMContentLoaded", function () { init(document); });
   }
 
-  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist };
+  return { DEFAULT_API_BASE, normalizeEmail, isValidEmail, apiBase, submitWaitlist, initBgm };
 });
