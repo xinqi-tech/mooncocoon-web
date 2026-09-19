@@ -1,3 +1,6 @@
+@font-face { font-family: "QingNiao Serif"; src: url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "QingNiao Sans"; src: url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype"); font-display: swap; }
+
 :root {
   --night-990: #030d20;
   --night-960: #06142f;
@@ -14,8 +17,8 @@
   --glass-border: rgba(220, 240, 255, 0.3);
   --glass-border-bright: rgba(235, 248, 255, 0.52);
   --page-x: clamp(20px, 5vw, 72px);
-  --serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-  --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", "QingNiao Serif", serif;
+  --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "QingNiao Sans", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -125,6 +128,79 @@ img { max-width: 100%; }
   border-radius: 50%;
   color: white;
   background: var(--glass-fill);
+}
+
+/* Product page header mirrors the original Japanese home navigation. */
+.product-page .site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  min-height: 0;
+  padding-top: 16px;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+.product-page .nav {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 48px;
+  height: 48px;
+  padding: 0 18px;
+  gap: 0;
+}
+.product-page .brand {
+  position: relative;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+.product-page .brand > img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: none;
+  filter: drop-shadow(0 0 8px rgba(191, 227, 255, 0.5));
+}
+.product-page .logo-reflection {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 32px;
+  height: 16px;
+  overflow: hidden;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.product-page .logo-reflection img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transform: scaleY(-1);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+}
+.product-page .nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 6px;
+}
+.product-page .nav-links a {
+  min-height: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.product-page .nav-links a:hover,
+.product-page .nav-links a:focus-visible,
+.product-page .nav-links a[aria-current="page"] {
+  color: white;
+  background: rgba(255,255,255,0.08);
 }
 
 .section, .narrow {
@@ -260,7 +336,7 @@ h3 { margin: 0; font-size: 24px; letter-spacing: 0.05em; }
 .fact-list li { padding: 15px 0; border-bottom: 1px solid rgba(220,240,255,0.16); color: var(--text-secondary); }
 .fact-list strong { display: block; color: white; font-weight: 500; }
 
-.product-page-hero { padding-top: 72px; }
+.product-page-hero { padding-top: 120px; }
 .product-gallery { position: relative; }
 .product-media { aspect-ratio: 1; }
 .product-media img { transition: opacity 0.25s ease; }
@@ -441,6 +517,20 @@ body.modal-open { overflow: hidden; }
   .angle-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-stack { min-height: min(620px, 120vw); }
   .footer-inner { flex-direction: column; }
+  .product-page .nav { flex-wrap: nowrap; padding: 0 20px; }
+  .product-page .brand > span:last-child { display: none; }
+  .product-page .nav-links {
+    position: static;
+    display: flex;
+    width: auto;
+    margin-left: auto;
+    padding-top: 0;
+    transform: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+  .product-page .nav-links a { padding: 8px 10px; }
 }
 
 @media (max-width: 520px) {

@@ -859,8 +859,8 @@ function addPressAnim(selector,extraClass){
 }
 addPressAnim('.nav-links a','is-pressing');
 
-// Nav smooth scroll
-document.querySelectorAll('.nav-links a').forEach(a=>{
+// Only in-page anchors use smooth scrolling. Page links must keep native navigation.
+document.querySelectorAll('.nav-links a[href^="#"]').forEach(a=>{
   a.addEventListener('click',e=>{
     e.preventDefault();
     const id=a.getAttribute('href').slice(1);

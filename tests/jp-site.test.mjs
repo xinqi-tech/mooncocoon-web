@@ -37,6 +37,9 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.equal((homeNav.match(/<a\b/g) || []).length, 2);
   assert.equal((productNav.match(/<a\b/g) || []).length, 2);
   assert.match(productNav, /href="\.\.\/index\.html"/);
+  assert.match(product, /<body class="product-page">/);
+  assert.doesNotMatch(product, /data-menu-button/);
+  assert.match(home, /querySelectorAll\('\.nav-links a\[href\^="#"\]'\)/);
   assert.match(product, /ホワイト/);
   assert.match(product, /パープル/);
   assert.match(product, /product-angle-01\.png/);
