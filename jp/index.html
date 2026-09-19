@@ -88,6 +88,9 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .hero-social{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:14px;align-items:center}
 .hero-social a{width:56px;height:56px;border-radius:50%;background:var(--glass-fill);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);text-decoration:none;font-size:11px;letter-spacing:0;transition:border-color .3s,color .3s,box-shadow .3s;backdrop-filter:blur(8px)}
 .hero-social a:hover{border-color:var(--glass-border-bright);color:var(--moon-000);box-shadow:0 0 14px rgba(150,205,255,0.35)}
+.hero-social img{display:block;object-fit:contain;transform-origin:center}
+.hero-social .social-icon-instagram{transform:scale(.79)}
+.hero-social .social-icon-x{transform:scale(.766)}
 .hero-social-divider{width:1px;height:40px;background:linear-gradient(to bottom,transparent,rgba(220,240,255,0.25),transparent)}
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:110px var(--page-x) 40px;max-width:1440px;margin:0 auto;contain:paint layout}
@@ -409,8 +412,8 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <!-- HERO SOCIAL SIDEBAR -->
 <div class="hero-social">
   <a href="https://v.douyin.com/NAH8Z86-hRY/" target="_blank" rel="noopener" title="Douyin"><img src="../images/icon_douyin.png" width="28" height="28" style="border-radius:0"></a>
-  <a href="https://www.instagram.com/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><img src="assets/instagram.png" width="28" height="28" style="border-radius:0" alt=""></a>
-  <a href="https://x.com/" target="_blank" rel="noopener" title="X" aria-label="X"><img src="assets/x.png" width="28" height="28" style="border-radius:0" alt=""></a>
+  <a href="https://www.instagram.com/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><img class="social-icon-instagram" src="assets/instagram.png" width="28" height="28" style="border-radius:0" alt=""></a>
+  <a href="https://x.com/" target="_blank" rel="noopener" title="X" aria-label="X"><img class="social-icon-x" src="assets/x.png" width="28" height="28" style="border-radius:0" alt=""></a>
   <div class="hero-social-divider"></div>
 </div>
 

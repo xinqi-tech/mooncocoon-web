@@ -151,6 +151,8 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(home, /href="product\/index\.html"/);
   assert.match(home, /href="https:\/\/www\.instagram\.com\/"[\s\S]*?src="assets\/instagram\.png"/);
   assert.match(home, /href="https:\/\/x\.com\/"[\s\S]*?src="assets\/x\.png"/);
+  assert.match(home, /\.social-icon-instagram\{transform:scale\(\.79\)\}/);
+  assert.match(home, /\.social-icon-x\{transform:scale\(\.766\)\}/);
   assert.equal((home.match(/src="\.\.\/images\/icon_douyin\.png"/g) || []).length, 1);
   assert.match(home, /<html lang="ja">/);
   const homeNav = home.match(/<div class="nav-links">([\s\S]*?)<\/div>/)?.[1] || "";
