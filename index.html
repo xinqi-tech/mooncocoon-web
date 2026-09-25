@@ -256,6 +256,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
+<link rel="stylesheet" href="reservation.css?v=20260925">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -290,7 +291,7 @@ body.is-loading{overflow:hidden}
 </div>
 <script>
 // Pick PV source by viewport: mobile gets the lighter 720p file (faster on cellular).
-// Used by both the loader preloader and the hero <video> so they stay in sync.
+// PV source is selected only when the visitor asks to play it.
 window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)?'videos/pv_720.mp4':'videos/pv.mp4';
 (function(){
   var loader=document.getElementById('loader');
@@ -302,7 +303,6 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   // First-screen assets weighted by approx download cost
   var assets=[
     {src:'images/banner_bg.jpg',w:40,type:'img'},
-    {src:window.__PV_SRC,w:34,type:'video'},
     {src:'images/pv_poster.jpg',w:2,type:'img'},
     {src:'images/bg.png',w:8,type:'img'},
     {src:'images/app-logo.jpg',w:7,type:'img'},
@@ -377,6 +377,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
   <div class="nav-links">
     <a href="#hero">首页</a>
+    <a href="#reservation">预约有礼</a>
     <a href="#modules">产品介绍</a>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="播放背景音乐" aria-pressed="false" title="背景音乐">
@@ -401,15 +402,62 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
   <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
-  <div class="hero-video" id="pvVideo">
-    <video muted playsinline autoplay loop poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
-    <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
-  </div>
-  <button class="scroll-hint" onclick="setTimeout(()=>{const target=document.getElementById('modules').getBoundingClientRect().top+window.scrollY;const start=window.scrollY;const dist=target-start;const duration=600;let t0=null;function step(ts){if(!t0)t0=ts;const p=Math.min((ts-t0)/duration,1);const ease=p<0.5?4*p*p*p:(1-Math.pow(-2*p+2,3)/2);window.scrollTo(0,start+dist*ease);if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)},300)">
+  <p class="reservation-hero-copy">预约有礼 · 三档集体里程碑，正式上线后使用同手机号账号领取已解锁奖励</p>
+  <a class="reservation-hero-cta" href="#reservation">查看预约活动</a>
+  <p class="reservation-hero-progress" id="heroReservationProgress">活动信息加载中</p>
+  <button class="scroll-hint" onclick="document.getElementById('reservation').scrollIntoView({behavior:'smooth'})">
     <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
     <span class="scroll-hint-label">SCROLL</span>
   </button>
 </section>
+
+<section class="reservation-section" id="reservation" aria-labelledby="reservationHeading">
+  <div class="reservation-panel">
+    <p class="reservation-eyebrow">月光茧 · 预约有礼</p>
+    <h2 id="reservationHeading">预约，等月光抵达</h2>
+    <p id="reservationPhase">正在获取活动状态</p>
+    <p id="reservationCount" aria-live="polite"></p>
+    <p id="reservationDates"></p>
+    <div class="reservation-rewards" id="reservationRewards"></div>
+    <div class="reservation-actions" id="reservationActions">
+      <form id="reservationForm" novalidate>
+        <label>中国大陆手机号 <input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" required></label>
+        <button type="button" id="reservationSms">获取验证码</button>
+        <label>短信验证码 <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+        <fieldset class="reservation-new-only"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"> Android</label><label><input type="radio" name="platform" value="IOS"> iOS</label></fieldset>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="adult"> 我已年满 18 周岁</label>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="terms"> 我已阅读并同意<a href="user-agreement/" target="_blank" rel="noopener">用户协议</a>、<a href="privacy-policy/" target="_blank" rel="noopener">隐私政策</a>与活动规则</label>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 自愿订阅正式上线短信提醒（可在“我的预约”取消）</label>
+        <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button><button type="button" id="reservationQuery">仅查询我的预约</button></div>
+      </form>
+      <div id="reservationMine" hidden>
+        <h3>我的预约</h3><p id="reservationMineText"></p><ul id="reservationMineRewards"></ul>
+        <button type="button" id="reservationCopy">复制预约编号</button>
+        <button type="button" id="reservationPlatform">切换目标平台</button>
+        <button type="button" id="reservationUnsubscribe">取消上线提醒</button>
+        <button type="button" id="reservationLogout">切换手机号</button>
+      </div>
+      <div id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
+    </div>
+    <p class="reservation-message" id="reservationMessage" role="status"></p>
+    <details class="reservation-rules"><summary>活动规则与常见问题</summary>
+      <p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p>
+      <p>人数达到 2 万、5 万、10 万后，分别解锁永久配饰、永久服装、永久称号。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p>
+      <p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p>
+      <p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 hello@heabo.cn。</p>
+    </details>
+  </div>
+</section>
+
+<section class="reservation-pv" id="pv" aria-labelledby="pvHeading">
+  <h2 id="pvHeading">走近月光茧</h2>
+  <div class="hero-video" id="pvVideo">
+    <video muted playsinline controls preload="none" poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
+    <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
+  </div>
+</section>
+
+<a class="reservation-sticky" href="#reservation" id="reservationSticky">查看预约活动</a>
 
 <!-- PRODUCT MODULES -->
 <section class="modules" id="modules">
@@ -523,11 +571,10 @@ const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
 // Set the right source for this viewport (mobile=720p, desktop=1080p). Poster shows
 // immediately so the hero is never an empty box while the video buffers.
+pvWrap.addEventListener('click',()=>{
 if(!pvVideo.src){
   pvVideo.src=window.__PV_SRC||pvVideo.getAttribute('data-src-desktop')||'videos/pv.mp4';
-  const pp=pvVideo.play(); if(pp&&pp.catch)pp.catch(()=>{});
 }
-pvWrap.addEventListener('click',()=>{
   // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
   // and requires playback; ensure it's playing then request fullscreen with fallbacks.
   const p=pvVideo.play();
@@ -1088,5 +1135,7 @@ addPressAnim('.scroll-hint-icon','is-pressing');
   drawTrail();
 })();
 </script>
+<script src="vendor/qrcode-generator.js" defer></script>
+<script src="reservation.js?v=20260925" defer></script>
 </body>
 </html>

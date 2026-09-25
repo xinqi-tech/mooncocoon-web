@@ -1,0 +1,25 @@
+/*
+ * AI Context
+ * 本文件是什么: 国内官网预约区视觉样式，沿用原站月光和玻璃质感。
+ * 上游: index.html；下游: reservation.js 的状态展示。
+ * 核心概念: 预约和奖励位于 PV 之前；移动入口固定但不遮挡表单。
+ */
+.reservation-hero-copy{font-size:16px;line-height:1.8;color:#e8efff;max-width:600px;margin:0 auto 24px}
+.reservation-hero-cta,.reservation-sticky{display:inline-block;color:#10233f;background:linear-gradient(120deg,#eaf8ff,#aacdeb);border-radius:999px;padding:14px 30px;text-decoration:none;font-weight:700;box-shadow:0 8px 28px #6b9cd155}
+.reservation-hero-progress{color:#d2e8ff;margin-top:22px}
+.reservation-section,.reservation-pv{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:72px 24px;text-align:center}
+.reservation-panel{background:linear-gradient(140deg,#0c1d3edb,#172b4bcc);border:1px solid #c1dfff65;box-shadow:0 12px 60px #010a2180;border-radius:28px;padding:42px clamp(20px,5vw,64px);backdrop-filter:blur(16px)}
+.reservation-eyebrow{letter-spacing:.2em;color:#b5d8f4;font-size:12px}.reservation-panel h2,.reservation-pv h2{font:300 clamp(28px,4vw,48px) serif;color:#f3f8ff;margin:10px 0 20px}
+.reservation-panel p{line-height:1.75;color:#d9e7f9}.reservation-rewards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:30px 0}
+.reservation-reward{border:1px solid #d6eaff60;border-radius:18px;background:#d7eaff12;padding:20px;min-height:190px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.reservation-reward img{width:88px;height:88px;object-fit:contain;border-radius:10px}.reservation-reward strong{color:#fff}.reservation-reward small{color:#b8cee7}.reservation-reward .unlocked{color:#a5eedc}
+.reservation-actions{max-width:620px;margin:0 auto;text-align:left}.reservation-actions form{display:grid;gap:15px}.reservation-actions label{display:block;color:#eaf4ff;line-height:1.6}
+.reservation-actions [hidden]{display:none!important}
+.reservation-download-option{display:inline-flex;flex-direction:column;align-items:center;gap:10px;margin:8px 16px}.reservation-qr{width:148px;height:148px;padding:8px;background:#fff;border-radius:10px;image-rendering:pixelated}
+.reservation-actions input[type=tel],.reservation-actions input[type=text]{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:12px 14px;background:#eef7ff;border:1px solid #b4d6ee;border-radius:10px;color:#16304e;font-size:16px}
+.reservation-actions fieldset{border:1px solid #9cbedb80;border-radius:10px;display:flex;gap:25px}.reservation-actions fieldset label{display:inline-block}
+.reservation-actions button,.reservation-actions a:not(.reservation-check a){border:1px solid #bcdcf3;background:#d8efff;color:#153553;border-radius:10px;padding:11px 18px;cursor:pointer;margin:6px 7px 6px 0;text-decoration:none;display:inline-block;font-size:14px}
+.reservation-actions button:disabled{opacity:.5;cursor:not-allowed}.reservation-check a{color:#bee4ff}.reservation-message{min-height:2em;color:#fff!important;margin:16px auto}.reservation-rules{text-align:left;border-top:1px solid #a7c6df55;margin-top:25px;padding-top:20px;color:#e6efff}.reservation-rules summary{cursor:pointer;font-weight:600}
+.reservation-pv{padding-top:30px}.reservation-pv .hero-video{margin:20px auto}.reservation-sticky{display:none}
+.reservation-sticky.reservation-sticky-hidden{display:none}
+@media(max-width:768px){.hero-social{display:none}.reservation-section{padding:38px 14px 110px}.reservation-panel{padding:25px 17px}.reservation-rewards{grid-template-columns:1fr;gap:10px}.reservation-reward{min-height:0}.reservation-qr{display:none}.reservation-sticky{display:block;position:fixed;z-index:80;bottom:calc(14px + env(safe-area-inset-bottom));left:18px;right:18px;text-align:center}.reservation-pv{padding:30px 16px 90px}.reservation-hero-copy{font-size:14px}}
