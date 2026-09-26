@@ -51,17 +51,41 @@
       const phase=data.phase;
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约尚未开始':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
+      el('reservationFormHeading').textContent=phase==='RESERVING'?'留下你的预约':'查询我的预约';
       el('reservationDates').textContent='预约开始：'+date(data.startAt)+'；正式上线：'+date(data.releaseAt)+'；领取截止：'+date(data.claimDeadlineAt);
       el('reservationCount').textContent=Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
       el('heroReservationProgress').textContent=el('reservationCount').textContent;
       const rewards=el('reservationRewards');rewards.replaceChildren();
-      for(const reward of data.rewards||[]){
-        const card=doc.createElement('article');card.className='reservation-reward';
-        const image=safeUrl(reward.image);if(image){const img=doc.createElement('img');img.src=image;img.alt=reward.name;card.append(img)}
-        const title=doc.createElement('strong');title.textContent=`${reward.threshold/10000} 万人 · ${reward.name}`;card.append(title);
+      const milestones=(data.rewards||[]).slice().sort((a,b)=>a.threshold-b.threshold);
+      const count=Number.isFinite(data.count)?Math.max(0,data.count):0;
+      const positions=milestones.map((_,index)=>(index+.5)/Math.max(milestones.length,1));
+      let progress=0;
+      if(milestones.length&&Number.isFinite(data.count)){
+        const nextIndex=milestones.findIndex(reward=>count<reward.threshold);
+        if(nextIndex<0)progress=positions[positions.length-1];
+        else{
+          const lowerCount=nextIndex?milestones[nextIndex-1].threshold:0;
+          const lowerPosition=nextIndex?positions[nextIndex-1]:0;
+          const fraction=Math.min(1,(count-lowerCount)/Math.max(1,milestones[nextIndex].threshold-lowerCount));
+          progress=lowerPosition+(positions[nextIndex]-lowerPosition)*fraction;
+        }
+      }
+      rewards.style.setProperty('--milestone-progress',`${(progress*100).toFixed(2)}%`);
+      const next=milestones.find(reward=>count<reward.threshold);
+      el('reservationNext').textContent=Number.isFinite(data.count)?next?`距离 ${next.threshold/10000} 万人档，还差 ${(next.threshold-count).toLocaleString('zh-CN')} 人`:'全部里程碑已达成':'人数更新后显示下一档进度';
+      for(const reward of milestones){
+        const unlocked=!!(data.unlockedMask&(1<<(reward.tier-1)));
+        const card=doc.createElement('article');card.className='reservation-reward'+(unlocked?' is-unlocked':'');
+        const target=doc.createElement('span');target.className='reservation-reward-target';target.textContent=`${reward.threshold/10000} 万人`;card.append(target);
+        const orb=doc.createElement('span');orb.className='reservation-reward-orb';orb.setAttribute('aria-hidden','true');
+        const image=safeUrl(reward.image);
+        if(image){const img=doc.createElement('img');img.src=image;img.alt='';orb.append(img)}
+        else orb.textContent='✦';
+        card.append(orb);
+        const title=doc.createElement('strong');title.textContent=reward.name;card.append(title);
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
-        const status=doc.createElement('span');status.className=(data.unlockedMask&(1<<(reward.tier-1)))?'unlocked':'';
-        status.textContent=status.className?'已解锁；上线后同号登录领取':'达到人数后解锁，符合资格者可领取';card.append(status);rewards.append(card);
+        const status=doc.createElement('span');status.className='reservation-reward-status';
+        status.textContent=unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
       }
       const canReserve=phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=!!state.mine?.reservation;
