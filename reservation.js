@@ -51,7 +51,7 @@
       const phase=data.phase;
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约尚未开始':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
-      el('reservationFormHeading').textContent=phase==='RESERVING'?'留下你的预约':'查询我的预约';
+      el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
       el('reservationDates').textContent='预约开始：'+date(data.startAt)+'；正式上线：'+date(data.releaseAt)+'；领取截止：'+date(data.claimDeadlineAt);
       el('reservationCount').textContent=Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
       el('heroReservationProgress').textContent=el('reservationCount').textContent;
