@@ -17,21 +17,24 @@
 .reservation-count{margin-top:14px;font-family:var(--font-serif);font-size:clamp(22px,3vw,34px);font-variant-numeric:tabular-nums;letter-spacing:.04em;color:#fff!important;text-shadow:0 0 20px rgba(180,226,255,.35)}
 .reservation-next{margin-top:3px;font-size:13px;letter-spacing:.04em;color:#a7cae9!important}
 .reservation-milestones{margin:22px auto 0;max-width:900px;padding:28px 0 18px}
-.reservation-rewards{--milestone-progress:0%;--track-y:64px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;isolation:isolate}
-.reservation-rewards::before,.reservation-rewards::after{content:"";position:absolute;top:var(--track-y);left:16.6667%;height:2px;pointer-events:none}
-.reservation-rewards::before{right:16.6667%;background:linear-gradient(90deg,rgba(200,229,255,.18),rgba(200,229,255,.35),rgba(200,229,255,.18))}
-.reservation-rewards::after{width:max(0%,calc(var(--milestone-progress) - 16.6667%));max-width:66.6667%;background:linear-gradient(90deg,#d8efff,#84c8ff);box-shadow:0 0 12px rgba(140,204,255,.9),0 0 24px rgba(140,204,255,.45);transition:width .8s cubic-bezier(.22,1,.36,1)}
+.reservation-rewards{--milestone-progress:0%;--track-y:50px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;isolation:isolate}
+.reservation-rewards::before,.reservation-rewards::after{content:"";position:absolute;top:var(--track-y);left:16.6667%;height:1px;pointer-events:none}
+.reservation-rewards::before{right:16.6667%;background:linear-gradient(90deg,rgba(200,229,255,.16),rgba(200,229,255,.24),rgba(200,229,255,.16))}
+.reservation-rewards::after{top:calc(var(--track-y) - 2px);height:5px;width:max(0%,calc(var(--milestone-progress) - 16.6667%));max-width:66.6667%;background:radial-gradient(circle at calc(100% - 2px) 50%,#eefaff 0 1px,transparent 2px),linear-gradient(90deg,#b4d3ed,#e1f1ff) left center / 100% 1px no-repeat;filter:drop-shadow(0 0 3px rgba(168,219,255,.5));transition:width .8s cubic-bezier(.22,1,.36,1)}
 .reservation-reward{display:flex;flex-direction:column;align-items:center;min-width:0;position:relative;z-index:1;color:var(--text-secondary)}
 .reservation-reward-target{height:24px;margin-bottom:12px;color:#a9cbe8;font-size:13px;letter-spacing:.08em;font-variant-numeric:tabular-nums}
-.reservation-reward-orb{width:56px;height:56px;display:grid;place-items:center;position:relative;border-radius:50%;border:1px solid rgba(191,224,251,.48);background:radial-gradient(circle at 38% 28%,rgba(193,225,255,.30),rgba(43,78,121,.62) 62%,rgba(9,27,57,.94));box-shadow:inset 0 2px 10px rgba(231,247,255,.15),0 0 0 8px rgba(132,189,236,.07);color:#d0e5f7;font-size:22px;line-height:1;transition:box-shadow .45s,border-color .45s,color .45s,background .45s}
+.reservation-reward-orb{width:28px;height:28px;display:grid;place-items:center;position:relative;border-radius:50%;border:1px solid rgba(191,224,251,.26);background:#142642;color:transparent;font-size:0;line-height:1;transition:box-shadow .45s,border-color .45s}
+.reservation-reward-orb::before{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;border:1px solid rgba(183,215,239,.5);border-radius:.5px;transform:translate(-50%,-50%) rotate(45deg);background:transparent}
+.reservation-reward-orb:has(img)::before{display:none}
 .reservation-reward-orb img{width:70%;height:70%;object-fit:contain;filter:grayscale(.7);opacity:.7}
-.reservation-reward.is-unlocked .reservation-reward-orb{color:#fff;border-color:rgba(245,252,255,.95);background:radial-gradient(circle at 40% 30%,#fff 0%,#d8f1ff 15%,#8dcbfa 48%,#245d9a 100%);box-shadow:0 0 0 8px rgba(181,225,255,.12),0 0 20px rgba(175,222,255,.86),0 0 48px rgba(122,187,246,.45),inset 0 0 14px rgba(255,255,255,.6);text-shadow:0 0 8px #fff}
+.reservation-reward.is-unlocked .reservation-reward-orb{border-color:rgba(221,241,255,.76);background:#182f4f;box-shadow:0 0 12px rgba(173,222,255,.16),inset 0 0 7px rgba(173,222,255,.08)}
+.reservation-reward.is-unlocked .reservation-reward-orb::before{width:6px;height:6px;border-color:#f1faff;background:#e2f3ff;box-shadow:0 0 7px rgba(214,240,255,.65)}
 .reservation-reward.is-unlocked .reservation-reward-orb img{filter:none;opacity:1}
-.reservation-reward.is-unlocked .reservation-reward-orb::after{content:"";position:absolute;inset:-17px;background:url('images/light.png') center/contain no-repeat;opacity:.78;pointer-events:none;animation:reservationTwinkle 3.4s ease-in-out infinite}
+.reservation-reward.is-unlocked .reservation-reward-orb::after{content:"";position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,rgba(177,222,255,.16),transparent 68%);opacity:.5;pointer-events:none;animation:reservationGlowBreath 5s ease-in-out infinite}
 .reservation-reward strong{margin-top:20px;font-family:var(--font-serif);font-size:21px;font-weight:400;letter-spacing:.1em;color:#eaf6ff}
 .reservation-reward small{font-size:11px;letter-spacing:.12em;color:#b0c7db}
 .reservation-reward-status{margin-top:12px;min-height:22px;font-size:12px;letter-spacing:.03em;color:#9bb3cb}
-.reservation-reward.is-unlocked .reservation-reward-status{color:#e1f7ff;text-shadow:0 0 12px rgba(172,224,255,.6)}
+.reservation-reward.is-unlocked .reservation-reward-status{color:#d5eaff}
 .reservation-dates{max-width:760px;margin:0 auto 35px;font-size:12px;line-height:1.9!important;color:var(--text-muted)!important}
 .reservation-actions{max-width:650px;margin:0 auto;padding:28px clamp(18px,4vw,38px);border:1px solid rgba(218,239,255,.18);border-radius:24px;background:linear-gradient(150deg,rgba(179,217,255,.09),rgba(38,80,129,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.06);text-align:left}
 .reservation-form-heading{display:flex;align-items:center;gap:13px;margin-bottom:24px}
@@ -77,7 +80,7 @@
 .reservation-download{margin-top:24px;text-align:center}
 .reservation-pv{padding-top:30px}.reservation-pv .hero-video{margin:20px auto}
 .reservation-sticky,.reservation-sticky.reservation-sticky-hidden{display:none}
-@keyframes reservationTwinkle{0%,100%{opacity:.45;transform:scale(.94) rotate(0)}50%{opacity:.9;transform:scale(1.09) rotate(20deg)}}
+@keyframes reservationGlowBreath{0%,100%{opacity:.35}50%{opacity:.7}}
 @media(max-width:768px){
   .hero-social{display:none}
   .reservation-section{padding:34px 14px 96px}
@@ -90,9 +93,9 @@
   .reservation-count{font-size:23px}
   .reservation-next{font-size:12px}
   .reservation-milestones{margin-top:6px;padding:28px 0 10px}
-  .reservation-rewards{--track-y:58px}
+  .reservation-rewards{--track-y:47px}
   .reservation-reward-target{font-size:11px;height:21px;margin-bottom:13px;white-space:nowrap}
-  .reservation-reward-orb{width:48px;height:48px;font-size:19px}
+  .reservation-reward-orb{width:26px;height:26px}
   .reservation-reward strong{font-size:17px;margin-top:15px}
   .reservation-reward small{font-size:10px}
   .reservation-reward-status{font-size:10px;line-height:1.4;max-width:95px;min-height:30px}
