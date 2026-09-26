@@ -256,7 +256,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20260926">
+<link rel="stylesheet" href="reservation.css?v=20260926e">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -425,12 +425,18 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="reservation-rewards" id="reservationRewards"></div>
     </div>
     <p id="reservationDates" class="reservation-dates"></p>
+    <button type="button" class="reservation-open" id="reservationOpen" aria-haspopup="dialog" aria-controls="reservationDialog" disabled>留下你的预约 <span aria-hidden="true">→</span></button>
+    <p class="reservation-notice" id="reservationNotice" role="status"></p>
+    <dialog class="reservation-dialog" id="reservationDialog" aria-labelledby="reservationFormHeading">
     <div class="reservation-actions" id="reservationActions">
+      <button type="button" class="reservation-dialog-close" id="reservationClose" aria-label="关闭预约窗口">×</button>
       <div class="reservation-form-heading"><span aria-hidden="true">✧</span><div><p>YOUR MOONLIGHT</p><h3 id="reservationFormHeading">留下你的预约</h3></div></div>
       <form id="reservationForm" novalidate>
         <label>中国大陆手机号 <input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" required></label>
-        <button type="button" id="reservationSms">获取验证码</button>
+        <div class="reservation-code-row">
         <label>短信验证码 <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+        <button type="button" id="reservationSms">获取验证码</button>
+        </div>
         <fieldset class="reservation-new-only"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"> Android</label><label><input type="radio" name="platform" value="IOS"> iOS</label></fieldset>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="adult"> 我已年满 18 周岁</label>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="terms"> 我已阅读并同意<a href="user-agreement/" target="_blank" rel="noopener">用户协议</a>、<a href="privacy-policy/" target="_blank" rel="noopener">隐私政策</a>与活动规则</label>
@@ -444,9 +450,10 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
         <button type="button" id="reservationUnsubscribe">取消上线提醒</button>
         <button type="button" id="reservationLogout">切换手机号</button>
       </div>
-      <div id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
+      <p class="reservation-message" id="reservationMessage" role="status"></p>
     </div>
-    <p class="reservation-message" id="reservationMessage" role="status"></p>
+    </dialog>
+    <div class="reservation-actions reservation-download" id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
     <details class="reservation-rules"><summary>活动规则与常见问题</summary>
       <p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p>
       <p>人数达到 2 万、5 万、10 万后，分别解锁永久配饰、永久服装、永久称号。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p>
@@ -1143,6 +1150,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20260926c" defer></script>
+<script src="reservation.js?v=20260926e" defer></script>
 </body>
 </html>

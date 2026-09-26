@@ -57,6 +57,24 @@
 .reservation-rules{text-align:left;border-top:1px solid rgba(190,219,245,.2);margin-top:12px;padding-top:22px;color:#e6efff}
 .reservation-rules summary{cursor:pointer;color:#bfd9ef;font-size:13px;letter-spacing:.04em}
 .reservation-rules p{font-size:13px;margin-top:12px}
+.reservation-open{display:inline-flex;align-items:center;justify-content:center;gap:30px;min-width:260px;min-height:56px;padding:14px 32px;border:1px solid rgba(240,250,255,.85);border-radius:999px;background:linear-gradient(120deg,#f0faff,#b7dcf7);box-shadow:0 0 30px rgba(149,207,253,.23),inset 0 1px 0 #fff;color:#153553;font-family:var(--font-serif);font-size:21px;letter-spacing:.08em;transition:transform .2s,box-shadow .2s}
+.reservation-open:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(149,207,253,.4)}
+.reservation-open:disabled{opacity:.5}
+.reservation-notice{margin:20px auto;font-size:13px}
+.reservation-notice:empty{min-height:12px;margin:12px auto}
+.reservation-open:focus-visible,.reservation-dialog button:focus-visible{outline:2px solid #c8e9ff;outline-offset:4px}
+.reservation-modal-open{overflow:hidden}
+.reservation-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100% - 28px));max-height:calc(100dvh - 40px);padding:0;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(218,239,255,.42);border-radius:26px;background:radial-gradient(ellipse at 30% 0%,rgba(129,181,228,.23),transparent 65%),#0c203f;color:var(--text-primary);box-shadow:0 28px 100px rgba(0,8,25,.65),inset 0 1px 0 rgba(255,255,255,.15);text-align:left}
+.reservation-dialog::backdrop{background:rgba(2,9,24,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.reservation-dialog,.reservation-dialog *{cursor:auto!important}
+.reservation-dialog button,.reservation-dialog a,.reservation-dialog input[type=checkbox],.reservation-dialog input[type=radio]{cursor:pointer!important}
+.reservation-dialog .reservation-actions{position:relative;max-width:none;margin:0;padding:32px;border:0;border-radius:0;background:none;box-shadow:none}
+.reservation-dialog .reservation-form-heading{padding-right:35px}
+.reservation-actions #reservationClose{position:absolute;top:17px;right:16px;width:36px;height:36px;margin:0;padding:0;display:grid;place-items:center;font:26px/1 system-ui;color:#cce7fa;background:rgba(199,229,255,.07);border-color:rgba(199,229,255,.23);box-shadow:none}
+.reservation-code-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.reservation-code-row #reservationSms{margin:0 0 1px;min-height:47px;padding:10px 16px;font-size:13px;white-space:nowrap;border-radius:12px}
+.reservation-dialog .reservation-message:empty{display:none}
+.reservation-download{margin-top:24px;text-align:center}
 .reservation-pv{padding-top:30px}.reservation-pv .hero-video{margin:20px auto}
 .reservation-sticky,.reservation-sticky.reservation-sticky-hidden{display:none}
 @keyframes reservationTwinkle{0%,100%{opacity:.45;transform:scale(.94) rotate(0)}50%{opacity:.9;transform:scale(1.09) rotate(20deg)}}
@@ -81,6 +99,10 @@
   .reservation-dates{font-size:11px;margin:10px auto 25px}
   .reservation-actions{padding:22px 17px;border-radius:19px}
   .reservation-form-heading{margin-bottom:18px}
+  .reservation-open{min-width:240px;min-height:54px;font-size:19px}
+  .reservation-dialog .reservation-actions{padding:27px 20px 22px}
+  .reservation-dialog .reservation-form-heading h3{font-size:22px}
+  .reservation-dialog .reservation-check{font-size:12px;line-height:1.8}
   .reservation-qr{display:none}
   .reservation-pv{padding:30px 16px 90px}
   .reservation-hero-copy{font-size:14px}

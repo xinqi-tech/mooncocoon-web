@@ -27,6 +27,18 @@
     const el=id=>doc.getElementById(id);
     const message=value=>{el('reservationMessage').textContent=value};
     const state={activity:null,mine:null,csrf:null,verified:false};
+    const dialog=el('reservationDialog');
+    el('reservationOpen').addEventListener('click',()=>{
+      dialog.showModal();doc.documentElement.classList.add('reservation-modal-open');
+    });
+    el('reservationClose').addEventListener('click',()=>dialog.close());
+    dialog.addEventListener('click',event=>{
+      const rect=dialog.getBoundingClientRect();
+      if(event.target===dialog&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom))dialog.close();
+    });
+    dialog.addEventListener('close',()=>{
+      doc.documentElement.classList.remove('reservation-modal-open');
+    });
     let refreshTimer;
     const params=new URLSearchParams(root.location.search);
     for(const key of ['utm_source','utm_campaign']){
@@ -47,11 +59,14 @@
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
     function renderActivity(data){
       state.activity=data;
-      if(!data||!data.available){message('活动尚未开放，请稍后查看。');form.hidden=true;return}
+      if(!data||!data.available){el('reservationNotice').textContent='活动尚未开放，请稍后查看。';form.hidden=true;el('reservationOpen').disabled=true;return}
+      el('reservationNotice').textContent='';
       const phase=data.phase;
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约尚未开始':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
+      el('reservationOpen').disabled=false;
+      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约')+' →';
       el('reservationDates').textContent='预约开始：'+date(data.startAt)+'；正式上线：'+date(data.releaseAt)+'；领取截止：'+date(data.claimDeadlineAt);
       el('reservationCount').textContent=Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
       el('heroReservationProgress').textContent=el('reservationCount').textContent;
@@ -126,7 +141,7 @@
           item.textContent=`${reward.tier} 档：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         el('reservationUnsubscribe').hidden=!reservation.reminderSubscribed;
         message('预约记录已确认。正式上线后请使用同手机号账号进入 App。');}
-      else if(data){message('未查到预约记录，请核对手机号。')}
+      else if(data&&state.verified){message('未查到预约记录，请核对手机号。')}
       if(state.activity)renderActivity(state.activity);
     }
     function refreshActivity(){
@@ -137,7 +152,7 @@
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
         refreshTimer=root.setTimeout(refreshActivity,delay);
       }).catch(()=>{
-        if(!state.activity){form.hidden=true;message('活动信息暂不可用，请稍后重试。');el('reservationCount').textContent=''}
+        if(!state.activity){form.hidden=true;el('reservationNotice').textContent='活动信息暂不可用，请稍后重试。';el('reservationCount').textContent=''}
         clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
       });
     }
