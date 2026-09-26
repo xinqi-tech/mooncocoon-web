@@ -102,7 +102,7 @@
           item.textContent=`${reward.tier} 档：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         el('reservationUnsubscribe').hidden=!reservation.reminderSubscribed;
         message('预约记录已确认。正式上线后请使用同手机号账号进入 App。');}
-      else if(data){message('未查到预约记录。活动开放时可确认年龄与协议后主动预约。')}
+      else if(data){message('未查到预约记录，请核对手机号。')}
       if(state.activity)renderActivity(state.activity);
     }
     function refreshActivity(){
