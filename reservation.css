@@ -1,4 +1,7 @@
 /* 月光茧预约区：人数驱动轨道，服务端解锁状态驱动节点光效。 */
+[data-reservation-entry][hidden]{display:none!important}
+#reservationRevealTitle{appearance:none;border:0;padding:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;line-height:inherit;text-shadow:inherit;text-align:inherit;user-select:none;touch-action:manipulation}
+#reservationRevealTitle:focus-visible{outline:1px solid var(--ice-340);outline-offset:8px;border-radius:4px}
 .reservation-hero-copy{font-size:16px;line-height:1.8;color:#e8efff;max-width:600px;margin:0 auto 24px}
 .reservation-hero-cta,.reservation-sticky{display:inline-block;color:#10233f;background:linear-gradient(120deg,#eaf8ff,#aacdeb);border-radius:999px;padding:14px 30px;text-decoration:none;font-weight:700;box-shadow:0 8px 28px #6b9cd155}
 .reservation-hero-progress{color:#d2e8ff;margin-top:22px}

@@ -256,7 +256,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20260926f">
+<link rel="stylesheet" href="reservation.css?v=20260927a">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -377,7 +377,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
   <div class="nav-links">
     <a href="#hero">首页</a>
-    <a href="#reservation">预约有礼</a>
+    <a href="#reservation" data-reservation-entry hidden>预约有礼</a>
     <a href="#modules">产品介绍</a>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="播放背景音乐" aria-pressed="false" title="背景音乐">
@@ -400,18 +400,18 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <!-- HERO -->
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
-  <h1 class="hero-title">虚实有别，爱意无界</h1>
+  <h1 class="hero-title"><button type="button" id="reservationRevealTitle">虚实有别，爱意无界</button></h1>
   <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
-  <p class="reservation-hero-copy">预约有礼 · 三档集体里程碑，正式上线后使用同手机号账号领取已解锁奖励</p>
-  <a class="reservation-hero-cta" href="#reservation">查看预约活动</a>
-  <p class="reservation-hero-progress" id="heroReservationProgress">活动信息加载中</p>
-  <button class="scroll-hint" onclick="document.getElementById('reservation').scrollIntoView({behavior:'smooth'})">
+  <p class="reservation-hero-copy" data-reservation-entry hidden>预约有礼 · 三档集体里程碑，正式上线后使用同手机号账号领取已解锁奖励</p>
+  <a class="reservation-hero-cta" href="#reservation" data-reservation-entry hidden>查看预约活动</a>
+  <p class="reservation-hero-progress" id="heroReservationProgress" data-reservation-entry hidden>活动信息加载中</p>
+  <button class="scroll-hint" onclick="document.getElementById(document.getElementById('reservation').hidden?'pv':'reservation').scrollIntoView({behavior:'smooth'})">
     <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
     <span class="scroll-hint-label">SCROLL</span>
   </button>
 </section>
 
-<section class="reservation-section" id="reservation" aria-labelledby="reservationHeading">
+<section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry hidden>
   <div class="reservation-panel">
     <p class="reservation-eyebrow"><span aria-hidden="true">✦</span> 月光茧 · 预约有礼 <span aria-hidden="true">✦</span></p>
     <h2 id="reservationHeading">预约，等月光抵达</h2>
@@ -471,7 +471,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
 </section>
 
-<a class="reservation-sticky" href="#reservation" id="reservationSticky">查看预约活动</a>
+<a class="reservation-sticky" href="#reservation" id="reservationSticky" data-reservation-entry hidden>查看预约活动</a>
 
 <!-- PRODUCT MODULES -->
 <section class="modules" id="modules">
@@ -1150,6 +1150,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20260926e" defer></script>
+<script src="reservation.js?v=20260927b" defer></script>
 </body>
 </html>

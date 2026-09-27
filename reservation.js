@@ -2,7 +2,7 @@
  * @fileoverview 国内官网预约有礼页面交互。
  * AI Context
  * 上游: index.html 和服务端 /api/reservation-gift；下游: 活动状态、短信验证、预约查询、退订和下载入口。
- * 核心概念: 查询 Cookie 仅由浏览器持有，JS 只保存同源 CSRF；服务端字段仅以 textContent 呈现。
+ * 核心概念: 默认隐藏，首页标题点击十次后才初始化；查询 Cookie 仅由浏览器持有，服务端字段仅以 textContent 呈现。
  */
 (function(root,factory){
   const api=factory(root);
@@ -202,6 +202,18 @@
     request('/mine').then(renderMine).catch(()=>{});
     return state;
   }
-  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
+  function setupPreviewGate(doc){
+    const title=doc.getElementById('reservationRevealTitle');if(!title)return;
+    let clicks=0;
+    const reveal=()=>{
+      if(++clicks<10)return;
+      title.removeEventListener('click',reveal);
+      for(const entry of doc.querySelectorAll('[data-reservation-entry]'))entry.hidden=false;
+      init(doc);
+      doc.getElementById('reservation').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    title.addEventListener('click',reveal);
+  }
+  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>setupPreviewGate(root.document));
   return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE};
 });
