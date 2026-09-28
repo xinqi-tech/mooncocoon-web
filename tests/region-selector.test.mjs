@@ -6,11 +6,28 @@ const read = (file) => readFile(new URL(`../${file}`, import.meta.url), "utf8");
 
 test("销售区域映射到 jp、us、sg 页面", async () => {
   const script = await read("region.js");
-  assert.match(script, /id: "jp"[\s\S]*home: "\/jp\/index\.html"/);
-  assert.match(script, /id: "us"[\s\S]*home: "\/us\/index\.html"/);
-  assert.match(script, /id: "sg"[\s\S]*home: "\/sg\/index\.html"/);
-  assert.match(script, /product: "\/us\/product\/index\.html"/);
-  assert.match(script, /product: "\/sg\/product\/index\.html"/);
+  assert.match(script, /id: "jp"[\s\S]*home: "jp\/index\.html"/);
+  assert.match(script, /id: "us"[\s\S]*home: "us\/index\.html"/);
+  assert.match(script, /id: "sg"[\s\S]*home: "sg\/index\.html"/);
+  assert.match(script, /product: "us\/product\/index\.html"/);
+  assert.match(script, /product: "sg\/product\/index\.html"/);
+  assert.match(script, /new URL\(region\[page\], source\)/);
+  assert.match(script, /rootPath = new URL\("\.\/", source\)/);
+});
+
+test("英语区域页面的资源路径可从项目子路径解析", async () => {
+  for (const file of ["us/index.html", "sg/index.html"]) {
+    const html = await read(file);
+    assert.doesNotMatch(html, /(?:src|href|poster|data-src-[^=]+)="\/(?:images|videos|audio|jp\/assets)/);
+    assert.match(html, /\.\.\/images\//);
+    assert.match(html, /\.\.\/videos\//);
+  }
+  for (const file of ["us/product/index.html", "sg/product/index.html"]) {
+    const html = await read(file);
+    assert.doesNotMatch(html, /(?:src|href)=\"\/(?:jp\/styles|jp\/site|region\.js|images|audio|jp\/assets)/);
+    assert.match(html, /\.\.\/\.\.\/jp\/styles\.css/);
+    assert.match(html, /\.\.\/\.\.\/region\.js/);
+  }
 });
 
 test("区域选择器出现在中文首页、日文首页和商品页", async () => {

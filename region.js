@@ -2,14 +2,21 @@
   "use strict";
 
   var regions = [
-    { id: "jp", label: "日本", home: "/jp/index.html", product: "/jp/product/index.html" },
-    { id: "us", label: "United States", home: "/us/index.html", product: "/us/product/index.html" },
-    { id: "sg", label: "Singapore", home: "/sg/index.html", product: "/sg/product/index.html" }
+    { id: "jp", label: "日本", home: "jp/index.html", product: "jp/product/index.html" },
+    { id: "us", label: "United States", home: "us/index.html", product: "us/product/index.html" },
+    { id: "sg", label: "Singapore", home: "sg/index.html", product: "sg/product/index.html" }
   ];
 
-  function currentRegion() {
+  function scriptUrl() {
+    var script = document.currentScript;
+    if (script && script.src) return new URL(script.src, document.baseURI);
+    return new URL("region.js", document.baseURI);
+  }
+
+  function currentRegion(rootPath) {
     var path = window.location.pathname;
-    var match = path.match(/^\/(jp|us|sg)(?:\/|$)/);
+    var relative = path.indexOf(rootPath) === 0 ? path.slice(rootPath.length) : path;
+    var match = relative.match(/^(jp|us|sg)(?:\/|$)/);
     return match ? match[1] : "";
   }
 
@@ -22,13 +29,15 @@
     if (!switcher) return;
     var button = switcher.querySelector("[data-region-button]");
     var menu = switcher.querySelector("[data-region-menu]");
-    var current = currentRegion();
+    var source = scriptUrl();
+    var rootPath = new URL("./", source).pathname;
+    var current = currentRegion(rootPath);
     var page = currentPage();
     if (!button || !menu) return;
 
     regions.forEach(function (region) {
       var link = document.createElement("a");
-      link.href = region[page];
+      link.href = new URL(region[page], source).href;
       link.dataset.region = region.id;
       link.setAttribute("role", "menuitem");
       link.textContent = region.label;
