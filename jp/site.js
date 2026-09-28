@@ -22,6 +22,31 @@
     return String(configured || DEFAULT_API_BASE).replace(/\/$/, "");
   }
 
+  function messages(doc) {
+    var english = doc && doc.body && String(doc.body.dataset.locale || "").toLowerCase().indexOf("en") === 0;
+    return english ? {
+      invalidEmail: "Please enter a valid email address.",
+      consentRequired: "Please agree to release updates and the privacy policy.",
+      registering: "Joining the waitlist…",
+      alreadyRegistered: "This email is already registered. You do not need to sign up again.",
+      success: "You are on the list. We will email you when the product launches.",
+      failed: "We could not complete your registration. Please check your connection and try again.",
+      unsubscribeSuccess: "Your subscription has been cancelled. You will not receive further release updates.",
+      unsubscribeFailed: "We could not cancel your subscription. Please contact support@lunakoru.com.",
+      invalidLink: "This link is invalid."
+    } : {
+      invalidEmail: "有効なメールアドレスを入力してください。",
+      consentRequired: "発売通知とプライバシーポリシーへの同意が必要です。",
+      registering: "登録しています…",
+      alreadyRegistered: "このメールアドレスは登録済みです。再度ご登録いただく必要はありません。",
+      success: "登録が完了しました。発売時にメールでお知らせします。",
+      failed: "登録できませんでした。通信環境をご確認のうえ、もう一度お試しください。",
+      unsubscribeSuccess: "配信停止を受け付けました。今後、発売通知は送信されません。",
+      unsubscribeFailed: "配信停止を完了できませんでした。support@lunakoru.com までご連絡ください。",
+      invalidLink: "このリンクは無効です。"
+    };
+  }
+
   function initMenu(doc) {
     const button = doc.querySelector("[data-menu-button]");
     const links = doc.querySelector("[data-nav-links]");
@@ -43,18 +68,19 @@
     const audio = doc.querySelector("[data-bgm-audio]");
     if (!button || !audio) return;
     audio.volume = 0.55;
+    var english = doc.body && String(doc.body.dataset.locale || "").toLowerCase().indexOf("en") === 0;
     button.addEventListener("click", function () {
       if (audio.paused) {
         audio.play().then(function () {
           button.classList.add("playing");
           button.setAttribute("aria-pressed", "true");
-          button.setAttribute("aria-label", "BGMを一時停止");
+          button.setAttribute("aria-label", english ? "Pause BGM" : "BGMを一時停止");
         }).catch(function () {});
       } else {
         audio.pause();
         button.classList.remove("playing");
         button.setAttribute("aria-pressed", "false");
-        button.setAttribute("aria-label", "BGMを再生");
+        button.setAttribute("aria-label", english ? "Play BGM" : "BGMを再生");
       }
     });
   }
@@ -154,28 +180,29 @@
   }
 
   async function submitWaitlist(form, fetchImpl, doc) {
+    var copy = messages(doc);
     const email = normalizeEmail(form.elements.email.value);
     const consent = Boolean(form.elements.consent && form.elements.consent.checked);
     if (!isValidEmail(email)) {
-      setFormMessage(form, "有効なメールアドレスを入力してください。", "error");
+      setFormMessage(form, copy.invalidEmail, "error");
       return false;
     }
     if (!consent) {
-      setFormMessage(form, "発売通知とプライバシーポリシーへの同意が必要です。", "error");
+      setFormMessage(form, copy.consentRequired, "error");
       return false;
     }
 
     const submit = form.querySelector("button[type='submit']");
     if (submit) submit.disabled = true;
-    setFormMessage(form, "登録しています…", "info");
+    setFormMessage(form, copy.registering, "info");
     const payload = {
       email: email,
       consent: true,
-      consentVersion: "jp-waitlist-2026-09-19",
+      consentVersion: doc.body && doc.body.dataset.locale ? "en-waitlist-2026-09-19" : "jp-waitlist-2026-09-19",
       productCode: "PRODUCT_01",
       variantInterest: form.elements.variantInterest ? form.elements.variantInterest.value : "UNDECIDED",
-      locale: "ja-JP",
-      source: "jp_website",
+      locale: doc.body && doc.body.dataset.locale ? doc.body.dataset.locale : "ja-JP",
+      source: doc.body && doc.body.dataset.locale ? "en_website" : "jp_website",
       website: form.elements.website ? form.elements.website.value : ""
     };
 
@@ -192,13 +219,13 @@
       form.elements.email.value = "";
       form.elements.consent.checked = false;
       if (body.data && body.data.alreadyRegistered === true) {
-        setFormMessage(form, "このメールアドレスは登録済みです。再度ご登録いただく必要はありません。", "info");
+        setFormMessage(form, copy.alreadyRegistered, "info");
       } else {
-        setFormMessage(form, "登録が完了しました。発売時にメールでお知らせします。", "success");
+        setFormMessage(form, copy.success, "success");
       }
       return true;
     } catch (error) {
-      setFormMessage(form, "登録できませんでした。通信環境をご確認のうえ、もう一度お試しください。", "error");
+      setFormMessage(form, copy.failed, "error");
       return false;
     } finally {
       if (submit) submit.disabled = false;
@@ -215,11 +242,12 @@
   }
 
   async function initUnsubscribe(doc, fetchImpl) {
+    var copy = messages(doc);
     const status = doc.querySelector("[data-unsubscribe-status]");
     if (!status) return;
     const token = new URLSearchParams(root.location.search).get("token");
     if (!token || !/^[a-f0-9]{64}$/i.test(token)) {
-      status.textContent = "このリンクは無効です。";
+      status.textContent = copy.invalidLink;
       status.dataset.kind = "error";
       return;
     }
@@ -233,9 +261,9 @@
       });
       const body = await response.json().catch(function () { return null; });
       if (!response.ok || !body || body.result !== 0) throw new Error("request_failed");
-      status.textContent = "配信停止を受け付けました。今後、発売通知は送信されません。";
+      status.textContent = copy.unsubscribeSuccess;
     } catch (error) {
-      status.textContent = "配信停止を完了できませんでした。support@lunakoru.com までご連絡ください。";
+      status.textContent = copy.unsubscribeFailed;
       status.dataset.kind = "error";
     }
   }
