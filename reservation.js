@@ -101,7 +101,6 @@
       const reminderAllowed=data.reminderAvailable!==false;
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
-      form.elements.reminder.closest('label').hidden=!reminderAllowed;
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
       el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约');
@@ -146,6 +145,7 @@
       form.hidden=upcoming||!!state.mine?.reservation;
       el('reservationSubmit').hidden=!canReserve;
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
+      form.elements.reminder.closest('label').hidden=!canReserve||!reminderAllowed;
       el('reservationQuery').textContent=canReserve?'仅查询我的预约':'查询我的预约';
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
       const links=el('reservationDownloadLinks');links.replaceChildren();
