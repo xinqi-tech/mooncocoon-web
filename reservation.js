@@ -167,6 +167,7 @@
       }
       const canReserve=!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
+      el('reservationCodeRow').hidden=state.queryOnly;
       el('reservationSubmit').hidden=upcoming&&!state.queryOnly;
       el('reservationSubmit').textContent=canReserve?'确认预约':'查询预约';
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
@@ -196,9 +197,9 @@
     function renderReminderSubscription(){
       const reservation=state.mine?.reservation;if(!reservation)return;
       const available=state.activity?.reminderAvailable===true;
-      el('reservationSubscribe').disabled=state.subscribing||reservation.reminderSubscribed||!available;
+      el('reservationSubscribe').disabled=!!state.mine?.publicLookup||state.subscribing||reservation.reminderSubscribed||!available;
       el('reservationSubscribe').textContent=state.subscribing?'订阅中…':reservation.reminderSubscribed?'已订阅上线提醒':'订阅上线提醒';
-      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':available?'自愿接收一条正式上线短信提醒。':'上线提醒订阅暂未开放';
+      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':state.mine?.publicLookup?'如需订阅提醒，请通过“立即预约”验证手机号。':available?'自愿接收一条正式上线短信提醒。':'上线提醒订阅暂未开放';
     }
     function renderMine(data,existing=false){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
@@ -288,6 +289,14 @@
       const flow=state.flow;
       let submitted=false;
       try{
+        if(state.queryOnly){
+          const phone=form.elements.phone.value.trim();
+          if(!phone)throw new Error('请先填写手机号');
+          if(!validPhone(phone))throw new Error('请填写正确的手机号');
+          renderMine(await request('/lookup','POST',{phone}),true);
+          if(!state.mine?.reservation)message('该手机号暂未查询到预约信息');
+          return;
+        }
         if(!state.verified)verificationInput();
         const accepting=!state.queryOnly&&state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
         if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
