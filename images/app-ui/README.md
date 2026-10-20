@@ -16,3 +16,6 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 - `star-divider.png`: `drawable-nodpi/affection_rules_divider.png`
 
 `title-slice-0.png` … `title-slice-8.png`: Figma J56l6Cs090O8z8aZU1AqQC node 40000741:48072, original exported slices in row-major order. Three columns; fixed end caps, stretchable center.
+
+
+`title-plate-responsive.svg`: original source PNGs re-downloaded from Figma download_assets, embedded unchanged in three columns. Integer source coordinates avoid fractional joins; end columns stay fixed while the middle flexes.

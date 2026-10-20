@@ -19,6 +19,8 @@
 .footer-brand::before{content:"";display:block;width:min(260px,70vw);height:8px;margin:0 auto 20px;background:url("images/app-ui/star-divider.png") center/100% auto no-repeat;opacity:.45}
 
 /* Figma 40000741:48072: three columns, preserving all nine exported slices. */
-.module-title,.first-screen .reservation-content>h2{background:url("images/app-ui/title-slice-0.png") left top/73px 10% no-repeat,url("images/app-ui/title-slice-1.png") 73px top/calc(100% - 194px) 10% no-repeat,url("images/app-ui/title-slice-2.png") right top/121px 10% no-repeat,url("images/app-ui/title-slice-3.png") left center/73px 80% no-repeat,url("images/app-ui/title-slice-4.png") 73px center/calc(100% - 194px) 80% no-repeat,url("images/app-ui/title-slice-5.png") right center/121px 80% no-repeat,url("images/app-ui/title-slice-6.png") left bottom/73px 10% no-repeat,url("images/app-ui/title-slice-7.png") 73px bottom/calc(100% - 194px) 10% no-repeat,url("images/app-ui/title-slice-8.png") right bottom/121px 10% no-repeat;min-height:80px;display:flex;align-items:center;justify-content:center;padding:18px 24px}
+.module-title,.first-screen .reservation-content>h2{background:none;position:relative;isolation:isolate;min-height:80px;display:flex;align-items:center;justify-content:center;padding:18px 24px}
 
 .module-title,.first-screen .reservation-content>h2{width:fit-content;max-width:100%;justify-self:center;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px}
+
+.module-title::before,.first-screen .reservation-content>h2::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url("images/app-ui/title-plate-responsive.svg") center/100% 100% no-repeat}

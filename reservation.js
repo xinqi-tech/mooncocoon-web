@@ -86,7 +86,8 @@
         [['预约开始',data.startAt],['正式上线',data.releaseAt],['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
       el('reservationDates').textContent=dates;el('reservationDates').hidden=!dates;
-      el('reservationCount').textContent=upcoming?'月光好礼，静候开启':Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
+      el('reservationCount').hidden=upcoming;
+      el('reservationCount').textContent=upcoming?'':Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
       const rewards=el('reservationRewards');rewards.replaceChildren();
       const milestones=(available&&data.rewards?.length?data.rewards:previewRewards).slice().sort((a,b)=>a.threshold-b.threshold);
       const count=!upcoming&&Number.isFinite(data.count)?Math.max(0,data.count):0;
@@ -172,6 +173,7 @@
         if(!state.activity){
           doc.querySelector('.reservation-panel').dataset.state='error';
           el('reservationPhase').textContent='暂时无法连接';
+          el('reservationCount').hidden=false;
           el('reservationCount').textContent='活动信息加载失败';
           el('reservationNext').textContent='请稍后重试，或先查看下方活动规则。';
               el('reservationNotice').textContent='';
