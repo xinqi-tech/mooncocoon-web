@@ -291,3 +291,14 @@
 .first-screen .reservation-rewards{--track-y:60.56px}
 
 .preview-environment{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:99999;border:1px solid #a8d5ff88;border-radius:12px;padding:6px 14px;background:#081e48ed;color:#eaf7ff;font-size:12px;pointer-events:none;max-width:90vw;text-align:center}
+
+/* Figma 40000758:81950, original 796 × 180 artwork including its glow. */
+@font-face{font-family:ReservationJHT;src:url('fonts/QingNiaoHuaGuang-Sans.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+.reservation-open{width:min(100%,320px);min-width:0;min-height:0;aspect-ratio:796/180;padding:0 38px;gap:20px;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font-family:ReservationJHT,sans-serif;font-weight:400;font-size:21px;line-height:1.3;text-shadow:0 1px 6px #24447666}
+.reservation-open:hover{box-shadow:none;filter:brightness(1.08)}
+.reservation-panel[data-state="active"]>.reservation-phase{position:absolute;top:18px;left:26px;margin:0;z-index:1}
+@media(max-width:768px){
+ .reservation-open{width:min(100%,280px);font-size:19px;gap:16px;padding-inline:30px}
+ .first-screen .reservation-panel[data-state="active"]{padding-top:54px}
+ .reservation-panel[data-state="active"]>.reservation-phase{top:14px;left:16px;font-size:10px;padding:3px 12px}
+}

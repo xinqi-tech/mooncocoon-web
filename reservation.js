@@ -78,7 +78,7 @@
       const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
       doc.querySelector('.reservation-panel').dataset.state=upcoming?'upcoming':'active';
       if(upcoming)el('reservationNotice').before(el('reservationPhase'));
-      else doc.querySelector('.reservation-overview').prepend(el('reservationPhase'));
+      else doc.querySelector('.reservation-panel').prepend(el('reservationPhase'));
       el('reservationRetry').hidden=true;
       root.clearInterval(countdownTimer);
       el('reservationNotice').textContent='';
@@ -103,10 +103,10 @@
       if(!reminderAllowed)form.elements.reminder.checked=false;
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
-      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约');
+      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'立即预约':'查询我的预约');
       const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
       const dates=upcoming?'':
-        [['预约开始',data.startAt],['正式上线',data.releaseAt],['领取截止',data.claimDeadlineAt]]
+        [['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
       el('reservationDates').textContent=dates;el('reservationDates').hidden=!dates;
       el('reservationCount').hidden=upcoming;
