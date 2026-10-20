@@ -12,6 +12,11 @@
   'use strict';
   const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
+  const RESERVATION_START='2026-10-24T00:00:00+08:00';
+  function formatCountdown(start,now){
+    const seconds=Math.max(0,Math.ceil((start-now)/1000));
+    return `${String(Math.floor(seconds/3600)).padStart(2,'0')} 小时 ${String(Math.floor(seconds/60)%60).padStart(2,'0')} 分钟 ${String(seconds%60).padStart(2,'0')} 秒`;
+  }
   // Approved reward categories are a preview only; counts and unlocks always come from the API.
   const previewRewards=[{tier:3,threshold:20000,name:'专属称号'},
     {tier:1,threshold:50000,name:'永久配饰'},{tier:2,threshold:100000,name:'永久服装'}];
@@ -43,7 +48,8 @@
     dialog.addEventListener('close',()=>{
       doc.documentElement.classList.remove('reservation-modal-open');
     });
-    let refreshTimer;
+    let refreshTimer,countdownTimer;
+    let boundaryRefreshRequested=false;
     const params=new URLSearchParams(root.location.search);
     for(const key of ['utm_source','utm_campaign']){
       const value=channel(params.get(key));
@@ -74,7 +80,21 @@
       if(upcoming)el('reservationNotice').before(el('reservationPhase'));
       else doc.querySelector('.reservation-overview').prepend(el('reservationPhase'));
       el('reservationRetry').hidden=true;
-      el('reservationNotice').textContent=upcoming?(available&&data.startAt?'预约将在以上时间开放，期待与你相见。':'开放时间将在官网公布，敬请期待。'):'';
+      root.clearInterval(countdownTimer);
+      el('reservationNotice').textContent='';
+      el('reservationNotice').setAttribute('aria-live',upcoming?'off':'polite');
+      if(upcoming){
+        const start=Date.parse(RESERVATION_START);
+        const receivedAt=Date.now(),serverTime=Date.parse(data.serverTime);
+        const clock=()=>Number.isFinite(serverTime)?serverTime+Date.now()-receivedAt:Date.now();
+        const update=()=>{
+          const now=clock();
+          el('reservationNotice').textContent=now<start?'距离预约开启 '+formatCountdown(start,now):'预约即将开放，请稍后刷新';
+          el('reservationNotice').title='2026年10月24日 00:00（北京时间）';
+          if(now>=start&&!boundaryRefreshRequested){boundaryRefreshRequested=true;root.setTimeout(refreshActivity,0)}
+        };
+        update();countdownTimer=root.setInterval(update,1000);
+      }
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
@@ -82,7 +102,7 @@
       el('reservationOpen').hidden=upcoming;
       el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约');
       const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
-      const dates=upcoming?(available&&data.startAt?'预约开启时间 · '+date(data.startAt):''):
+      const dates=upcoming?'':
         [['预约开始',data.startAt],['正式上线',data.releaseAt],['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
       el('reservationDates').textContent=dates;el('reservationDates').hidden=!dates;
@@ -169,6 +189,7 @@
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
         refreshTimer=root.setTimeout(refreshActivity,delay);
       }).catch(()=>{
+        root.clearInterval(countdownTimer);
         el('reservationRetry').hidden=false;
         if(!state.activity){
           doc.querySelector('.reservation-panel').dataset.state='error';
@@ -237,5 +258,5 @@
     title.addEventListener('click',reveal);
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>setupPreviewGate(root.document));
-  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE};
+  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,formatCountdown,RESERVATION_START};
 });

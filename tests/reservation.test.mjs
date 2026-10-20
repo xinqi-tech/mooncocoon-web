@@ -46,3 +46,12 @@ test('桌面下载二维码由本地库为同一 HTTPS 链接编码',async()=>{
   const qr=qrcode(0,'M');qr.addData('https://releases.lunakoru.com/');qr.make();
   assert.ok(qr.getModuleCount()>20);
 });
+
+test('北京时间预约倒计时使用总小时并在开启时归零',()=>{
+  const start=Date.parse(reservation.RESERVATION_START);
+  assert.equal(start,Date.parse('2026-10-23T16:00:00Z'));
+  assert.equal(reservation.formatCountdown(start,start-((49*3600+2*60+3)*1000)), '49 小时 02 分钟 03 秒');
+  assert.equal(reservation.formatCountdown(start,start-1),'00 小时 00 分钟 01 秒');
+  assert.equal(reservation.formatCountdown(start,start),'00 小时 00 分钟 00 秒');
+  assert.equal(reservation.formatCountdown(start,start+1000),'00 小时 00 分钟 00 秒');
+});

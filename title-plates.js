@@ -10,7 +10,7 @@
     const prefix = title.matches('.module-title') ? 'product-title' : title.matches('.tab-detail-title') ? 'product-subtitle' : 'title-column';
     for (const part of ['left', 'middle', 'right']) {
       const image = document.createElement('img');
-      image.src = new URL(prefix + '-' + part + (prefix === 'product-title' ? '-trimmed.svg' : prefix === 'title-column' ? '.svg' : '.png'), base).href;
+      image.src = new URL(prefix + '-' + part + (prefix === 'title-column' ? '.svg' : '.png'), base).href;
       image.alt = '';
       image.className = part === 'middle' ? 'title-plate-middle' : 'title-plate-cap';
       plate.append(image);

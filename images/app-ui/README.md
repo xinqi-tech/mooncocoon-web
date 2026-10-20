@@ -25,4 +25,5 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 
 `gift-base.png`: Figma node 40000750:48425 / child 40000750:48424, original image export; contained beneath the gift without resizing the gift itself.
 
-`product-title-*-trimmed.svg`: viewport-only clipping of original PNGs, excludes top 110/bottom 60/left 54/right 93 source pixels. The original PNG bytes remain unchanged; cap aspect ratios are preserved.
+
+Product title columns now display their full transparent canvas outside an 80px visible artwork band (original visible band 100px). This preserves butterflies and glow without clipping; end caps retain aspect ratio.
