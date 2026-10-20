@@ -20,3 +20,9 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 
 
 `title-column-left.svg`, `title-column-middle.svg`, `title-column-right.svg`: separate columns assembled from the original PNG slice bytes (unchanged). title-plates.js inserts three img elements: end caps use intrinsic aspect ratio and fixed flex size, middle uses flex:1 and preserveAspectRatio=none. No complete-plate image is stretched.
+
+`product-title-{left,middle,right}.png`: Figma node 40000750:48411. `product-subtitle-{left,middle,right}.png`: node 40000750:48423. Original exports unchanged; caps preserve aspect ratio, only middle flexes.
+
+`gift-base.png`: Figma node 40000750:48425 / child 40000750:48424, original image export; contained beneath the gift without resizing the gift itself.
+
+`product-title-*-trimmed.svg`: viewport-only clipping of original PNGs, excludes top 110/bottom 60/left 54/right 93 source pixels. The original PNG bytes remain unchanged; cap aspect ratios are preserved.

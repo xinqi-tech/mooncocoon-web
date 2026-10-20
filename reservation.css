@@ -284,3 +284,8 @@
 .first-screen .reservation-reward-orb{width:57.6px;height:57.6px}
 .first-screen .reservation-rewards{--track-y:54.8px}
 @media(max-width:768px){.first-screen .reservation-panel{padding-top:24px;padding-bottom:24px}}
+.first-screen .reservation-reward-orb,.first-screen .reservation-reward.is-unlocked .reservation-reward-orb{border:0;border-radius:0;background:transparent url('images/app-ui/gift-base.png') center/contain no-repeat;box-shadow:none}
+.first-screen .reservation-reward-orb::before{display:none}
+
+.first-screen .reservation-reward-orb{width:69.12px;height:69.12px}
+.first-screen .reservation-rewards{--track-y:60.56px}
