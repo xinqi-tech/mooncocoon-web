@@ -11,3 +11,6 @@ Copied unchanged from Aildo-Android/ui/src/main/res.
 - `close.webp`: `drawable-xxxhdpi/ic_gift_share_close.webp`
 
 Gift states illustrate milestone locked/unlocked; they do not imply a user has claimed a reward.
+
+- `title-plate.webp`: `drawable-nodpi/recharge_help_heading.webp`
+- `star-divider.png`: `drawable-nodpi/affection_rules_divider.png`

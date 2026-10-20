@@ -216,3 +216,36 @@
  .first-screen .reservation-panel{grid-template-columns:1fr;gap:22px}
  .first-screen .reservation-rules-static{border-left:0;border-top:1px solid #dcefff2e;padding:22px 0 0}
 }
+
+/* Vertical reservation + four always-visible rule rows. */
+.first-screen:has(#reservation:not([hidden])) .hero-logo{width:88px;margin-bottom:4px}
+.first-screen:has(#reservation:not([hidden])) .hero-title{font-size:28px;margin-bottom:6px}
+.first-screen:has(#reservation:not([hidden])){gap:12px}
+.first-screen .reservation-panel{display:block;padding:18px 32px}
+.first-screen .reservation-content>h2{width:min(420px,100%);margin:4px auto;background:url('images/app-ui/title-plate.webp') center/100% 100% no-repeat;padding:8px 20px;font-size:24px}
+.first-screen .reservation-lead{font-size:11px}
+.first-screen .reservation-overview{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
+.first-screen .reservation-panel .reservation-count{font-size:19px;line-height:1.4;margin:0}
+.first-screen .reservation-panel .reservation-next{flex-basis:100%;margin:0;font-size:11px}
+.first-screen .reservation-milestones{margin-top:8px;padding:6px 0 16px;max-width:760px}
+.first-screen .reservation-reward strong{margin-top:6px;font-size:17px}
+.first-screen .reservation-reward-status{margin-top:3px;font-size:10px;min-height:16px}
+.first-screen .reservation-panel .reservation-cta{padding-top:12px;min-height:32px}
+.first-screen .reservation-notice{font-size:11px}
+.first-screen .reservation-rules-static{margin:14px 0 0;padding:14px 0 0;border:0;border-top:1px solid #dcefff2e;background:none}
+.first-screen .reservation-rules-static>h2{font-size:13px;gap:8px}
+.first-screen .reservation-help-icon{width:22px;height:22px}
+.first-screen .reservation-rule-list{gap:7px;padding:10px 0 0}
+.first-screen .reservation-rule-list li{gap:8px}
+.first-screen .reservation-rule-list li>img{width:10px;height:12px;flex-basis:10px;margin-top:3px}
+.first-screen .reservation-rule-list h3{display:inline;font-size:11px;margin-right:10px;color:#deedff}
+.first-screen .reservation-rule-list p{display:inline;font-size:11px;line-height:1.65;margin:0}
+.first-screen .reservation-rule-list li>div{line-height:1.65}
+@media(max-width:768px){
+ .first-screen .reservation-panel{padding:18px 16px}
+ .first-screen .reservation-content>h2{font-size:21px;padding:8px 14px}
+ .first-screen:has(#reservation:not([hidden])) .hero-title{font-size:24px}
+ .first-screen .reservation-rule-list h3{display:block;margin:0 0 2px}
+ .first-screen .reservation-rule-list p{font-size:12px;line-height:1.7}
+ .first-screen .reservation-rule-list{gap:12px}
+}
