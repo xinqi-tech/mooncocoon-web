@@ -39,3 +39,7 @@ Reservation dialog: `reservation-edit{,-base}.png` are original assets from Figm
 `reservation-copy.png`: unchanged 94×94 App copy export from Figma J56l6Cs090O8z8aZU1AqQC node 40000766:82346, rendered beside the receipt code.
 
 `query-{left,middle,right}.png`: original independent three-slice exports from node 40000766:82347, 230×74 button design. End caps preserve aspect ratio; only the center stretches.
+
+`reservation-progress-light.png`: unchanged 116×116 progress endpoint export from Figma 40000772:82368.
+
+`gift-base-locked.png`: original grey plate export from Figma 40000771:82365; uses the specified crop (left -19.57%, top -16.3%, width140.58%, height134.06%) inside a 67% centered frame to match the blue plate visible circle, whose source includes a larger transparent glow canvas. Gift icons remain closed in both states.

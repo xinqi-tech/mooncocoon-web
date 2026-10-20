@@ -139,18 +139,27 @@
       const milestones=(available&&data.rewards?.length?data.rewards:previewRewards).slice().sort((a,b)=>a.threshold-b.threshold);
       const count=!upcoming&&Number.isFinite(data.count)?Math.max(0,data.count):0;
       const positions=milestones.map((_,index)=>(index+.5)/Math.max(milestones.length,1));
-      let progress=0;
+      const trackStart=.02;
+      let progress=trackStart;
       if(!upcoming&&milestones.length&&Number.isFinite(data.count)){
         const nextIndex=milestones.findIndex(reward=>count<reward.threshold);
         if(nextIndex<0)progress=positions[positions.length-1];
         else{
           const lowerCount=nextIndex?milestones[nextIndex-1].threshold:0;
-          const lowerPosition=nextIndex?positions[nextIndex-1]:0;
+          const lowerPosition=nextIndex?positions[nextIndex-1]:trackStart;
           const fraction=Math.min(1,(count-lowerCount)/Math.max(1,milestones[nextIndex].threshold-lowerCount));
           progress=lowerPosition+(positions[nextIndex]-lowerPosition)*fraction;
         }
       }
-      rewards.style.setProperty('--milestone-progress',`${(progress*100).toFixed(2)}%`);
+      rewards.style.setProperty('--milestone-progress',`${(progress*100).toFixed(5)}%`);
+      rewards.dataset.progressActive=String(!upcoming&&Number.isFinite(data.count)&&count>0);
+      const track=doc.createElement('span');track.className='reservation-track';track.setAttribute('role','progressbar');
+      track.setAttribute('aria-label','预约人数奖励进度');track.setAttribute('aria-valuemin','0');
+      track.setAttribute('aria-valuemax',String(milestones.at(-1)?.threshold||100000));
+      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones.at(-1)?.threshold||100000)));
+      else track.setAttribute('aria-valuetext',upcoming?'预约尚未开启':'预约人数暂不可用');
+      const start=doc.createElement('span');start.className='reservation-track-start';start.setAttribute('aria-hidden','true');track.append(start);
+      const light=doc.createElement('img');light.className='reservation-progress-light';light.src='images/app-ui/reservation-progress-light.png';light.alt='';light.setAttribute('aria-hidden','true');track.append(light);rewards.append(track);
       const next=milestones.find(reward=>count<reward.threshold);
       el('reservationNext').textContent=upcoming?'预约开启后，与你一起点亮三份心意。':Number.isFinite(data.count)?next?`距离 ${next.threshold/10000} 万人档，还差 ${(next.threshold-count).toLocaleString('zh-CN')} 人`:'全部里程碑已达成':'人数更新后显示下一档进度';
       for(const reward of milestones){
@@ -158,7 +167,8 @@
         const card=doc.createElement('article');card.className='reservation-reward'+(unlocked?' is-unlocked':'');
         const target=doc.createElement('span');target.className='reservation-reward-target';target.textContent=`${reward.threshold/10000} 万人`;card.append(target);
         const orb=doc.createElement('span');orb.className='reservation-reward-orb';orb.setAttribute('aria-hidden','true');
-        const img=doc.createElement('img');img.src=unlocked?'images/app-ui/gift-open.webp':'images/app-ui/gift-closed.webp';img.alt='';orb.append(img);
+        if(!unlocked){const base=doc.createElement('span');base.className='reservation-orb-base';const baseImage=doc.createElement('img');baseImage.src='images/app-ui/gift-base-locked.png';baseImage.alt='';base.append(baseImage);orb.append(base)}
+        const img=doc.createElement('img');img.className='reservation-gift-icon';img.src='images/app-ui/gift-closed.webp';img.alt='';orb.append(img);
         card.append(orb);
         const title=doc.createElement('strong');title.textContent=reward.name;card.append(title);
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);

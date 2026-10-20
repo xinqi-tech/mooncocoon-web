@@ -374,3 +374,23 @@
 .reservation-dialog #reservationSubscribe{width:min(100%,280px);aspect-ratio:796/180;padding:0 24px;min-height:0;margin:0;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font:400 19px/1.3 ReservationJHT,sans-serif}
 .reservation-dialog #reservationSubscribe:disabled{filter:grayscale(.8);opacity:.65;cursor:default}
 @media(max-width:768px){.reservation-query{right:16px;top:14px;width:104px;height:34px;font-size:15px}.reservation-query-art{grid-template-columns:46.5px minmax(0,1fr) 46.5px}.reservation-query-art>img{height:34px}.reservation-receipt{font-size:13px}.reservation-receipt>div{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:12px 0}.reservation-dialog .reservation-receipt-note{font-size:12px}}
+/* Milestones start at zero, then interpolate between the three real thresholds. */
+.reservation-rewards{--track-start:2%}
+.reservation-rewards::before{left:var(--track-start);right:16.66667%;height:1px}
+.reservation-rewards::after{left:var(--track-start);top:calc(var(--track-y) - 2px);height:4px;width:max(0%,calc(var(--milestone-progress) - var(--track-start)));max-width:81.33334%;border-radius:4px;background:linear-gradient(90deg,#5b97f5,#8cc6ff 70%,#d5efff);filter:drop-shadow(0 0 4px #69a7ff) drop-shadow(0 0 8px #72adff88)}
+.reservation-track{position:absolute;inset:0;pointer-events:none}
+.reservation-track-start{position:absolute;left:var(--track-start);top:var(--track-y);width:7px;height:7px;transform:translate(-50%,-50%);border:1px solid #c5dbf277;border-radius:50%;background:#526984}
+.reservation-rewards[data-progress-active="true"] .reservation-track-start{background:#a4d4ff;box-shadow:0 0 8px #78b9ff}
+.reservation-progress-light{position:absolute;left:var(--milestone-progress);top:var(--track-y);width:38px;height:38px;object-fit:contain;transform:translate(-50%,-50%);z-index:2;transition:left .8s cubic-bezier(.22,1,.36,1)}
+.reservation-rewards[data-progress-active="false"] .reservation-progress-light{visibility:hidden}
+.first-screen .reservation-reward:not(.is-unlocked) .reservation-reward-orb{background:none}
+.reservation-orb-base{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.first-screen .reservation-reward-orb .reservation-orb-base>img,.reservation-reward-orb .reservation-orb-base>img{position:absolute;left:-19.57%;top:-16.3%;width:140.58%;height:134.06%;max-width:none;object-fit:fill;filter:none;opacity:1}
+.reservation-reward-orb>.reservation-gift-icon{position:relative;z-index:1}
+@media(max-width:768px){.reservation-progress-light{width:30px;height:30px}.reservation-track-start{width:6px;height:6px}}
+@media(prefers-reduced-motion:reduce){.reservation-progress-light{transition:none}}
+.reservation-track{z-index:0}
+/* Match the visible circles, accounting for the blue export's transparent canvas. */
+.reservation-orb-base{inset:16.5%;width:67%;height:67%}
+.reservation-rewards::after{top:calc(var(--track-y) - 1px);height:2px;filter:drop-shadow(0 0 2px #69a7ff) drop-shadow(0 0 5px #72adff88)}
+.first-screen .reservation-reward.is-unlocked .reservation-reward-orb::after{display:none}
