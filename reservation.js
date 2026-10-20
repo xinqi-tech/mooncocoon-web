@@ -104,7 +104,7 @@
       if(!reminderAllowed)form.elements.reminder.checked=false;
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
-      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'立即预约':'查询我的预约');
+      el('reservationOpen').textContent=(state.mine?.reservation?'查看预约':phase==='RESERVING'&&!data.reservationPaused?'立即预约':'查询我的预约');
       const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
       const dates=upcoming?'':
         [['领取截止',data.claimDeadlineAt]]
@@ -144,10 +144,10 @@
       }
       const canReserve=phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=upcoming||!!state.mine?.reservation;
-      el('reservationSubmit').hidden=!canReserve;
+      el('reservationSubmit').hidden=upcoming;
+      el('reservationSubmit').textContent=canReserve?'确认预约':'查看预约';
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
       form.elements.reminder.closest('label').hidden=!canReserve||!reminderAllowed;
-      el('reservationQuery').textContent=canReserve?'仅查询我的预约':'查询我的预约';
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
       const links=el('reservationDownloadLinks');links.replaceChildren();
       if(released)for(const [platform,url,label] of [['ANDROID',data.androidUrl,'下载 Android 版'],['IOS',data.iosUrl,'前往 App Store']]){
@@ -215,17 +215,32 @@
       const data=await request('/verify','POST',{phone,code});state.verified=true;renderMine(data.mine);return data;
     }
     form.elements.phone.addEventListener('input',()=>{state.verified=false});
+    let smsTimer,smsSending=false;
+    let smsRetryAt=Number(root.sessionStorage.getItem('reservation_sms_retry_at'))||0;
+    function renderSmsCooldown(){
+      const seconds=Math.max(0,Math.ceil((smsRetryAt-Date.now())/1000));
+      el('reservationSms').disabled=smsSending||seconds>0;
+      el('reservationSms').textContent=smsSending?'发送中…':seconds>0?`重新获取 ${seconds} s`:'获取验证码';
+      if(!seconds){root.clearInterval(smsTimer);root.sessionStorage.removeItem('reservation_sms_retry_at')}
+    }
+    function watchSmsCooldown(){root.clearInterval(smsTimer);renderSmsCooldown();if(smsRetryAt>Date.now())smsTimer=root.setInterval(renderSmsCooldown,250)}
+    watchSmsCooldown();
     el('reservationSms').addEventListener('click',async()=>{
+      if(smsSending||smsRetryAt>Date.now())return;
       try{const phone=form.elements.phone.value.trim();if(!validPhone(phone))throw new Error('请输入正确的中国大陆手机号');
-        await request('/sms','POST',{phone});message('验证码已发送');}catch(error){message(error.message)}
+        smsSending=true;renderSmsCooldown();
+        await request('/sms','POST',{phone});
+        smsRetryAt=Date.now()+60000;root.sessionStorage.setItem('reservation_sms_retry_at',String(smsRetryAt));message('');
+      }catch(error){message(error.message)}
+      finally{smsSending=false;watchSmsCooldown()}
     });
-    el('reservationQuery').addEventListener('click',async()=>{try{await verify()}catch(error){message(error.message)}});
     form.addEventListener('submit',async event=>{
       event.preventDefault();
-      if(!form.elements.adult.checked||!form.elements.terms.checked){message('请先确认已年满18周岁并同意协议与规则');return}
       try{
         if(!state.verified)await verify();
         if(state.mine?.reservation){message('该手机号已预约，已恢复原记录');return}
+        if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
+        if(!form.elements.adult.checked||!form.elements.terms.checked){message('请先确认已年满18周岁并同意协议与规则');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
         const platform=selectedPlatform(form,root.navigator.userAgent);
@@ -235,7 +250,7 @@
       }catch(error){
         refreshActivity();
         try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
-        message('暂未确认预约结果，请先查询我的预约；未成功可重试。'+error.message);
+        message('暂未确认预约结果，请重试；若已预约，将自动恢复记录。'+error.message);
       }
     });
     el('reservationCopy').addEventListener('click',()=>{const code=state.mine?.reservation?.code;if(code)root.navigator.clipboard.writeText(code)});
