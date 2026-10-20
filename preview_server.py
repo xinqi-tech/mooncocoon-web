@@ -3,6 +3,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.request import urlopen
 from pathlib import Path
 import os
+import argparse
 
 UPSTREAM = "https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com/api/reservation-gift/activity"
 
@@ -29,4 +30,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir(Path(__file__).resolve().parent)
-    ThreadingHTTPServer(("127.0.0.1", 8770), PreviewHandler).serve_forever()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=8769)
+    args = parser.parse_args()
+    ThreadingHTTPServer(("127.0.0.1", args.port), PreviewHandler).serve_forever()

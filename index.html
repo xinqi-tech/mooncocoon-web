@@ -266,8 +266,8 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261020c">
-<link rel="stylesheet" href="app-ui.css?v=20261020c">
+<link rel="stylesheet" href="reservation.css?v=20261020d">
+<link rel="stylesheet" href="app-ui.css?v=20261020d">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -402,7 +402,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <audio id="bgmAudio" src="audio/bgm_login.mp3" loop preload="none"></audio>
 </nav>
 </div>
-<script src="region.js?v=20261020c"></script>
+<script src="region.js?v=20261020d"></script>
 <canvas id="particles"></canvas>
 <div class="page-ui">
 <!-- HERO SOCIAL SIDEBAR -->
@@ -423,6 +423,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 
 <section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry hidden>
   <div class="reservation-panel" data-state="loading">
+    <div class="reservation-content">
     <p class="reservation-eyebrow"><img src="images/reservation/star.png" alt=""> 月光茧 · 预约有礼 <img src="images/reservation/star.png" alt=""></p>
     <h2 id="reservationHeading">预约，等月光抵达</h2>
     <p class="reservation-lead">每一份期待，都让月光更近一步。</p>
@@ -467,7 +468,16 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     </div>
     </dialog>
     <div class="reservation-actions reservation-download" id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
-
+    </div>
+    <section class="reservation-rules reservation-rules-static" aria-labelledby="reservationRulesTitle">
+      <h2 id="reservationRulesTitle"><img class="reservation-help-icon" src="images/reservation/help.webp" alt=""><span>活动规则与常见问题</span></h2>
+      <ul class="reservation-rule-list">
+        <li><img src="images/reservation/star.png" alt=""><div><h3>参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>三份心意，随期待解锁</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>如何领取预约奖励</h3><p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>查询记录与上线提醒</h3><p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
+      </ul>
+    </section>
   </div>
 </section>
 
@@ -481,15 +491,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 
 <button class="scroll-hint first-screen-scroll" id="firstScreenScroll" type="button" aria-label="查看下方内容" onclick="document.getElementById(document.getElementById('reservation').hidden?'modules':'pv').scrollIntoView({behavior:'smooth'})"><img class="app-icon" src="images/app-ui/down.png" alt=""></button>
 </div>
-    <section class="reservation-rules reservation-rules-static" data-reservation-entry hidden aria-labelledby="reservationRulesTitle">
-      <h2 id="reservationRulesTitle"><img class="reservation-help-icon" src="images/reservation/help.webp" alt=""><span>活动规则与常见问题</span></h2>
-      <ul class="reservation-rule-list">
-        <li><img src="images/reservation/star.png" alt=""><div><h3>参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>三份心意，随期待解锁</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>如何领取预约奖励</h3><p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>查询记录与上线提醒</h3><p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
-      </ul>
-    </section>
+
 
 <!-- PRODUCT MODULES -->
 <section class="modules" id="modules">
@@ -1168,6 +1170,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20261020c" defer></script>
+<script src="reservation.js?v=20261020d" defer></script>
 </body>
 </html>
