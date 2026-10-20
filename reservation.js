@@ -71,6 +71,8 @@
       data=data||{};
       const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
       doc.querySelector('.reservation-panel').dataset.state=upcoming?'upcoming':'active';
+      if(upcoming)el('reservationNotice').before(el('reservationPhase'));
+      else doc.querySelector('.reservation-overview').prepend(el('reservationPhase'));
       el('reservationRetry').hidden=true;
       el('reservationNotice').textContent=upcoming?(available&&data.startAt?'预约将在以上时间开放，期待与你相见。':'开放时间将在官网公布，敬请期待。'):'';
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):

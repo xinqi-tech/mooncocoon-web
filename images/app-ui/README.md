@@ -14,3 +14,5 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 
 - `title-plate.webp`: `drawable-nodpi/recharge_help_heading.webp`
 - `star-divider.png`: `drawable-nodpi/affection_rules_divider.png`
+
+`title-slice-0.png` … `title-slice-8.png`: Figma J56l6Cs090O8z8aZU1AqQC node 40000741:48072, original exported slices in row-major order. Three columns; fixed end caps, stretchable center.
