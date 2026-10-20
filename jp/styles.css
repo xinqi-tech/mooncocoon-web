@@ -1,5 +1,5 @@
-@font-face { font-family: "QingNiao Serif"; src: url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype"); font-display: swap; }
-@font-face { font-family: "QingNiao Sans"; src: url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "JHT"; src: url("../fonts/JHT.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "JHB"; src: url("../fonts/JHB.woff2") format("woff2"); font-display: swap; }
 
 :root {
   --night-990: #030d20;
@@ -17,8 +17,8 @@
   --glass-border: rgba(220, 240, 255, 0.3);
   --glass-border-bright: rgba(235, 248, 255, 0.52);
   --page-x: clamp(20px, 5vw, 72px);
-  --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", "QingNiao Serif", serif;
-  --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "QingNiao Sans", system-ui, sans-serif;
+  --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", "JHT", serif;
+  --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", "JHB", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }

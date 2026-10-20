@@ -17,11 +17,10 @@
 </script>
 <title>LunaKoru - A place where feelings connect</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+<link rel="preload" href="../fonts/JHT.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:"QingNiao Serif";src:url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
-@font-face{font-family:"QingNiao Sans";src:url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"JHT";src:url("../fonts/JHT.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"JHB";src:url("../fonts/JHB.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
 :root {
   --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
   --night-780:#1d477f;--mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;
@@ -33,8 +32,8 @@
   --glow-blue:rgba(150,205,255,0.34);--divider-soft:rgba(220,240,255,0.18);
   --rounded-xxl:28px;--rounded-panel:34px;--rounded-pill:9999px;
   --nav-h:56px;--page-x:18px;
-  --font-serif:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP","QingNiao Serif",serif;
-  --font-sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","QingNiao Sans",system-ui,sans-serif;
+  --font-serif:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP","JHT",serif;
+  --font-sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","JHB",system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
 .custom-cursor{position:fixed;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);width:44px;height:44px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('../images/cursor_stop.apng')}
@@ -285,6 +284,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
+<link rel="stylesheet" href="../app-ui.css?v=20261020">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -419,8 +419,8 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <div class="region-menu" data-region-menu role="menu"></div>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="Play BGM" aria-pressed="false" title="BGM">
-    <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <img class="bgm-off" src="../images/app-ui/sound-off.png" alt="" aria-hidden="true">
+    <img class="bgm-on" src="../images/app-ui/sound-on.png" alt="" aria-hidden="true">
   </button>
   <audio id="bgmAudio" src="../audio/bgm_login.mp3" loop preload="none"></audio>
 </nav>
@@ -446,7 +446,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <span class="frame-corner"><img class="light-particle" src="../images/light.png"><img class="light-particle" src="../images/light.png"><img class="light-particle" src="../images/light.png"></span>
   </div>
   <button class="scroll-hint" onclick="setTimeout(()=>{const target=document.getElementById('modules').getBoundingClientRect().top+window.scrollY;const start=window.scrollY;const dist=target-start;const duration=600;let t0=null;function step(ts){if(!t0)t0=ts;const p=Math.min((ts-t0)/duration,1);const ease=p<0.5?4*p*p*p:(1-Math.pow(-2*p+2,3)/2);window.scrollTo(0,start+dist*ease);if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)},300)">
-    <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
+    <div class="scroll-hint-icon"><img class="app-icon" src="../images/app-ui/down.png" alt="" aria-hidden="true"></div>
     <span class="scroll-hint-label">SCROLL</span>
   </button>
 </section>
@@ -535,7 +535,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
+
 const moduleData = [
   {subs:["Character design","Appearance customization","Real voice"],descs:["Shape a personality and a one-of-a-kind heart around your preferences\nChoose from official and original settings\nFine manual editing and AI-assisted generation","Adjust facial features and outfits to create your ideal look\nCustomize face, body, and styling from every angle\nMix and match animal ears, masks, collars, and more","A voice that carries emotional nuance and breath\nChoose from multiple natural TTS voices\nExpress every emotion through voice"],videos:[["../videos/01_persona_setup/user_initial_setup.mp4","../videos/01_persona_setup/boyfriend_style_selection.mp4","../videos/01_persona_setup/persona_manual_ai_voice.mp4"],["../videos/02_appearance_customization/appearance_hair_color.mp4","../videos/02_appearance_customization/appearance_facial_detail.mp4","../videos/02_appearance_customization/appearance_body_adjust.mp4"],["../videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["Initial setup","Style selection","Profile editing"],["Hair color","Facial details","Body shape"],["Emotional voice"]]},
   {subs:["Our memories","A life of its own","Emotional responses"],descs:["Build memories that belong only to the two of you through conversation\nEdit or delete memories and shape them as your relationship grows\nLet your companion bring up shared memories in everyday conversation","Keep a life of its own while you are away\nHave its own schedule and daily rhythm\nQuietly record its inner thoughts in a diary","Respond to your actions with changing emotions\nAn emotional model that changes with each situation\nConversations that do not rely on mechanical replies"],videos:[["../videos/08_exclusive_memory/memory_edit.mp4"],["../videos/04_boyfriend_daily/boyfriend_diary.mp4","../videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["../videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["Memory editing"],["Diary","Schedule","Coming soon"],["Emotional changes"]]},

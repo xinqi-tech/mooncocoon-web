@@ -12,6 +12,9 @@
   'use strict';
   const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
+  // Approved reward categories are a preview only; counts and unlocks always come from the API.
+  const previewRewards=[{tier:3,threshold:20000,name:'专属称号'},
+    {tier:1,threshold:50000,name:'永久配饰'},{tier:2,threshold:100000,name:'永久服装'}];
   const validPhone=phone=>/^1[3-9]\d{9}$/.test(String(phone||''));
   const safeUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:''}catch(_){return ''}};
   const channel=value=>/^[a-zA-Z0-9_-]{1,80}$/.test(value||'')?value:'unknown';
@@ -48,34 +51,45 @@
     const request=async(path,method='GET',body=null)=>{
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
-      const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,
-        body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
-      if(!response.ok)throw new Error(response.status===401?'查询会话已过期，请重新验证手机号':
-        response.status===403?'请求被拒绝，请刷新页面重试':response.status===429?'操作太频繁，请稍后再试':'请求失败，请稍后再试');
-      const envelope=await response.json();
-      if(envelope.result!==0)throw new Error(envelope.errorMsg||'请求失败');
-      return envelope.data;
+      const controller=path==='/activity'?new AbortController():null;
+      const timeout=controller?root.setTimeout(()=>controller.abort(),12000):null;
+      try{
+        const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
+          body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
+        if(!response.ok)throw new Error(response.status===401?'查询会话已过期，请重新验证手机号':
+          response.status===403?'请求被拒绝，请刷新页面重试':response.status===429?'操作太频繁，请稍后再试':'请求失败，请稍后再试');
+        const envelope=await response.json();
+        if(envelope.result!==0)throw new Error(envelope.errorMsg||'请求失败');
+        return envelope.data;
+      }finally{if(timeout!==null)root.clearTimeout(timeout)}
     };
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
     function renderActivity(data){
       state.activity=data;
-      if(!data||!data.available){el('reservationNotice').textContent='活动尚未开放，请稍后查看。';form.hidden=true;el('reservationOpen').disabled=true;return}
-      el('reservationNotice').textContent='';
-      const phase=data.phase;
+      const available=!!data?.available;
+      data=data||{};
+      const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
+      doc.querySelector('.reservation-panel').dataset.state=upcoming?'upcoming':'active';
+      el('reservationRetry').hidden=true;
+      el('reservationNotice').textContent=upcoming?(available&&data.startAt?'预约将在以上时间开放，期待与你相见。':'开放时间将在官网公布，敬请期待。'):'';
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
-        phase==='BEFORE'?'预约尚未开始':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
+        phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
-      el('reservationOpen').disabled=false;
+      el('reservationOpen').disabled=upcoming;
+      el('reservationOpen').hidden=upcoming;
       el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约')+' →';
-      el('reservationDates').textContent='预约开始：'+date(data.startAt)+'；正式上线：'+date(data.releaseAt)+'；领取截止：'+date(data.claimDeadlineAt);
-      el('reservationCount').textContent=Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
-      el('heroReservationProgress').textContent=el('reservationCount').textContent;
+      const dates=upcoming?(available&&data.startAt?'预约开启时间 · '+date(data.startAt):''):
+        [['预约开始',data.startAt],['正式上线',data.releaseAt],['领取截止',data.claimDeadlineAt]]
+          .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
+      el('reservationDates').textContent=dates;el('reservationDates').hidden=!dates;
+      el('reservationCount').textContent=upcoming?'月光好礼，静候开启':Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
+      el('heroReservationProgress').textContent=upcoming?'预约即将开启 · 开放时间敬请关注':el('reservationCount').textContent;
       const rewards=el('reservationRewards');rewards.replaceChildren();
-      const milestones=(data.rewards||[]).slice().sort((a,b)=>a.threshold-b.threshold);
-      const count=Number.isFinite(data.count)?Math.max(0,data.count):0;
+      const milestones=(available&&data.rewards?.length?data.rewards:previewRewards).slice().sort((a,b)=>a.threshold-b.threshold);
+      const count=!upcoming&&Number.isFinite(data.count)?Math.max(0,data.count):0;
       const positions=milestones.map((_,index)=>(index+.5)/Math.max(milestones.length,1));
       let progress=0;
-      if(milestones.length&&Number.isFinite(data.count)){
+      if(!upcoming&&milestones.length&&Number.isFinite(data.count)){
         const nextIndex=milestones.findIndex(reward=>count<reward.threshold);
         if(nextIndex<0)progress=positions[positions.length-1];
         else{
@@ -87,23 +101,21 @@
       }
       rewards.style.setProperty('--milestone-progress',`${(progress*100).toFixed(2)}%`);
       const next=milestones.find(reward=>count<reward.threshold);
-      el('reservationNext').textContent=Number.isFinite(data.count)?next?`距离 ${next.threshold/10000} 万人档，还差 ${(next.threshold-count).toLocaleString('zh-CN')} 人`:'全部里程碑已达成':'人数更新后显示下一档进度';
+      el('reservationNext').textContent=upcoming?'预约开启后，与你一起点亮三份心意。':Number.isFinite(data.count)?next?`距离 ${next.threshold/10000} 万人档，还差 ${(next.threshold-count).toLocaleString('zh-CN')} 人`:'全部里程碑已达成':'人数更新后显示下一档进度';
       for(const reward of milestones){
-        const unlocked=!!(data.unlockedMask&(1<<(reward.tier-1)));
+        const unlocked=!upcoming&&!!(data.unlockedMask&(1<<(reward.tier-1)));
         const card=doc.createElement('article');card.className='reservation-reward'+(unlocked?' is-unlocked':'');
         const target=doc.createElement('span');target.className='reservation-reward-target';target.textContent=`${reward.threshold/10000} 万人`;card.append(target);
         const orb=doc.createElement('span');orb.className='reservation-reward-orb';orb.setAttribute('aria-hidden','true');
-        const image=safeUrl(reward.image);
-        if(image){const img=doc.createElement('img');img.src=image;img.alt='';orb.append(img)}
-        else orb.textContent='✦';
+        const img=doc.createElement('img');img.src=unlocked?'images/app-ui/gift-open.webp':'images/app-ui/gift-closed.webp';img.alt='';orb.append(img);
         card.append(orb);
         const title=doc.createElement('strong');title.textContent=reward.name;card.append(title);
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
-        status.textContent=unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
+        status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
       }
       const canReserve=phase==='RESERVING'&&!data.reservationPaused;
-      form.hidden=!!state.mine?.reservation;
+      form.hidden=upcoming||!!state.mine?.reservation;
       el('reservationSubmit').hidden=!canReserve;
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
       el('reservationQuery').textContent=canReserve?'仅查询我的预约':'查询我的预约';
@@ -128,7 +140,7 @@
         }
         group.append(node);links.append(group);
       }
-      el('reservationSticky').textContent=released?'下载月光茧':state.mine?.reservation?'查看我的预约':'立即预约';
+      el('reservationSticky').textContent=upcoming?'查看预约预告':released?'下载月光茧':state.mine?.reservation?'查看我的预约':'立即预约';
     }
     function renderMine(data){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
@@ -146,6 +158,7 @@
       if(state.activity)renderActivity(state.activity);
     }
     function refreshActivity(){
+      clearTimeout(refreshTimer);
       request('/activity').then(data=>{
         renderActivity(data);clearTimeout(refreshTimer);
         const now=Date.parse(data.serverTime),release=Date.parse(data.releaseAt),start=Date.parse(data.startAt);
@@ -153,10 +166,20 @@
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
         refreshTimer=root.setTimeout(refreshActivity,delay);
       }).catch(()=>{
-        if(!state.activity){form.hidden=true;el('reservationNotice').textContent='活动信息暂不可用，请稍后重试。';el('reservationCount').textContent=''}
+        el('reservationRetry').hidden=false;
+        if(!state.activity){
+          doc.querySelector('.reservation-panel').dataset.state='error';
+          el('reservationPhase').textContent='暂时无法连接';
+          el('reservationCount').textContent='活动信息加载失败';
+          el('reservationNext').textContent='请稍后重试，或先查看下方活动规则。';
+          el('heroReservationProgress').textContent='活动信息暂不可用';
+          el('reservationNotice').textContent='';
+          form.hidden=true;el('reservationOpen').hidden=true;el('reservationOpen').disabled=true;
+        }else el('reservationNotice').textContent='活动信息暂未更新，请稍后重试。';
         clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
       });
     }
+    el('reservationRetry').addEventListener('click',()=>{el('reservationRetry').hidden=true;refreshActivity()});
     async function verify(){
       const phone=form.elements.phone.value.trim(),code=form.elements.code.value.trim();
       if(!validPhone(phone)||!/^\d{6}$/.test(code))throw new Error('请填写正确的大陆手机号和六位验证码');

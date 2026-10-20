@@ -7,11 +7,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>月光茧 - 虚实有别，爱意无界</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+<link rel="preload" href="fonts/JHT.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-@font-face{font-family:"QingNiao Serif";src:url("fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
-@font-face{font-family:"QingNiao Sans";src:url("fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"JHT";src:url("fonts/JHT.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"JHB";src:url("fonts/JHB.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
 :root {
   --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
   --night-780:#1d477f;--mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;
@@ -23,8 +22,8 @@
   --glow-blue:rgba(150,205,255,0.34);--divider-soft:rgba(220,240,255,0.18);
   --rounded-xxl:28px;--rounded-panel:34px;--rounded-pill:9999px;
   --nav-h:56px;--page-x:18px;
-  --font-serif:"QingNiao Serif","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
-  --font-sans:"QingNiao Sans","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-serif:"JHT","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-sans:"JHB","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
 .custom-cursor{position:fixed;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);width:44px;height:44px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('images/cursor_stop.apng')}
@@ -267,7 +266,8 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20260927a">
+<link rel="stylesheet" href="reservation.css?v=20261020b">
+<link rel="stylesheet" href="app-ui.css?v=20261020">
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -396,8 +396,8 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <div class="region-menu" data-region-menu role="menu"></div>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="播放背景音乐" aria-pressed="false" title="背景音乐">
-    <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <img class="bgm-off" src="images/app-ui/sound-off.png" alt="" aria-hidden="true">
+    <img class="bgm-on" src="images/app-ui/sound-on.png" alt="" aria-hidden="true">
   </button>
   <audio id="bgmAudio" src="audio/bgm_login.mp3" loop preload="none"></audio>
 </nav>
@@ -422,30 +422,33 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <a class="reservation-hero-cta" href="#reservation" data-reservation-entry hidden>查看预约活动</a>
   <p class="reservation-hero-progress" id="heroReservationProgress" data-reservation-entry hidden>活动信息加载中</p>
   <button class="scroll-hint" onclick="document.getElementById(document.getElementById('reservation').hidden?'pv':'reservation').scrollIntoView({behavior:'smooth'})">
-    <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
+    <div class="scroll-hint-icon"><img class="app-icon" src="images/app-ui/down.png" alt="" aria-hidden="true"></div>
     <span class="scroll-hint-label">SCROLL</span>
   </button>
 </section>
 
 <section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry hidden>
-  <div class="reservation-panel">
-    <p class="reservation-eyebrow"><span aria-hidden="true">✦</span> 月光茧 · 预约有礼 <span aria-hidden="true">✦</span></p>
+  <div class="reservation-panel" data-state="loading">
+    <p class="reservation-eyebrow"><img src="images/reservation/star.png" alt=""> 月光茧 · 预约有礼 <img src="images/reservation/star.png" alt=""></p>
     <h2 id="reservationHeading">预约，等月光抵达</h2>
     <p class="reservation-lead">每一份期待，都让月光更近一步。</p>
     <div class="reservation-overview">
-      <p id="reservationPhase" class="reservation-phase">正在获取活动状态</p>
+      <p id="reservationPhase" class="reservation-phase" role="status">正在加载活动信息</p>
       <p id="reservationCount" class="reservation-count" aria-live="polite"></p>
       <p id="reservationNext" class="reservation-next"></p>
     </div>
     <div class="reservation-milestones" aria-label="预约人数奖励进度">
       <div class="reservation-rewards" id="reservationRewards"></div>
     </div>
-    <p id="reservationDates" class="reservation-dates"></p>
-    <button type="button" class="reservation-open" id="reservationOpen" aria-haspopup="dialog" aria-controls="reservationDialog" disabled>留下你的预约 <span aria-hidden="true">→</span></button>
+    <div class="reservation-cta">
+    <p id="reservationDates" class="reservation-dates" hidden></p>
+    <button type="button" class="reservation-open" id="reservationOpen" aria-haspopup="dialog" aria-controls="reservationDialog" disabled hidden>留下你的预约 <img class="app-icon" src="images/app-ui/right.png" alt="" aria-hidden="true"></button>
     <p class="reservation-notice" id="reservationNotice" role="status"></p>
+    <button type="button" id="reservationRetry" class="reservation-retry" hidden>重新加载</button>
+    </div>
     <dialog class="reservation-dialog" id="reservationDialog" aria-labelledby="reservationFormHeading">
     <div class="reservation-actions" id="reservationActions">
-      <button type="button" class="reservation-dialog-close" id="reservationClose" aria-label="关闭预约窗口">×</button>
+      <button type="button" class="reservation-dialog-close" id="reservationClose" aria-label="关闭预约窗口"><img class="app-icon" src="images/app-ui/close.webp" alt=""></button>
       <div class="reservation-form-heading"><span aria-hidden="true">✧</span><div><p>YOUR MOONLIGHT</p><h3 id="reservationFormHeading">留下你的预约</h3></div></div>
       <form id="reservationForm" novalidate>
         <label>中国大陆手机号 <input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" required></label>
@@ -470,11 +473,14 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     </div>
     </dialog>
     <div class="reservation-actions reservation-download" id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
-    <details class="reservation-rules"><summary>活动规则与常见问题</summary>
-      <p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p>
-      <p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p>
-      <p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p>
-      <p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 hello@heabo.cn。</p>
+    <details class="reservation-rules">
+      <summary><img class="reservation-help-icon" src="images/reservation/help.webp" alt=""><span>活动规则与常见问题</span><span class="reservation-rules-toggle" aria-hidden="true"></span></summary>
+      <ul class="reservation-rule-list">
+        <li><img src="images/reservation/star.png" alt=""><div><h3>参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>三份心意，随期待解锁</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>如何领取预约奖励</h3><p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>查询记录与上线提醒</h3><p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
+      </ul>
     </details>
   </div>
 </section>
@@ -574,7 +580,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
+
 const moduleData = [
   {subs:["人设定制","外观定制","拟真语音"],descs:["结合你的喜好与个性，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
   {subs:["独家记忆","独立生活","情绪反馈"],descs:["根据聊天内容，日积月累形成专属记忆库\n记忆库可编辑可删减，制造你们独一无二的回忆\n在日常聊天里主动提起曾经的回忆","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表","待补充"],["真实情绪"]]},
@@ -1166,6 +1172,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20261020a" defer></script>
+<script src="reservation.js?v=20261020b" defer></script>
 </body>
 </html>
