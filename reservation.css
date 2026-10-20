@@ -354,3 +354,23 @@
 .reservation-close-art>img{position:absolute;left:0;top:4.48%;width:100%;height:101.49%;max-width:none}
 
 .reservation-dialog .reservation-message{text-align:center;color:#ff9999!important;margin:12px auto 0;width:100%}
+/* Receipt: quiet rows, fine moonlight rules, copy action beside the number. */
+.reservation-panel{position:relative}
+.reservation-query{position:absolute;right:26px;top:18px;z-index:2;width:115px;height:37px;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;color:#5779b6;font:400 17px/1 ReservationJHT,sans-serif;cursor:pointer}
+.reservation-query>span:last-child{position:relative}
+.reservation-query-art{position:absolute;inset:0;display:grid;grid-template-columns:50.6px minmax(0,1fr) 50.6px;pointer-events:none}
+.reservation-query-art>img{width:100%;height:37px;display:block}
+.reservation-receipt{margin:10px 0 18px;font:400 15px/1.7 ReservationJHT,sans-serif}
+.reservation-receipt>div{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid #bfdcff30}
+.reservation-receipt>div:first-child{border-top:1px solid #bfdcff30}
+.reservation-receipt dt{color:#b8cde4}
+.reservation-receipt dd{margin:0;color:#f0f7ff;min-width:0;overflow-wrap:anywhere}
+.reservation-code{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#reservationMineCode{user-select:all}
+.reservation-dialog #reservationCopy{display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:32px;min-height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;border-radius:0}
+#reservationCopy>img{display:block;width:28px;height:28px;object-fit:contain}
+#reservationCopyStatus{color:#c0dcf8;font-size:12px}
+.reservation-dialog .reservation-receipt-note{font:400 13px/1.8 ReservationJHT,sans-serif;color:#b8cde4;text-align:center;margin:12px 0}
+.reservation-dialog #reservationSubscribe{width:min(100%,280px);aspect-ratio:796/180;padding:0 24px;min-height:0;margin:0;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font:400 19px/1.3 ReservationJHT,sans-serif}
+.reservation-dialog #reservationSubscribe:disabled{filter:grayscale(.8);opacity:.65;cursor:default}
+@media(max-width:768px){.reservation-query{right:16px;top:14px;width:104px;height:34px;font-size:15px}.reservation-query-art{grid-template-columns:46.5px minmax(0,1fr) 46.5px}.reservation-query-art>img{height:34px}.reservation-receipt{font-size:13px}.reservation-receipt>div{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:12px 0}.reservation-dialog .reservation-receipt-note{font-size:12px}}

@@ -37,9 +37,14 @@
     const el=id=>doc.getElementById(id);
     const message=value=>{el('reservationMessage').textContent=value};
     const errorHint=error=>error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
-    const state={activity:null,mine:null,csrf:null,verified:false};
+    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false};
     const dialog=el('reservationDialog');
     el('reservationOpen').addEventListener('click',()=>{
+      state.queryOnly=false;if(state.activity)renderActivity(state.activity);message('');
+      dialog.showModal();doc.documentElement.classList.add('reservation-modal-open');
+    });
+    el('reservationQuery').addEventListener('click',()=>{
+      state.queryOnly=true;if(state.activity)renderActivity(state.activity);message('');
       dialog.showModal();doc.documentElement.classList.add('reservation-modal-open');
     });
     el('reservationClose').addEventListener('click',()=>dialog.close());
@@ -102,7 +107,7 @@
       }
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
-      el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'立即预约':'查询我的预约';
+      el('reservationFormHeading').textContent=state.mine?.reservation?'预约成功':state.queryOnly?'查询预约':phase==='RESERVING'?'立即预约':'查询预约';
       const reminderAllowed=data.reminderAvailable!==false;
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
@@ -146,10 +151,10 @@
         const status=doc.createElement('span');status.className='reservation-reward-status';
         status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
       }
-      const canReserve=phase==='RESERVING'&&!data.reservationPaused;
-      form.hidden=upcoming||!!state.mine?.reservation;
-      el('reservationSubmit').hidden=upcoming;
-      el('reservationSubmit').textContent=canReserve?'确认预约':'查看预约';
+      const canReserve=!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
+      form.hidden=(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
+      el('reservationSubmit').hidden=upcoming&&!state.queryOnly;
+      el('reservationSubmit').textContent=canReserve?'确认预约':'查询预约';
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
       form.elements.reminder.closest('label').hidden=!canReserve||!reminderAllowed;
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
@@ -178,14 +183,21 @@
       state.mine=data;state.csrf=data?.csrf||state.csrf;
       const reservation=data?.reservation;
       el('reservationMine').hidden=!reservation;
-      if(reservation){el('reservationMineText').textContent=`${data.phoneMasked} · 编号 ${reservation.code} · ${reservation.platform} · ${reservation.reminderSubscribed?'已订阅上线提醒':'未订阅上线提醒'}`;
+      if(reservation){
+        el('reservationMinePhone').textContent=data.phoneMasked;
+        el('reservationMineCode').textContent=reservation.code;
+        el('reservationMinePlatform').textContent=reservation.platform==='IOS'?'iOS':'Android';
+        el('reservationMineReminder').textContent=reservation.reminderSubscribed?'已订阅':'未订阅';
+        el('reservationCopyStatus').textContent='';
+        el('reservationSubscribe').disabled=reservation.reminderSubscribed||state.activity?.reminderAvailable!==true;
+        el('reservationSubscribe').textContent=reservation.reminderSubscribed?'已订阅上线提醒':'订阅上线提醒';
+        el('reservationReminderHint').textContent=!reservation.reminderSubscribed&&state.activity?.reminderAvailable!==true?'上线提醒暂未开放':'';
         const rewardList=el('reservationMineRewards');rewardList.replaceChildren();
         const stateLabels={PENDING:'发放中',GRANTED:'已到账',ALREADY_OWNED:'已拥有同款'};
         for(const reward of reservation.rewards||[]){const item=doc.createElement('li');
           const tierLabel={3:'2 万人档',1:'5 万人档',2:'10 万人档'};
           item.textContent=`${tierLabel[reward.tier]||'奖励'}：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
-        el('reservationUnsubscribe').hidden=!reservation.reminderSubscribed;
-        message('预约记录已确认。正式上线后请使用同手机号账号进入 App。');}
+        message('');}
       else if(data&&state.verified){message('未查到预约记录，请核对手机号。')}
       if(state.activity)renderActivity(state.activity);
     }
@@ -250,10 +262,11 @@
       let submitted=false;
       try{
         if(!state.verified)verificationInput();
-        const accepting=state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
+        const accepting=!state.queryOnly&&state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
         if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
         if(!state.verified)await verify();
-        if(state.mine?.reservation){message('该手机号已预约，已恢复原记录');return}
+        if(state.mine?.reservation)return;
+        if(state.queryOnly){message('未查到预约记录');return}
         if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
@@ -270,12 +283,14 @@
         message(errorHint(error));
       }
     });
-    el('reservationCopy').addEventListener('click',()=>{const code=state.mine?.reservation?.code;if(code)root.navigator.clipboard.writeText(code)});
-    el('reservationPlatform').addEventListener('click',async()=>{try{const current=state.mine?.reservation?.platform;
-      renderMine(await request('/platform','PATCH',{platform:current==='IOS'?'ANDROID':'IOS'}));}catch(error){message(errorHint(error))}});
-    el('reservationUnsubscribe').addEventListener('click',async()=>{try{renderMine(await request('/unsubscribe','POST',{}));message('已取消上线短信提醒，预约与奖励不受影响')}catch(error){message(errorHint(error))}});
-    el('reservationLogout').addEventListener('click',async()=>{try{await request('/logout','POST',{});state.mine=null;state.csrf=null;state.verified=false;form.reset();
-      el('reservationMine').hidden=true;renderActivity(state.activity);message('已退出，请验证新的手机号')}catch(error){message(errorHint(error))}});
+    el('reservationCopy').addEventListener('click',async()=>{const code=state.mine?.reservation?.code;if(!code)return;
+      try{await root.navigator.clipboard.writeText(code);el('reservationCopyStatus').textContent='已复制'}
+      catch(_){el('reservationCopyStatus').textContent='请长按编号复制'}});
+    el('reservationSubscribe').addEventListener('click',async()=>{
+      if(el('reservationSubscribe').disabled)return;
+      try{el('reservationSubscribe').disabled=true;renderMine(await request('/subscribe','POST',{}))}
+      catch(error){el('reservationSubscribe').disabled=false;message(errorHint(error))}
+    });
     doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
     refreshActivity();
     if(!localPreview||doc.body.dataset.reservationTest==='true')request('/mine').then(renderMine).catch(()=>{});

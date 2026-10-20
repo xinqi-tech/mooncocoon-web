@@ -35,3 +35,7 @@ Reservation dialog: `reservation-edit{,-base}.png` are original assets from Figm
 `platform-android.svg` / `platform-ios.svg`: unchanged Figma C1hCs4YKQWmVjmOjLU84Xm nodes 578:743 / 578:749, displayed left of the platform names.
 
 `reservation-close.png`: original export from Figma J56l6Cs090O8z8aZU1AqQC node 40000763:81992 (sorting hat_icon_close), retaining the design crop offset; dialog close button has no circular frame.
+
+`reservation-copy.png`: unchanged 94×94 App copy export from Figma J56l6Cs090O8z8aZU1AqQC node 40000766:82346, rendered beside the receipt code.
+
+`query-{left,middle,right}.png`: original independent three-slice exports from node 40000766:82347, 230×74 button design. End caps preserve aspect ratio; only the center stretches.

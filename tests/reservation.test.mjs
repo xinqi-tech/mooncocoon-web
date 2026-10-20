@@ -35,7 +35,7 @@ test('首页预约在 PV 前，视频不自动预加载',async()=>{
 test('接口请求带 Cookie 且个人资料不用 HTML 字符串插值',async()=>{
   const js=await readFile(new URL('../reservation.js',import.meta.url),'utf8');
   assert.match(js,/credentials:'include'/);
-  assert.match(js,/textContent=`\$\{data\.phoneMasked\}/);
+  assert.match(js,/textContent=data\.phoneMasked/);
   assert.doesNotMatch(js,/innerHTML/);
 });
 test('桌面下载二维码由本地库为同一 HTTPS 链接编码',async()=>{

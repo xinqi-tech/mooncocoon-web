@@ -424,6 +424,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 
 <section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry hidden>
   <div class="reservation-panel" data-state="loading">
+    <button type="button" id="reservationQuery" class="reservation-query"><span aria-hidden="true" class="reservation-query-art"><img src="images/app-ui/query-left.png" alt=""><img src="images/app-ui/query-middle.png" alt=""><img src="images/app-ui/query-right.png" alt=""></span><span>查询预约</span></button>
     <div class="reservation-content">
     <p class="reservation-eyebrow"><img src="images/reservation/star.png" alt=""> 月光茧 · 预约有礼 <img src="images/reservation/star.png" alt=""></p>
     <h2 id="reservationHeading">月光茧预约有礼</h2>
@@ -453,15 +454,20 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
         <fieldset class="reservation-new-only reservation-platform-tabs"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"><span><img src="images/app-ui/platform-android.svg" alt="">Android</span></label><label><input type="radio" name="platform" value="IOS"><span><img src="images/app-ui/platform-ios.svg" alt="">iOS</span></label></fieldset>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="adult"> 我已年满 18 周岁</label>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="terms"> 我已阅读并同意<a href="user-agreement/" target="_blank" rel="noopener">用户协议</a>、<a href="privacy-policy/" target="_blank" rel="noopener">隐私政策</a>与活动规则</label>
-        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 自愿订阅正式上线短信提醒（可在“我的预约”取消）</label>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 自愿订阅一次正式上线短信提醒</label>
         <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button></div>
       </form>
       <div id="reservationMine" hidden>
-        <h3>我的预约</h3><p id="reservationMineText"></p><ul id="reservationMineRewards"></ul>
-        <button type="button" id="reservationCopy">复制预约编号</button>
-        <button type="button" id="reservationPlatform">切换目标平台</button>
-        <button type="button" id="reservationUnsubscribe">取消上线提醒</button>
-        <button type="button" id="reservationLogout">切换手机号</button>
+        <dl class="reservation-receipt">
+          <div><dt>预约手机号</dt><dd id="reservationMinePhone"></dd></div>
+          <div><dt>预约编号</dt><dd class="reservation-code"><span id="reservationMineCode"></span><button type="button" id="reservationCopy" aria-label="复制预约编号" title="复制预约编号"><img src="images/app-ui/reservation-copy.png" alt=""></button><span id="reservationCopyStatus" role="status"></span></dd></div>
+          <div><dt>目标平台</dt><dd id="reservationMinePlatform"></dd></div>
+          <div><dt>上线提醒</dt><dd id="reservationMineReminder"></dd></div>
+        </dl>
+        <ul id="reservationMineRewards"></ul>
+        <p class="reservation-receipt-note">正式上线后，请使用同一手机号登录 App。</p>
+        <div class="reservation-buttons"><button type="button" id="reservationSubscribe">订阅上线提醒</button></div>
+        <p id="reservationReminderHint" class="reservation-receipt-note"></p>
       </div>
       <p class="reservation-message" id="reservationMessage" role="status"></p>
     </div>
