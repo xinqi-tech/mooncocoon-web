@@ -352,3 +352,5 @@
 
 .reservation-close-art{position:relative;display:block;width:28px;height:28px;overflow:hidden}
 .reservation-close-art>img{position:absolute;left:0;top:4.48%;width:100%;height:101.49%;max-width:none}
+
+.reservation-dialog .reservation-message{text-align:center;color:#ff9999!important;margin:12px auto 0;width:100%}
