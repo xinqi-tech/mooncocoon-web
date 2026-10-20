@@ -35,18 +35,22 @@
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
     const el=id=>doc.getElementById(id);
-    const message=value=>{el('reservationMessage').textContent=value};
-    const errorHint=error=>error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
-    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false};
+    const message=value=>{if(value!==null)el('reservationMessage').textContent=value};
+    const errorHint=error=>error?.stale?null:error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
+    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false,flow:0,cleaning:Promise.resolve()};
     const dialog=el('reservationDialog');
-    el('reservationOpen').addEventListener('click',()=>{
-      state.queryOnly=false;if(state.activity)renderActivity(state.activity);message('');
+    async function openFlow(queryOnly){
+      const flow=++state.flow;
+      state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;state.queryOnly=queryOnly;
+      form.reset();form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
+      el('reservationMine').hidden=true;
+      if(state.activity)renderActivity(state.activity);message('');
       dialog.showModal();doc.documentElement.classList.add('reservation-modal-open');
-    });
-    el('reservationQuery').addEventListener('click',()=>{
-      state.queryOnly=true;if(state.activity)renderActivity(state.activity);message('');
-      dialog.showModal();doc.documentElement.classList.add('reservation-modal-open');
-    });
+      el('reservationSubmit').disabled=true;
+      await state.cleaning;if(state.flow===flow)el('reservationSubmit').disabled=false;
+    }
+    el('reservationOpen').addEventListener('click',()=>openFlow(false));
+    el('reservationQuery').addEventListener('click',()=>openFlow(true));
     el('reservationClose').addEventListener('click',()=>dialog.close());
     dialog.addEventListener('click',event=>{
       const rect=dialog.getBoundingClientRect();
@@ -54,6 +58,10 @@
     });
     dialog.addEventListener('close',()=>{
       doc.documentElement.classList.remove('reservation-modal-open');
+      if(state.csrf)state.cleaning=request('/logout','POST',{}).catch(()=>{});
+      state.flow++;state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;
+      form.reset();el('reservationMine').hidden=true;message('');
+      if(state.activity)renderActivity(state.activity);
     });
     let refreshTimer,countdownTimer;
     let boundaryRefreshRequested=false;
@@ -63,6 +71,8 @@
       if(value!=='unknown')root.sessionStorage.setItem('reservation_'+key,value);
     }
     const request=async(path,method='GET',body=null)=>{
+      const flow=state.flow;
+      const stale=()=>path!=='/activity'&&path!=='/logout'&&flow!==state.flow;
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
       const controller=path==='/activity'?new AbortController():null;
@@ -70,6 +80,7 @@
       try{
         const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
+        if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         if(!response.ok)throw new Error(response.status===401?'验证已过期，请重新获取验证码':
           response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');
         const envelope=await response.json();
@@ -77,8 +88,10 @@
           const reason=String(envelope.errorMsg||'');
           throw new Error(/频繁|冷却/.test(reason)?'请求太频繁，请稍后重试':/验证码/.test(reason)?'验证码错误或已过期':'请求失败，请稍后重试');
         }
+        if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         return envelope.data;
-      }finally{if(timeout!==null)root.clearTimeout(timeout)}
+      }catch(error){if(stale())error.stale=true;throw error}
+      finally{if(timeout!==null)root.clearTimeout(timeout)}
     };
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
     function renderActivity(data){
@@ -114,7 +127,7 @@
       if(!reminderAllowed)form.elements.reminder.checked=false;
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
-      el('reservationOpen').textContent=(state.mine?.reservation?'查看预约':phase==='RESERVING'&&!data.reservationPaused?'立即预约':'查询我的预约');
+      el('reservationOpen').textContent='立即预约';
       const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
       const dates=upcoming?'':
         [['领取截止',data.claimDeadlineAt]]
@@ -187,11 +200,12 @@
       el('reservationSubscribe').textContent=state.subscribing?'订阅中…':reservation.reminderSubscribed?'已订阅上线提醒':'订阅上线提醒';
       el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':available?'自愿接收一条正式上线短信提醒。':'上线提醒订阅暂未开放';
     }
-    function renderMine(data){
+    function renderMine(data,existing=false){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
       const reservation=data?.reservation;
       el('reservationMine').hidden=!reservation;
       if(reservation){
+        el('reservationMineNotice').textContent=existing?'该手机号已预约，以下是你的预约信息。':'';
         el('reservationMinePhone').textContent=data.phoneMasked;
         el('reservationMineCode').textContent=reservation.code;
         el('reservationMinePlatform').textContent=reservation.platform==='IOS'?'iOS':'Android';
@@ -204,7 +218,7 @@
           const tierLabel={3:'2 万人档',1:'5 万人档',2:'10 万人档'};
           item.textContent=`${tierLabel[reward.tier]||'奖励'}：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         message('');}
-      else if(data&&state.verified){message('未查到预约记录，请核对手机号。')}
+      else if(data&&state.verified&&state.queryOnly){message('该手机号暂未查询到预约信息')}
       if(state.activity)renderActivity(state.activity);
     }
     function refreshActivity(){
@@ -240,8 +254,11 @@
       return {phone,code};
     }
     async function verify(){
+      const flow=state.flow;
       const {phone,code}=verificationInput();
-      const data=await request('/verify','POST',{phone,code});state.verified=true;renderMine(data.mine);return data;
+      await state.cleaning;
+      if(flow!==state.flow){const error=new Error('closed reservation flow');error.stale=true;throw error}
+      const data=await request('/verify','POST',{phone,code});state.verified=true;renderMine(data.mine,true);return data;
     }
     form.elements.phone.addEventListener('input',()=>{state.verified=false});
     let smsTimer,smsSending=false;
@@ -256,8 +273,11 @@
     watchSmsCooldown();
     el('reservationSms').addEventListener('click',async()=>{
       if(smsSending||smsRetryAt>Date.now())return;
+      const flow=state.flow;
       try{const phone=form.elements.phone.value.trim();if(!phone)throw new Error('请先填写手机号');if(!validPhone(phone))throw new Error('请填写正确的手机号');
         smsSending=true;renderSmsCooldown();
+        await state.cleaning;
+        if(flow!==state.flow)return;
         await request('/sms','POST',{phone});
         smsRetryAt=Date.now()+60000;root.sessionStorage.setItem('reservation_sms_retry_at',String(smsRetryAt));message('');
       }catch(error){message(errorHint(error))}
@@ -265,6 +285,7 @@
     });
     form.addEventListener('submit',async event=>{
       event.preventDefault();
+      const flow=state.flow;
       let submitted=false;
       try{
         if(!state.verified)verificationInput();
@@ -272,7 +293,7 @@
         if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
         if(!state.verified)await verify();
         if(state.mine?.reservation)return;
-        if(state.queryOnly){message('未查到预约记录');return}
+        if(state.queryOnly){message('该手机号暂未查询到预约信息');return}
         if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
@@ -282,11 +303,12 @@
           source,campaignTag,deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'});
         renderMine(await request('/mine'));
       }catch(error){
+        if(error.stale||flow!==state.flow)return;
         if(submitted){
           refreshActivity();
           try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
         }
-        message(errorHint(error));
+        if(flow===state.flow)message(errorHint(error));
       }
     });
     el('reservationCopy').addEventListener('click',async()=>{const code=state.mine?.reservation?.code;if(!code)return;
@@ -294,13 +316,13 @@
       catch(_){el('reservationCopyStatus').textContent='请长按编号复制'}});
     el('reservationSubscribe').addEventListener('click',async()=>{
       if(el('reservationSubscribe').disabled)return;
+      const flow=state.flow;
       try{state.subscribing=true;renderReminderSubscription();renderMine(await request('/subscribe','POST',{}))}
       catch(error){message(errorHint(error))}
-      finally{state.subscribing=false;renderReminderSubscription()}
+      finally{if(flow===state.flow){state.subscribing=false;renderReminderSubscription()}}
     });
     doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
     refreshActivity();
-    if(!localPreview||doc.body.dataset.reservationTest==='true')request('/mine').then(renderMine).catch(()=>{});
     return state;
   }
   function setupPreviewGate(doc){

@@ -458,6 +458,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
         <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button></div>
       </form>
       <div id="reservationMine" hidden>
+        <p id="reservationMineNotice" class="reservation-receipt-note" role="status"></p>
         <dl class="reservation-receipt">
           <div><dt>预约手机号</dt><dd id="reservationMinePhone"></dd></div>
           <div><dt>预约编号</dt><dd class="reservation-code"><span id="reservationMineCode"></span><button type="button" id="reservationCopy" aria-label="复制预约编号" title="复制预约编号"><img src="images/app-ui/reservation-copy.png" alt=""></button><span id="reservationCopyStatus" role="status"></span></dd></div>
