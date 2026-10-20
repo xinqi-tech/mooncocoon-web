@@ -23,4 +23,9 @@
 
 .module-title,.first-screen .reservation-content>h2{width:fit-content;max-width:100%;justify-self:center;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px}
 
-.module-title::before,.first-screen .reservation-content>h2::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url("images/app-ui/title-plate-responsive.svg") center/100% 100% no-repeat}
+
+
+.title-plate{position:absolute;inset:0;display:flex;align-items:stretch;gap:0;z-index:-1;pointer-events:none;overflow:hidden}
+.title-plate img{display:block;height:100%;min-width:0;max-width:none;border:0;padding:0;margin:0}
+.title-plate .title-plate-cap{width:auto;flex:0 0 auto;object-fit:contain}
+.title-plate .title-plate-middle{width:0;flex:1 1 0;object-fit:fill}

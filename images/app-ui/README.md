@@ -18,4 +18,5 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 `title-slice-0.png` … `title-slice-8.png`: Figma J56l6Cs090O8z8aZU1AqQC node 40000741:48072, original exported slices in row-major order. Three columns; fixed end caps, stretchable center.
 
 
-`title-plate-responsive.svg`: original source PNGs re-downloaded from Figma download_assets, embedded unchanged in three columns. Integer source coordinates avoid fractional joins; end columns stay fixed while the middle flexes.
+
+`title-column-left.svg`, `title-column-middle.svg`, `title-column-right.svg`: separate columns assembled from the original PNG slice bytes (unchanged). title-plates.js inserts three img elements: end caps use intrinsic aspect ratio and fixed flex size, middle uses flex:1 and preserveAspectRatio=none. No complete-plate image is stretched.
