@@ -10,5 +10,4 @@ Copied unchanged from Aildo-Android/ui/src/main/res.
 - `right.png`: `drawable-nodpi/mall_sub_arrow_right.png`
 - `close.webp`: `drawable-xxxhdpi/ic_gift_share_close.webp`
 
-Fonts: JHT.woff2 from font/jh.TTF (internal name JHT), JHB.woff2 from font/jhb.TTF. Lossless WOFF2 encoding.
 Gift states illustrate milestone locked/unlocked; they do not imply a user has claimed a reward.

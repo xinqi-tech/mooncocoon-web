@@ -17,10 +17,10 @@
 </script>
 <title>LunaKoru - 想いがつながる場所</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="../fonts/JHT.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-@font-face{font-family:"JHT";src:url("../fonts/JHT.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
-@font-face{font-family:"JHB";src:url("../fonts/JHB.woff2") format("woff2");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"QingNiao Serif";src:url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
+@font-face{font-family:"QingNiao Sans";src:url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
 :root {
   --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
   --night-780:#1d477f;--mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;
@@ -32,8 +32,8 @@
   --glow-blue:rgba(150,205,255,0.34);--divider-soft:rgba(220,240,255,0.18);
   --rounded-xxl:28px;--rounded-panel:34px;--rounded-pill:9999px;
   --nav-h:56px;--page-x:18px;
-  --font-serif:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP","JHT",serif;
-  --font-sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","JHB",system-ui,sans-serif;
+  --font-serif:"Yu Mincho","Hiragino Mincho ProN","Noto Serif JP","QingNiao Serif",serif;
+  --font-sans:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","QingNiao Sans",system-ui,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
 .custom-cursor{position:fixed;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);width:44px;height:44px;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:url('../images/cursor_stop.apng')}
@@ -284,7 +284,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="../app-ui.css?v=20261020">
+<link rel="stylesheet" href="../app-ui.css?v=20261020b">
 </head>
 <body class="is-loading">
 <!-- LOADER -->

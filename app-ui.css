@@ -1,10 +1,4 @@
-/* Shared typography and controls from the App component library. */
-@font-face{font-family:JHT;src:url("fonts/JHT.woff2") format("woff2");font-display:swap}
-@font-face{font-family:JHB;src:url("fonts/JHB.woff2") format("woff2");font-display:swap}
-:root{--font-serif:JHT,"Yu Mincho","PingFang SC",serif;--font-sans:JHB,"Yu Gothic","PingFang SC",sans-serif;--serif:var(--font-serif);--sans:var(--font-sans)}
-body{font-family:var(--font-sans)}
-button,input,select,textarea{font-family:inherit}
-h1,h2,h3{font-family:var(--font-serif)}
+/* Shared controls from the App component library. */
 .app-icon{width:22px;height:22px;object-fit:contain;vertical-align:middle}
 .bgm-toggle img{width:22px;height:22px;object-fit:contain;pointer-events:none}
 .region-switcher button::after{content:"";width:16px;height:16px;background:url("images/app-ui/down.png") center/contain no-repeat}
