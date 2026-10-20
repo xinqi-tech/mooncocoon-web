@@ -29,3 +29,5 @@ Gift states illustrate milestone locked/unlocked; they do not imply a user has c
 Product title columns now display their full transparent canvas outside an 80px visible artwork band (original visible band 100px). This preserves butterflies and glow without clipping; end caps retain aspect ratio.
 
 `reservation-button.png`: Figma node 40000758:81950, original 796×180 btn_secondary image export, unchanged. Used at its original aspect ratio for the reservation CTA. The CTA alone uses the existing App JHT / QingNiaoHuaGuang-Sans.ttf font.
+
+Reservation dialog: `reservation-edit{,-base}.png` are original assets from Figma 40000760:81959; `checkbox-{off,on}.png` are original exports from 40000760:81960. Edit icon retains the design's 168/68 composition and crop geometry. Title reuses the existing three-column reservation title plate.

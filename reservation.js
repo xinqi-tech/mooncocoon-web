@@ -30,6 +30,7 @@
   };
   function init(doc,fetchImpl){
     const form=doc.getElementById('reservationForm');if(!form)return;
+    if(!form.querySelector('input[name="platform"]:checked'))form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
     const fetcher=fetchImpl||root.fetch.bind(root);
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
@@ -64,7 +65,7 @@
         const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
         if(!response.ok)throw new Error(response.status===401?'查询会话已过期，请重新验证手机号':
-          response.status===403?'请求被拒绝，请刷新页面重试':response.status===429?'操作太频繁，请稍后再试':'请求失败，请稍后再试');
+          response.status===403?'请求被拒绝，请刷新页面重试':response.status===429?'操作太频繁或短信暂不可用，请稍后再试':response.status===400?(path==='/sms'?'手机号暂不可用，请检查号码或稍后重试':'验证码不正确或已过期，请重新获取'):response.status===503?'验证服务暂不可用，请稍后重试':'请求失败，请稍后再试');
         const envelope=await response.json();
         if(envelope.result!==0)throw new Error(envelope.errorMsg||'请求失败');
         return envelope.data;
@@ -97,7 +98,7 @@
       }
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
-      el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
+      el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'立即预约':'查询我的预约';
       const reminderAllowed=data.reminderAvailable!==false;
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
