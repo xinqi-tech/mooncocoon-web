@@ -26,7 +26,8 @@
   function init(doc,fetchImpl){
     const form=doc.getElementById('reservationForm');if(!form)return;
     const fetcher=fetchImpl||root.fetch.bind(root);
-    const base=String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
+    const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
+    const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
     const el=id=>doc.getElementById(id);
     const message=value=>{el('reservationMessage').textContent=value};
     const state={activity:null,mine:null,csrf:null,verified:false};
@@ -77,13 +78,13 @@
       el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
-      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约')+' →';
+      el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约');
+      const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
       const dates=upcoming?(available&&data.startAt?'预约开启时间 · '+date(data.startAt):''):
         [['预约开始',data.startAt],['正式上线',data.releaseAt],['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
       el('reservationDates').textContent=dates;el('reservationDates').hidden=!dates;
       el('reservationCount').textContent=upcoming?'月光好礼，静候开启':Number.isFinite(data.count)?`已有 ${data.count.toLocaleString('zh-CN')} 人完成预约`:'当前人数暂不可用';
-      el('heroReservationProgress').textContent=upcoming?'预约即将开启 · 开放时间敬请关注':el('reservationCount').textContent;
       const rewards=el('reservationRewards');rewards.replaceChildren();
       const milestones=(available&&data.rewards?.length?data.rewards:previewRewards).slice().sort((a,b)=>a.threshold-b.threshold);
       const count=!upcoming&&Number.isFinite(data.count)?Math.max(0,data.count):0;
@@ -140,7 +141,6 @@
         }
         group.append(node);links.append(group);
       }
-      el('reservationSticky').textContent=upcoming?'查看预约预告':released?'下载月光茧':state.mine?.reservation?'查看我的预约':'立即预约';
     }
     function renderMine(data){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
@@ -172,8 +172,7 @@
           el('reservationPhase').textContent='暂时无法连接';
           el('reservationCount').textContent='活动信息加载失败';
           el('reservationNext').textContent='请稍后重试，或先查看下方活动规则。';
-          el('heroReservationProgress').textContent='活动信息暂不可用';
-          el('reservationNotice').textContent='';
+              el('reservationNotice').textContent='';
           form.hidden=true;el('reservationOpen').hidden=true;el('reservationOpen').disabled=true;
         }else el('reservationNotice').textContent='活动信息暂未更新，请稍后重试。';
         clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
@@ -215,15 +214,9 @@
     el('reservationUnsubscribe').addEventListener('click',async()=>{try{renderMine(await request('/unsubscribe','POST',{}));message('已取消上线短信提醒，预约与奖励不受影响')}catch(error){message(error.message)}});
     el('reservationLogout').addEventListener('click',async()=>{try{await request('/logout','POST',{});state.mine=null;state.csrf=null;state.verified=false;form.reset();
       el('reservationMine').hidden=true;renderActivity(state.activity);message('已退出，请验证新的手机号')}catch(error){message(error.message)}});
-    const updateSticky=()=>{
-      const rect=el('reservation').getBoundingClientRect();
-      el('reservationSticky').classList.toggle('reservation-sticky-hidden',rect.top<root.innerHeight&&rect.bottom>0);
-    };
-    root.addEventListener('scroll',updateSticky,{passive:true});root.addEventListener('resize',updateSticky);
-    updateSticky();
     doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
     refreshActivity();
-    request('/mine').then(renderMine).catch(()=>{});
+    if(!localPreview)request('/mine').then(renderMine).catch(()=>{});
     return state;
   }
   function setupPreviewGate(doc){
@@ -233,8 +226,9 @@
       if(++clicks<10)return;
       title.removeEventListener('click',reveal);
       for(const entry of doc.querySelectorAll('[data-reservation-entry]'))entry.hidden=false;
+      doc.getElementById('firstScreen').after(doc.getElementById('pv'));
       init(doc);
-      doc.getElementById('reservation').scrollIntoView({behavior:'smooth',block:'start'});
+      doc.getElementById('hero').scrollIntoView({behavior:'smooth',block:'start'});
     };
     title.addEventListener('click',reveal);
   }

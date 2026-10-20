@@ -7,3 +7,8 @@
 .reservation-rules[open] .reservation-rules-toggle{transform:rotate(180deg)}
 .reservation-reward-orb img{width:90%;height:90%;opacity:1;filter:none}
 .reservation-dialog-close{display:grid;place-items:center}
+.region-switcher button::after,.scroll-hint .app-icon{transform:rotate(180deg)}
+.region-switcher.is-open button::after{transform:rotate(0)}
+.region-switcher .region-menu{box-sizing:border-box;left:0;right:0;width:100%;min-width:0;padding:5px;border-radius:16px;border:1px solid rgba(220,240,255,.3);background:linear-gradient(145deg,rgba(45,75,113,.97),rgba(6,20,47,.98));box-shadow:inset 0 1px 0 rgba(235,248,255,.25),0 12px 32px rgba(3,13,32,.4);backdrop-filter:blur(20px)}
+.region-menu a{padding:9px 5px;text-align:center;font-size:11px;white-space:normal;overflow-wrap:break-word}
+.region-menu a:hover,.region-menu a:focus-visible{background:rgba(180,215,255,.2);box-shadow:inset 0 0 0 1px rgba(235,248,255,.25)}
