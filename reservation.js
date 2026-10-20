@@ -138,7 +138,8 @@
         const rewardList=el('reservationMineRewards');rewardList.replaceChildren();
         const stateLabels={PENDING:'发放中',GRANTED:'已到账',ALREADY_OWNED:'已拥有同款'};
         for(const reward of reservation.rewards||[]){const item=doc.createElement('li');
-          item.textContent=`${reward.tier} 档：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
+          const tierLabel={3:'2 万人档',1:'5 万人档',2:'10 万人档'};
+          item.textContent=`${tierLabel[reward.tier]||'奖励'}：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         el('reservationUnsubscribe').hidden=!reservation.reminderSubscribed;
         message('预约记录已确认。正式上线后请使用同手机号账号进入 App。');}
       else if(data&&state.verified){message('未查到预约记录，请核对手机号。')}
