@@ -289,3 +289,5 @@
 
 .first-screen .reservation-reward-orb{width:69.12px;height:69.12px}
 .first-screen .reservation-rewards{--track-y:60.56px}
+
+.preview-environment{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:99999;border:1px solid #a8d5ff88;border-radius:12px;padding:6px 14px;background:#081e48ed;color:#eaf7ff;font-size:12px;pointer-events:none;max-width:90vw;text-align:center}

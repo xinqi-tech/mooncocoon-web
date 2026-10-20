@@ -98,6 +98,10 @@
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'我的预约':phase==='RESERVING'?'留下你的预约':'查询我的预约';
+      const reminderAllowed=data.reminderAvailable!==false;
+      form.elements.reminder.disabled=!reminderAllowed;
+      if(!reminderAllowed)form.elements.reminder.checked=false;
+      form.elements.reminder.closest('label').hidden=!reminderAllowed;
       el('reservationOpen').disabled=upcoming;
       el('reservationOpen').hidden=upcoming;
       el('reservationOpen').textContent=(state.mine?.reservation?'查看我的预约':phase==='RESERVING'&&!data.reservationPaused?'留下你的预约':'查询我的预约');
@@ -241,7 +245,7 @@
       el('reservationMine').hidden=true;renderActivity(state.activity);message('已退出，请验证新的手机号')}catch(error){message(error.message)}});
     doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
     refreshActivity();
-    if(!localPreview)request('/mine').then(renderMine).catch(()=>{});
+    if(!localPreview||doc.body.dataset.reservationTest==='true')request('/mine').then(renderMine).catch(()=>{});
     return state;
   }
   function setupPreviewGate(doc){
@@ -256,6 +260,7 @@
       doc.getElementById('hero').scrollIntoView({behavior:'smooth',block:'start'});
     };
     title.addEventListener('click',reveal);
+    if(doc.body.dataset.reservationAutoOpen==='true'){clicks=9;reveal()}
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>setupPreviewGate(root.document));
   return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,formatCountdown,RESERVATION_START};
