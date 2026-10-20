@@ -36,6 +36,7 @@
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
     const el=id=>doc.getElementById(id);
     const message=value=>{el('reservationMessage').textContent=value};
+    const errorHint=error=>error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
     const state={activity:null,mine:null,csrf:null,verified:false};
     const dialog=el('reservationDialog');
     el('reservationOpen').addEventListener('click',()=>{
@@ -64,10 +65,13 @@
       try{
         const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
-        if(!response.ok)throw new Error(response.status===401?'查询会话已过期，请重新验证手机号':
-          response.status===403?'请求被拒绝，请刷新页面重试':response.status===429?'操作太频繁或短信暂不可用，请稍后再试':response.status===400?(path==='/sms'?'手机号暂不可用，请检查号码或稍后重试':'验证码不正确或已过期，请重新获取'):response.status===503?'验证服务暂不可用，请稍后重试':'请求失败，请稍后再试');
+        if(!response.ok)throw new Error(response.status===401?'验证已过期，请重新获取验证码':
+          response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');
         const envelope=await response.json();
-        if(envelope.result!==0)throw new Error(envelope.errorMsg||'请求失败');
+        if(envelope.result!==0){
+          const reason=String(envelope.errorMsg||'');
+          throw new Error(/频繁|冷却/.test(reason)?'请求太频繁，请稍后重试':/验证码/.test(reason)?'验证码错误或已过期':'请求失败，请稍后重试');
+        }
         return envelope.data;
       }finally{if(timeout!==null)root.clearTimeout(timeout)}
     };
@@ -209,9 +213,16 @@
       });
     }
     el('reservationRetry').addEventListener('click',()=>{el('reservationRetry').hidden=true;refreshActivity()});
-    async function verify(){
+    function verificationInput(){
       const phone=form.elements.phone.value.trim(),code=form.elements.code.value.trim();
-      if(!validPhone(phone)||!/^\d{6}$/.test(code))throw new Error('请填写正确的大陆手机号和六位验证码');
+      if(!phone)throw new Error('请先填写手机号');
+      if(!validPhone(phone))throw new Error('请填写正确的手机号');
+      if(!code)throw new Error('请先填写验证码');
+      if(!/^\d{6}$/.test(code))throw new Error('请填写六位验证码');
+      return {phone,code};
+    }
+    async function verify(){
+      const {phone,code}=verificationInput();
       const data=await request('/verify','POST',{phone,code});state.verified=true;renderMine(data.mine);return data;
     }
     form.elements.phone.addEventListener('input',()=>{state.verified=false});
@@ -227,38 +238,44 @@
     watchSmsCooldown();
     el('reservationSms').addEventListener('click',async()=>{
       if(smsSending||smsRetryAt>Date.now())return;
-      try{const phone=form.elements.phone.value.trim();if(!validPhone(phone))throw new Error('请输入正确的中国大陆手机号');
+      try{const phone=form.elements.phone.value.trim();if(!phone)throw new Error('请先填写手机号');if(!validPhone(phone))throw new Error('请填写正确的手机号');
         smsSending=true;renderSmsCooldown();
         await request('/sms','POST',{phone});
         smsRetryAt=Date.now()+60000;root.sessionStorage.setItem('reservation_sms_retry_at',String(smsRetryAt));message('');
-      }catch(error){message(error.message)}
+      }catch(error){message(errorHint(error))}
       finally{smsSending=false;watchSmsCooldown()}
     });
     form.addEventListener('submit',async event=>{
       event.preventDefault();
+      let submitted=false;
       try{
+        if(!state.verified)verificationInput();
+        const accepting=state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
+        if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
         if(!state.verified)await verify();
         if(state.mine?.reservation){message('该手机号已预约，已恢复原记录');return}
         if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
-        if(!form.elements.adult.checked||!form.elements.terms.checked){message('请先确认已年满18周岁并同意协议与规则');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
         const platform=selectedPlatform(form,root.navigator.userAgent);
+        submitted=true;
         await request('/reserve','POST',{platform,adult:true,terms:true,reminder:form.elements.reminder.checked,
           source,campaignTag,deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'});
         renderMine(await request('/mine'));
       }catch(error){
-        refreshActivity();
-        try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
-        message('暂未确认预约结果，请重试；若已预约，将自动恢复记录。'+error.message);
+        if(submitted){
+          refreshActivity();
+          try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
+        }
+        message(errorHint(error));
       }
     });
     el('reservationCopy').addEventListener('click',()=>{const code=state.mine?.reservation?.code;if(code)root.navigator.clipboard.writeText(code)});
     el('reservationPlatform').addEventListener('click',async()=>{try{const current=state.mine?.reservation?.platform;
-      renderMine(await request('/platform','PATCH',{platform:current==='IOS'?'ANDROID':'IOS'}));}catch(error){message(error.message)}});
-    el('reservationUnsubscribe').addEventListener('click',async()=>{try{renderMine(await request('/unsubscribe','POST',{}));message('已取消上线短信提醒，预约与奖励不受影响')}catch(error){message(error.message)}});
+      renderMine(await request('/platform','PATCH',{platform:current==='IOS'?'ANDROID':'IOS'}));}catch(error){message(errorHint(error))}});
+    el('reservationUnsubscribe').addEventListener('click',async()=>{try{renderMine(await request('/unsubscribe','POST',{}));message('已取消上线短信提醒，预约与奖励不受影响')}catch(error){message(errorHint(error))}});
     el('reservationLogout').addEventListener('click',async()=>{try{await request('/logout','POST',{});state.mine=null;state.csrf=null;state.verified=false;form.reset();
-      el('reservationMine').hidden=true;renderActivity(state.activity);message('已退出，请验证新的手机号')}catch(error){message(error.message)}});
+      el('reservationMine').hidden=true;renderActivity(state.activity);message('已退出，请验证新的手机号')}catch(error){message(errorHint(error))}});
     doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
     refreshActivity();
     if(!localPreview||doc.body.dataset.reservationTest==='true')request('/mine').then(renderMine).catch(()=>{});

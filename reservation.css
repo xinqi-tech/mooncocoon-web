@@ -343,3 +343,12 @@
 .reservation-code-row #reservationSms:disabled{opacity:1;background:linear-gradient(120deg,#b4c1ce,#8d9dad);color:#344b62;border-color:#c4cfda77;box-shadow:none;transform:none}
 
 #reservationFormHeading{display:flex;align-items:center}
+
+/* Feedback uses the same typography as the consent labels. */
+.reservation-dialog .reservation-check,.reservation-dialog .reservation-message{font-size:14px;font-weight:400;line-height:1.8}
+.reservation-dialog .reservation-form-heading #reservationClose{border:0;background:transparent;box-shadow:none;border-radius:0}
+.reservation-dialog .reservation-form-heading #reservationClose:hover{background:transparent;box-shadow:none}
+@media(max-width:768px){.reservation-dialog .reservation-check,.reservation-dialog .reservation-message{font-size:12px}}
+
+.reservation-close-art{position:relative;display:block;width:28px;height:28px;overflow:hidden}
+.reservation-close-art>img{position:absolute;left:0;top:4.48%;width:100%;height:101.49%;max-width:none}
