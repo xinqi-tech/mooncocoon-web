@@ -15,7 +15,7 @@
     const output = document.getElementById('qaCalls');
     if(output)output.textContent='MOCK API — '+JSON.stringify(calls);
     const response = (data,status=200) => new Response(JSON.stringify({result:status===200?0:status,data}),{status,headers:{'Content-Type':'application/json'}});
-    if(path==='/activity')return response({available:true,phase:acceptanceScenario==='before'?'BEFORE':ended?'ENDED':released?'CLAIMING':'RESERVING',serverTime:new Date().toISOString(),claimDeadlineAt:new Date(Date.now()+(ended?-1:1)*86400000).toISOString(),count:released?100000:1,unlockedMask:released?7:0,reminderAvailable:!released,claimAvailable:released&&!ended});
+    if(path==='/activity')return response({available:true,phase:acceptanceScenario==='before'?'BEFORE':ended?'ENDED':released?'CLAIMING':'RESERVING',serverTime:new Date().toISOString(),startAt:new Date(Date.now()+7200000).toISOString(),claimDeadlineAt:new Date(Date.now()+(ended?-1:1)*86400000).toISOString(),count:released?100000:1,unlockedMask:released?7:0,reminderAvailable:!released,claimAvailable:released&&!ended});
     if(path==='/lookup')return response({publicLookup:true,phoneMasked:'*** **** 8001',reservation:body.phone==='13800138001'?{code:'RG-DUPLICATE',platform:'ANDROID',reminderSubscribed:false,rewards:[]}:null});
     if(path==='/verify'){
       await new Promise(resolve=>setTimeout(resolve,600));

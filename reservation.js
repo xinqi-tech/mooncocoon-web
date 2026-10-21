@@ -121,13 +121,14 @@
       el('reservationNotice').textContent='';
       el('reservationNotice').setAttribute('aria-live',upcoming?'off':'polite');
       if(upcoming){
-        const start=Date.parse(RESERVATION_START);
+        const configuredStart=Date.parse(data.startAt);
+        const start=Number.isFinite(configuredStart)?configuredStart:Date.parse(RESERVATION_START);
         const receivedAt=Date.now(),serverTime=Date.parse(data.serverTime);
         const clock=()=>Number.isFinite(serverTime)?serverTime+Date.now()-receivedAt:Date.now();
         const update=()=>{
           const now=clock();
           el('reservationNotice').textContent=now<start?'距离预约开启 '+formatCountdown(start,now):'预约即将开放，请稍后刷新';
-          el('reservationNotice').title='2026年10月24日 00:00（北京时间）';
+          el('reservationNotice').title=date(start);
           if(now>=start&&!boundaryRefreshRequested){boundaryRefreshRequested=true;root.setTimeout(refreshActivity,0)}
         };
         update();countdownTimer=root.setInterval(update,1000);
