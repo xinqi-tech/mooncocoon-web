@@ -63,7 +63,6 @@ class PreviewHandler(SimpleHTTPRequestHandler):
         if self.server.real_test and urlsplit(self.path).path in ('/', '/index.html'):
             html = Path('index.html').read_text(encoding='utf-8')
             html = re.sub(r'<body\b', '<body data-reservation-test="true" data-reservation-auto-open="true"', html, count=1)
-            html = html.replace('</body>', '<div class="preview-environment" role="note">真实测试环境 · 短信会实际发送，预约写入测试库</div></body>')
             payload = html.encode('utf-8')
             self.send_response(200); self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.send_header('Cache-Control', 'no-store'); self.send_header('Content-Length', str(len(payload)))
