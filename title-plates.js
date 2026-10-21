@@ -7,7 +7,7 @@
     const plate = document.createElement('span');
     plate.className = 'title-plate';
     plate.setAttribute('aria-hidden', 'true');
-    const prefix = title.matches('.module-title') ? 'product-title' : title.matches('.tab-detail-title') ? 'product-subtitle' : 'title-column';
+    const prefix = title.matches('.module-title, .pv-title') ? 'product-title' : title.matches('.tab-detail-title') ? 'product-subtitle' : 'title-column';
     for (const part of ['left', 'middle', 'right']) {
       const image = document.createElement('img');
       image.src = new URL(prefix + '-' + part + (prefix === 'title-column' ? '.svg' : '.png'), base).href;
@@ -17,7 +17,7 @@
     }
     title.prepend(plate);
   }
-  for (const title of document.querySelectorAll('.module-title, .tab-detail-title, .reservation-panel-title, #reservationFormHeading')) {
+  for (const title of document.querySelectorAll('.module-title, .pv-title, .tab-detail-title, .reservation-panel-title, #reservationFormHeading')) {
     decorate(title);
     new MutationObserver(() => decorate(title)).observe(title, {childList:true});
   }

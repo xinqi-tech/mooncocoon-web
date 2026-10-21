@@ -36,19 +36,27 @@
 .feature-point>span{min-width:0}
 
 /* Display only the title plate artwork, excluding Figma transparent gutters. */
-.module-title>.title-plate{height:100px;top:50%;bottom:auto;left:-80px;right:-80px;transform:translateY(-50%);overflow:visible}
+.module-title>.title-plate,.pv-title>.title-plate{height:100px;top:50%;bottom:auto;left:-80px;right:-80px;transform:translateY(-50%);overflow:visible}
 .tab-detail-title{color:#fff}
 .tab-detail-title::after{display:block}
-@media(max-width:768px){.module-title>.title-plate{height:28px;left:-12px;right:-12px}}
+@media(max-width:768px){.module-title>.title-plate,.pv-title>.title-plate{height:28px;left:-12px;right:-12px}}
 
 /* Keep the original transparent artwork beyond its visible 100px band. */
-.module-title>.title-plate{--band-scale:.8;height:80px;left:-30px;right:-30px;overflow:visible}
-.module-title>.title-plate img{height:216px;transform:translateY(-88px)}
-.module-title>.title-plate img:first-child{margin-left:-43.2px}
-.module-title>.title-plate img:last-child{margin-right:-74.4px}
+.module-title>.title-plate,.pv-title>.title-plate{--band-scale:.8;height:80px;left:-30px;right:-30px;overflow:visible}
+.module-title>.title-plate img,.pv-title>.title-plate img{height:216px;transform:translateY(-88px)}
+.module-title>.title-plate img:first-child,.pv-title>.title-plate img:first-child{margin-left:-43.2px}
+.module-title>.title-plate img:last-child,.pv-title>.title-plate img:last-child{margin-right:-74.4px}
 @media(max-width:768px){
- .module-title>.title-plate{height:28px;left:-8px;right:-8px}
- .module-title>.title-plate img{height:75.6px;transform:translateY(-30.8px)}
- .module-title>.title-plate img:first-child{margin-left:-15.12px}
- .module-title>.title-plate img:last-child{margin-right:-26.04px}
+ .module-title>.title-plate,.pv-title>.title-plate{height:28px;left:-8px;right:-8px}
+ .module-title>.title-plate img,.pv-title>.title-plate img{height:75.6px;transform:translateY(-30.8px)}
+ .module-title>.title-plate img:first-child,.pv-title>.title-plate img:first-child{margin-left:-15.12px}
+ .module-title>.title-plate img:last-child,.pv-title>.title-plate img:last-child{margin-right:-26.04px}
 }
+
+/* A short mobile subtitle still needs enough room for both unscaled artwork caps. */
+.tab-detail-title{min-width:160px}
+.tab-detail-title>.title-plate{overflow:visible}
+.pv-title{min-width:min(640px,100%);position:relative;isolation:isolate;display:flex;justify-content:center;align-items:baseline;gap:.15em;width:fit-content;max-width:100%;min-height:80px;margin:0 auto;padding:18px 24px}
+.pv-title-intro{font-size:.58em}
+.pv-title-name{font-size:1em}
+@media(max-width:768px){.tab-detail-title{min-width:120px;min-height:48px}.pv-title{min-width:min(280px,100%);min-height:64px;padding:12px 16px}}
