@@ -211,7 +211,7 @@
       el('reservationSubscribe').hidden=false;
       el('reservationSubscribe').disabled=state.subscribing||reservation.reminderSubscribed||!available;
       el('reservationSubscribe').textContent=state.subscribing?'订阅中…':reservation.reminderSubscribed?'已订阅上线提醒':'订阅上线提醒';
-      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':!available?'上线提醒订阅暂未开放':state.mine?.publicLookup?'点击订阅后，验证预约手机号即可完成。':'自愿接收一条正式上线短信提醒。';
+      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':!available?'上线提醒订阅暂未开放':'自愿接收一条正式上线短信提醒。';
     }
     function renderMine(data,existing=false){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
@@ -341,17 +341,10 @@
       catch(_){el('reservationCopyStatus').textContent='请长按编号复制'}});
     el('reservationSubscribe').addEventListener('click',async()=>{
       if(el('reservationSubscribe').disabled)return;
-      if(state.mine?.publicLookup){
-        const phone=form.elements.phone.value.trim(),nextFlow=state.flow+1;
-        await openFlow(false);
-        if(state.flow!==nextFlow)return;
-        form.elements.phone.value=phone;
-        form.elements.reminder.checked=true;
-        form.elements.code.focus();
-        return;
-      }
       const flow=state.flow;
-      try{state.subscribing=true;renderReminderSubscription();renderMine(await request('/subscribe','POST',{}))}
+      try{state.subscribing=true;renderReminderSubscription();
+        const publicLookup=!!state.mine?.publicLookup;
+        renderMine(await request(publicLookup?'/lookup/subscribe':'/subscribe','POST',publicLookup?{phone:form.elements.phone.value.trim()}:{}))}
       catch(error){message(errorHint(error))}
       finally{if(flow===state.flow){state.subscribing=false;renderReminderSubscription()}}
     });

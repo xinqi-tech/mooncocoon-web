@@ -13,7 +13,7 @@ PROD = 'https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com'
 TEST = 'https://1259219143-3xft5qxme3.ap-guangzhou.tencentscf.com'
 PREFIX = '/api/reservation-gift'
 READS = {'/activity', '/mine'}
-WRITES = {'POST': {'/sms', '/verify', '/reserve', '/lookup', '/subscribe', '/unsubscribe', '/logout'}, 'PATCH': {'/platform'}}
+WRITES = {'POST': {'/sms', '/verify', '/reserve', '/lookup', '/lookup/subscribe', '/subscribe', '/unsubscribe', '/logout'}, 'PATCH': {'/platform'}}
 
 class PreviewHandler(SimpleHTTPRequestHandler):
     def proxy(self):
