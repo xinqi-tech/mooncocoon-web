@@ -99,6 +99,7 @@
       const available=!!data?.available;
       data=data||{};
       const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
+      el('reservationQuery').hidden=upcoming;
       doc.querySelector('.reservation-panel').dataset.state=upcoming?'upcoming':'active';
       if(upcoming)el('reservationNotice').before(el('reservationPhase'));
       else doc.querySelector('.reservation-panel').prepend(el('reservationPhase'));
