@@ -208,9 +208,10 @@
     function renderReminderSubscription(){
       const reservation=state.mine?.reservation;if(!reservation)return;
       const available=state.activity?.reminderAvailable===true;
-      el('reservationSubscribe').disabled=!!state.mine?.publicLookup||state.subscribing||reservation.reminderSubscribed||!available;
+      el('reservationSubscribe').hidden=false;
+      el('reservationSubscribe').disabled=state.subscribing||reservation.reminderSubscribed||!available;
       el('reservationSubscribe').textContent=state.subscribing?'订阅中…':reservation.reminderSubscribed?'已订阅上线提醒':'订阅上线提醒';
-      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':state.mine?.publicLookup?'如需订阅提醒，请通过“立即预约”验证手机号。':available?'自愿接收一条正式上线短信提醒。':'上线提醒订阅暂未开放';
+      el('reservationReminderHint').textContent=reservation.reminderSubscribed?'正式上线时，将向预约手机号发送一条短信提醒。':!available?'上线提醒订阅暂未开放':state.mine?.publicLookup?'点击订阅后，验证预约手机号即可完成。':'自愿接收一条正式上线短信提醒。';
     }
     function renderMine(data,existing=false){
       state.mine=data;state.csrf=data?.csrf||state.csrf;
@@ -312,7 +313,11 @@
         const accepting=!state.queryOnly&&state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
         if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
         if(!state.verified)await verify();
-        if(state.mine?.reservation)return;
+        if(state.mine?.reservation){
+          if(form.elements.reminder.checked&&!state.mine.reservation.reminderSubscribed)
+            renderMine(await request('/subscribe','POST',{}),true);
+          return;
+        }
         if(state.queryOnly){message('该手机号暂未查询到预约信息');return}
         if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
@@ -336,6 +341,15 @@
       catch(_){el('reservationCopyStatus').textContent='请长按编号复制'}});
     el('reservationSubscribe').addEventListener('click',async()=>{
       if(el('reservationSubscribe').disabled)return;
+      if(state.mine?.publicLookup){
+        const phone=form.elements.phone.value.trim(),nextFlow=state.flow+1;
+        await openFlow(false);
+        if(state.flow!==nextFlow)return;
+        form.elements.phone.value=phone;
+        form.elements.reminder.checked=true;
+        form.elements.code.focus();
+        return;
+      }
       const flow=state.flow;
       try{state.subscribing=true;renderReminderSubscription();renderMine(await request('/subscribe','POST',{}))}
       catch(error){message(errorHint(error))}
