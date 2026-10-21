@@ -266,7 +266,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261021-form-loading">
+<link rel="stylesheet" href="reservation.css?v=20261021-claim-login">
 <link rel="stylesheet" href="app-ui.css?v=20261020n">
 <script src="title-plates.js?v=20261020n" defer></script>
 </head>
@@ -430,6 +430,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <h2 id="reservationHeading">月光茧预约有礼</h2>
     <div class="reservation-overview">
       <p id="reservationPhase" class="reservation-phase" role="status">正在加载活动信息</p>
+      <div id="reservationLoginBar" class="reservation-login-bar" hidden><button type="button" id="reservationLogin">登录</button><span id="reservationLoginPhone"></span><button type="button" id="reservationLogout" hidden>退出登录</button></div>
       <p id="reservationCount" class="reservation-count" aria-live="polite"></p>
       <p id="reservationNext" class="reservation-next"></p>
     </div>
@@ -466,10 +467,11 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
           <div><dt>上线提醒</dt><dd id="reservationMineReminder"></dd></div>
         </dl>
         <ul id="reservationMineRewards"></ul>
-        <p class="reservation-receipt-note">正式上线后，请使用同一手机号登录 App。</p>
+        <p class="reservation-receipt-note">正式上线后，在预约页面领取激活码，再到 App 活动页面兑换。</p>
         <div class="reservation-buttons"><button type="button" id="reservationSubscribe">订阅上线提醒</button></div>
         <p id="reservationReminderHint" class="reservation-receipt-note"></p>
       </div>
+      <div id="reservationCodeClaims" hidden><p class="reservation-receipt-note">每档奖励单独领取，登录后无需重复验证；每个激活码仅可兑换一次，请妥善保管。</p><div id="reservationCodeClaimList"></div></div>
       <p class="reservation-message" id="reservationMessage" role="status"></p>
     </div>
     </dialog>
@@ -479,9 +481,9 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <h2 id="reservationRulesTitle"><img class="reservation-help-icon" src="images/reservation/help.webp" alt=""><span>活动规则与常见问题</span></h2>
       <ul class="reservation-rule-list">
         <li><img src="images/reservation/star.png" alt=""><div><h3>参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>三份心意，随期待解锁</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>如何领取预约奖励</h3><p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p></div></li>
-        <li><img src="images/reservation/star.png" alt=""><div><h3>查询记录与上线提醒</h3><p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>礼物解锁规则</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>如何领取预约奖励</h3><p>App 正式上线后，可以在预约页面点击领取按钮，获取道具激活码，在 App 内活动页面输入激活码进行兑换，每个激活码仅可兑换一次。领取时验证一次预约手机号，即可领取多个已解锁奖励。请在上线后 30 天内领取并兑换；已拥有同款资产不重复发放，不提供补偿。</p></div></li>
+        <li><img src="images/reservation/star.png" alt=""><div><h3>查询记录与上线提醒</h3><p>预约开启且预约成功后，点击右上角的查询预约按钮，输入手机号，可以查询该手机号的预约信息。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
       </ul>
     </section>
   </div>
@@ -1176,6 +1178,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20261021-form-loading" defer></script>
+<script src="reservation.js?v=20261021-claim-login" defer></script>
 </body>
 </html>
