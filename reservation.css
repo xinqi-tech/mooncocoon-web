@@ -274,8 +274,9 @@
 .first-screen .reservation-rules-static{margin-top:10px;padding-top:10px}
 @media(max-width:768px){.first-screen .reservation-reward-orb img{width:21.6px;height:21.6px}}
 
-.first-screen .reservation-rule-list li{align-items:center}
-.first-screen .reservation-rule-list li>img{margin-top:0;align-self:center}
+.first-screen .reservation-rule-list li{align-items:flex-start}
+.first-screen .reservation-rule-list li>div{font-size:11px;line-height:1.7}
+.first-screen .reservation-rule-list li>img{margin-top:calc((11px * 1.7 - 12px)/2);align-self:flex-start}
 
 .first-screen .reservation-panel{padding-top:30px;padding-bottom:30px}
 .first-screen .reservation-content>h2{min-height:60px;padding-top:8px;padding-bottom:8px}
