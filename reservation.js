@@ -190,7 +190,7 @@
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
         status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
-        if(phase==='CLAIMING'&&unlocked){const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent='领取';claim.disabled=data.claimAvailable!==true;claim.addEventListener('click',()=>openClaim(reward.tier));card.append(claim)}
+        if(['CLAIMING','ENDED'].includes(phase)&&unlocked){const issued=state.session?.activationCodes?.some(code=>code.tier===reward.tier);const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent=phase==='ENDED'||issued?'查看激活码':'领取';claim.disabled=phase==='CLAIMING'&&!issued&&data.claimAvailable!==true;claim.setAttribute('aria-label',claim.textContent+'：'+reward.name);claim.addEventListener('click',()=>openClaim(reward.tier));card.append(claim)}
       }
       const canReserve=state.claimTier===null&&!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=state.claimTier!==null?state.verified:(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
@@ -236,27 +236,28 @@
     async function openClaim(tier){
       await openFlow(false,tier);
       if(state.claimTier!==tier)return;
-      if(state.verified&&tier>0){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
+      if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
     }
     async function issueCode(tier){
       const result=await request('/activation-code','POST',{tier});
       const codes=state.session.activationCodes||[];
-      state.session.activationCodes=[...codes.filter(code=>code.tier!==tier),{...result,tier}];
-      renderCodeClaims();
+      state.session.activationCodes=[...codes.filter(code=>code.tier!==tier),{expiresAt:state.activity.claimDeadlineAt,...result,tier}];
+      renderActivity(state.activity);
     }
     function renderCodeClaims(){
       const panel=el('reservationCodeClaims');panel.hidden=state.claimTier===null||!state.verified;
       if(panel.hidden)return;
       const list=el('reservationCodeClaimList');list.replaceChildren();
       if(!state.session?.reservation){const note=doc.createElement('p');note.textContent='该手机号暂无预约记录';list.append(note);return}
-      if(state.claimTier===0){const note=doc.createElement('p');note.textContent='登录成功，请点击对应礼物下方的领取按钮。';list.append(note);return}
+      if(state.claimTier===0){const note=doc.createElement('p');note.textContent=state.activity.phase==='ENDED'?'领取期已结束，可点击对应礼物下方的按钮查看历史激活码。':'登录成功，请点击对应礼物下方的领取按钮。';list.append(note);return}
       for(const reward of previewRewards){
         if(reward.tier!==state.claimTier)continue;
         if(!(state.activity.unlockedMask&(1<<(reward.tier-1))))continue;
         const row=doc.createElement('div');row.className='reservation-activation-row';
         const name=doc.createElement('strong');name.textContent=reward.name;row.append(name);
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
-        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent='复制激活码';copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按激活码复制'}});row.append(copy)}
+        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'激活码已过期':'复制激活码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按激活码复制'}});row.append(copy)}
+        else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，该档位未领取';row.append(note)}
         else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
       }
@@ -304,7 +305,7 @@
       clearTimeout(refreshTimer);
       request('/activity').then(async data=>{
         renderActivity(data);clearTimeout(refreshTimer);
-        if(['CLAIMING','ENDED'].includes(data.phase)&&!state.restored){state.restored=true;try{const mine=await request('/mine');state.session=mine;renderLogin()}catch(_){}}
+        if(['CLAIMING','ENDED'].includes(data.phase)&&!state.restored){state.restored=true;try{const mine=await request('/mine');state.session=mine;renderActivity(data)}catch(_){}}
         const now=Date.parse(data.serverTime),release=Date.parse(data.releaseAt),start=Date.parse(data.startAt);
         const next=[start,release,release+30*24*3600*1000].filter(time=>Number.isFinite(time)&&time>now)[0];
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
@@ -376,7 +377,7 @@
       try{
         if(state.claimTier!==null){
           if(!state.verified)await verify();
-          if(state.claimTier>0&&state.mine?.reservation)await issueCode(state.claimTier);
+          if(state.claimTier>0&&state.mine?.reservation&&state.activity?.phase==='CLAIMING')await issueCode(state.claimTier);
           renderCodeClaims();return;
         }
         if(state.queryOnly){
