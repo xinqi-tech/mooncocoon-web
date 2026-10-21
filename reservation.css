@@ -325,6 +325,7 @@
 .reservation-activation-row{padding:18px 0;border-top:1px solid #bddaff33;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .reservation-activation-row strong{width:100%}
 .reservation-activation-row code{display:block;width:100%;overflow-wrap:anywhere;color:#fff;font-size:15px;user-select:all}
+@media(max-width:768px){.reservation-login-bar{left:16px;top:14px;font-size:11px;gap:5px}.reservation-login-bar button{padding:5px 8px}.reservation-tier-claim{min-width:64px;padding:6px 12px;font-size:12px}}
 .reservation-dialog input[type=checkbox]:focus-visible{outline:2px solid #bee4ff;outline-offset:2px}
 .reservation-dialog .reservation-platform-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:0;padding:0;margin:14px 0 18px;min-width:0}
 .reservation-dialog .reservation-platform-tabs legend{padding:0;margin-bottom:8px}
