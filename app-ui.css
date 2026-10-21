@@ -1,0 +1,54 @@
+/* Shared controls from the App component library. */
+.app-icon{width:22px;height:22px;object-fit:contain;vertical-align:middle}
+.bgm-toggle img{width:22px;height:22px;object-fit:contain;pointer-events:none}
+.region-switcher button::after{content:"";width:16px;height:16px;background:url("images/app-ui/down.png") center/contain no-repeat}
+.reservation-rules-toggle{background:url("images/app-ui/down.png") center/18px no-repeat;transition:transform .2s}
+.reservation-rules-toggle::before,.reservation-rules-toggle::after{display:none}
+.reservation-rules[open] .reservation-rules-toggle{transform:rotate(180deg)}
+.reservation-reward-orb img{width:54%;height:54%;opacity:1;filter:none}
+.reservation-dialog-close{display:grid;place-items:center}
+.region-switcher button::after,.scroll-hint .app-icon{transform:rotate(180deg)}
+.region-switcher.is-open button::after{transform:rotate(0)}
+.region-switcher .region-menu{box-sizing:border-box;left:0;right:0;width:100%;min-width:0;padding:5px;border-radius:16px;border:1px solid rgba(220,240,255,.3);background:linear-gradient(145deg,rgba(45,75,113,.8),rgba(6,20,47,.8));box-shadow:inset 0 1px 0 rgba(235,248,255,.25),0 12px 32px rgba(3,13,32,.4);backdrop-filter:blur(20px)}
+.region-menu a{padding:9px 5px;text-align:center;font-size:11px;white-space:normal;overflow-wrap:break-word}
+.region-menu a:hover,.region-menu a:focus-visible{background:rgba(180,215,255,.2);box-shadow:inset 0 0 0 1px rgba(235,248,255,.25)}
+
+/* App pearl title plate and star-line accents, shared across regional pages. */
+.module-title{background:url("images/app-ui/title-plate.webp") center/100% 100% no-repeat;padding:14px 28px;text-shadow:0 0 20px #c7e5ff66}
+.module-content{position:relative}
+.footer-brand::before{content:"";display:block;width:min(260px,70vw);height:8px;margin:0 auto 20px;background:url("images/app-ui/star-divider.png") center/100% auto no-repeat;opacity:.45}
+
+/* Figma 40000741:48072: three columns, preserving all nine exported slices. */
+.module-title,.first-screen .reservation-content>h2{background:none;position:relative;isolation:isolate;min-height:80px;display:flex;align-items:center;justify-content:center;padding:18px 24px}
+
+.module-title,.first-screen .reservation-content>h2{width:fit-content;max-width:100%;justify-self:center;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px}
+
+
+
+.title-plate{position:absolute;inset:0;display:flex;align-items:stretch;gap:0;z-index:-1;pointer-events:none;overflow:hidden}
+.title-plate img{display:block;height:100%;min-width:0;max-width:none;border:0;padding:0;margin:0}
+.title-plate .title-plate-cap{width:auto;flex:0 0 auto;object-fit:contain}
+.title-plate .title-plate-middle{width:0;flex:1 1 0;object-fit:fill}
+.tab-detail-title{position:relative;isolation:isolate;width:fit-content;max-width:100%;min-height:64px;padding:12px 22px;display:flex;align-items:center;justify-content:center}
+.tab-detail-title::after{display:none}
+.tab-detail-desc .feature-point{display:flex;align-items:center;gap:9px;margin:7px 0}
+.feature-point>img{width:12px;height:12px;flex:0 0 12px;object-fit:contain}
+.feature-point>span{min-width:0}
+
+/* Display only the title plate artwork, excluding Figma transparent gutters. */
+.module-title>.title-plate{height:100px;top:50%;bottom:auto;left:-80px;right:-80px;transform:translateY(-50%);overflow:visible}
+.tab-detail-title{color:#fff}
+.tab-detail-title::after{display:block}
+@media(max-width:768px){.module-title>.title-plate{height:28px;left:-12px;right:-12px}}
+
+/* Keep the original transparent artwork beyond its visible 100px band. */
+.module-title>.title-plate{--band-scale:.8;height:80px;left:-30px;right:-30px;overflow:visible}
+.module-title>.title-plate img{height:216px;transform:translateY(-88px)}
+.module-title>.title-plate img:first-child{margin-left:-43.2px}
+.module-title>.title-plate img:last-child{margin-right:-74.4px}
+@media(max-width:768px){
+ .module-title>.title-plate{height:28px;left:-8px;right:-8px}
+ .module-title>.title-plate img{height:75.6px;transform:translateY(-30.8px)}
+ .module-title>.title-plate img:first-child{margin-left:-15.12px}
+ .module-title>.title-plate img:last-child{margin-right:-26.04px}
+}

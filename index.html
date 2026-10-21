@@ -8,7 +8,6 @@
 <title>月光茧 - 虚实有别，爱意无界</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 <style>
 @font-face{font-family:"QingNiao Serif";src:url("fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
 @font-face{font-family:"QingNiao Sans";src:url("fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
@@ -267,7 +266,9 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20260927a">
+<link rel="stylesheet" href="reservation.css?v=20261021-download">
+<link rel="stylesheet" href="app-ui.css?v=20261020n">
+<script src="title-plates.js?v=20261021-download" defer></script>
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -388,7 +389,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
   <div class="nav-links">
     <a href="#hero">首页</a>
-    <a href="#reservation" data-reservation-entry hidden>预约有礼</a>
+    <a href="#reservation" data-reservation-entry>预约有礼</a>
     <a href="#modules">产品介绍</a>
   </div>
   <div class="region-switcher" data-region-switcher>
@@ -396,13 +397,13 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
     <div class="region-menu" data-region-menu role="menu"></div>
   </div>
   <button class="bgm-toggle" id="bgmToggle" type="button" aria-label="播放背景音乐" aria-pressed="false" title="背景音乐">
-    <svg class="bgm-off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m17 9 4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <svg class="bgm-on" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path class="bgm-wave" d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="bgm-wave2" d="M18.5 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <img class="bgm-off" src="images/app-ui/sound-off.png" alt="" aria-hidden="true">
+    <img class="bgm-on" src="images/app-ui/sound-on.png" alt="" aria-hidden="true">
   </button>
   <audio id="bgmAudio" src="audio/bgm_login.mp3" loop preload="none"></audio>
 </nav>
 </div>
-<script src="region.js"></script>
+<script src="region.js?v=20261020n"></script>
 <canvas id="particles"></canvas>
 <div class="page-ui">
 <!-- HERO SOCIAL SIDEBAR -->
@@ -413,69 +414,78 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <div class="hero-social-divider"></div>
 </div>
 
+<div class="first-screen" id="firstScreen">
 <!-- HERO -->
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
-  <h1 class="hero-title"><button type="button" id="reservationRevealTitle">虚实有别，爱意无界</button></h1>
+  <h1 class="hero-title">虚实有别，爱意无界</h1>
   <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
-  <p class="reservation-hero-copy" data-reservation-entry hidden>预约有礼 · 三档集体里程碑，正式上线后使用同手机号账号领取已解锁奖励</p>
-  <a class="reservation-hero-cta" href="#reservation" data-reservation-entry hidden>查看预约活动</a>
-  <p class="reservation-hero-progress" id="heroReservationProgress" data-reservation-entry hidden>活动信息加载中</p>
-  <button class="scroll-hint" onclick="document.getElementById(document.getElementById('reservation').hidden?'pv':'reservation').scrollIntoView({behavior:'smooth'})">
-    <div class="scroll-hint-icon"><i data-lucide="chevron-down" width="20" height="20"></i></div>
-    <span class="scroll-hint-label">SCROLL</span>
-  </button>
 </section>
 
-<section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry hidden>
-  <div class="reservation-panel">
-    <p class="reservation-eyebrow"><span aria-hidden="true">✦</span> 月光茧 · 预约有礼 <span aria-hidden="true">✦</span></p>
-    <h2 id="reservationHeading">预约，等月光抵达</h2>
-    <p class="reservation-lead">每一份期待，都让月光更近一步。</p>
+<section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry>
+  <div class="reservation-panel" data-state="loading">
+    <button type="button" id="reservationQuery" class="reservation-query" hidden><span aria-hidden="true" class="reservation-query-art"><img src="images/app-ui/query-left.png" alt=""><img src="images/app-ui/query-middle.png" alt=""><img src="images/app-ui/query-right.png" alt=""></span><span>查询预约</span></button>
+    <div class="reservation-content">
+    <p class="reservation-eyebrow"><img src="images/reservation/star.png" alt=""> 月光茧 · 预约有礼 <img src="images/reservation/star.png" alt=""></p>
+    <h2 id="reservationHeading" class="reservation-panel-title">月光茧预约有礼</h2>
     <div class="reservation-overview">
-      <p id="reservationPhase" class="reservation-phase">正在获取活动状态</p>
+      <p id="reservationPhase" class="reservation-phase" role="status">正在加载活动信息</p>
+      <div id="reservationLoginBar" class="reservation-login-bar" hidden><button type="button" id="reservationLogin" class="reservation-query"><span aria-hidden="true" class="reservation-query-art"><img src="images/app-ui/query-left.png" alt=""><img src="images/app-ui/query-middle.png" alt=""><img src="images/app-ui/query-right.png" alt=""></span><span>登录</span></button><span id="reservationLoginPhone"></span><button type="button" id="reservationLogout" hidden>退出登录</button></div>
       <p id="reservationCount" class="reservation-count" aria-live="polite"></p>
       <p id="reservationNext" class="reservation-next"></p>
     </div>
     <div class="reservation-milestones" aria-label="预约人数奖励进度">
       <div class="reservation-rewards" id="reservationRewards"></div>
     </div>
-    <p id="reservationDates" class="reservation-dates"></p>
-    <button type="button" class="reservation-open" id="reservationOpen" aria-haspopup="dialog" aria-controls="reservationDialog" disabled>留下你的预约 <span aria-hidden="true">→</span></button>
+    <div class="reservation-cta">
+    <p id="reservationDates" class="reservation-dates" hidden></p>
+    <button type="button" class="reservation-open" id="reservationOpen" aria-haspopup="dialog" aria-controls="reservationDialog" disabled hidden>立即预约 <img class="app-icon" src="images/app-ui/right.png" alt="" aria-hidden="true"></button>
     <p class="reservation-notice" id="reservationNotice" role="status"></p>
+    <button type="button" id="reservationRetry" class="reservation-retry" hidden>重新加载</button>
+    </div>
     <dialog class="reservation-dialog" id="reservationDialog" aria-labelledby="reservationFormHeading">
     <div class="reservation-actions" id="reservationActions">
-      <button type="button" class="reservation-dialog-close" id="reservationClose" aria-label="关闭预约窗口">×</button>
-      <div class="reservation-form-heading"><span aria-hidden="true">✧</span><div><p>YOUR MOONLIGHT</p><h3 id="reservationFormHeading">留下你的预约</h3></div></div>
+      <div class="reservation-form-heading"><span class="reservation-edit-icon" aria-hidden="true"><img class="reservation-edit-base" src="images/app-ui/reservation-edit-base.png" alt=""><span class="reservation-edit-glyph"><img src="images/app-ui/reservation-edit.png" alt=""></span></span><div><h3 id="reservationFormHeading">立即预约</h3></div><button type="button" class="reservation-dialog-close" id="reservationClose" aria-label="关闭预约窗口"><span class="reservation-close-art" aria-hidden="true"><img src="images/app-ui/reservation-close.png" alt=""></span></button></div>
       <form id="reservationForm" novalidate>
-        <label>中国大陆手机号 <input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" required></label>
-        <div class="reservation-code-row">
-        <label>短信验证码 <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+        <label><span class="reservation-field-label">中国大陆手机号</span> <input name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" required></label>
+        <div class="reservation-code-row" id="reservationCodeRow">
+        <label><span class="reservation-field-label">短信验证码</span> <input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
         <button type="button" id="reservationSms">获取验证码</button>
         </div>
-        <fieldset class="reservation-new-only"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"> Android</label><label><input type="radio" name="platform" value="IOS"> iOS</label></fieldset>
+        <fieldset class="reservation-new-only reservation-platform-tabs"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"><span><img src="images/app-ui/platform-android.svg" alt="">Android</span></label><label><input type="radio" name="platform" value="IOS"><span><img src="images/app-ui/platform-ios.svg" alt="">iOS</span></label></fieldset>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="adult"> 我已年满 18 周岁</label>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="terms"> 我已阅读并同意<a href="user-agreement/" target="_blank" rel="noopener">用户协议</a>、<a href="privacy-policy/" target="_blank" rel="noopener">隐私政策</a>与活动规则</label>
-        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 自愿订阅正式上线短信提醒（可在“我的预约”取消）</label>
-        <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button><button type="button" id="reservationQuery">仅查询我的预约</button></div>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 订阅上线提醒（可选）</label>
+        <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button></div>
       </form>
       <div id="reservationMine" hidden>
-        <h3>我的预约</h3><p id="reservationMineText"></p><ul id="reservationMineRewards"></ul>
-        <button type="button" id="reservationCopy">复制预约编号</button>
-        <button type="button" id="reservationPlatform">切换目标平台</button>
-        <button type="button" id="reservationUnsubscribe">取消上线提醒</button>
-        <button type="button" id="reservationLogout">切换手机号</button>
+        <p id="reservationMineNotice" class="reservation-receipt-note" role="status"></p>
+        <dl class="reservation-receipt">
+          <div><dt>预约手机号</dt><dd id="reservationMinePhone"></dd></div>
+          <div><dt>预约编号</dt><dd class="reservation-code"><span id="reservationMineCode"></span><button type="button" id="reservationCopy" aria-label="复制预约编号" title="复制预约编号"><img src="images/app-ui/reservation-copy.png" alt=""></button><span id="reservationCopyStatus" role="status"></span></dd></div>
+          <div><dt>目标平台</dt><dd id="reservationMinePlatform"></dd></div>
+          <div><dt>上线提醒</dt><dd id="reservationMineReminder"></dd></div>
+        </dl>
+        <ul id="reservationMineRewards"></ul>
+        <p class="reservation-receipt-note">正式上线后，在预约页面领取激活码，再到 App 活动页面兑换。</p>
+        <div class="reservation-buttons"><button type="button" id="reservationSubscribe">订阅上线提醒</button></div>
+        <p id="reservationReminderHint" class="reservation-receipt-note"></p>
       </div>
+      <div id="reservationCodeClaims" hidden><p class="reservation-receipt-note">每档奖励单独领取，登录后无需重复验证；每个激活码仅可兑换一次，请妥善保管。</p><div id="reservationCodeClaimList"></div></div>
       <p class="reservation-message" id="reservationMessage" role="status"></p>
     </div>
     </dialog>
-    <div class="reservation-actions reservation-download" id="reservationDownload" hidden><h3>月光茧已开放下载</h3><div id="reservationDownloadLinks"></div></div>
-    <details class="reservation-rules"><summary>活动规则与常见问题</summary>
-      <p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p>
-      <p>人数达到 2 万、5 万、10 万后，分别解锁永久配饰、永久服装、永久称号。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p>
-      <p>请在领取期内使用相同手机号登录或返回 App。已拥有同款资产时跳过重复发放，不提供补偿；其他档位照常处理。</p>
-      <p>手机号验证后可查询 30 天，查询会话到期需重新验证。订阅上线短信完全自愿，取消不影响预约和奖励。隐私删除申请请联系 hello@heabo.cn。</p>
-    </details>
+    <div class="reservation-actions reservation-download" id="reservationDownload" hidden><h3 class="reservation-panel-title">下载月光茧</h3><div id="reservationDownloadLinks"></div></div>
+    </div>
+    <section class="reservation-rules reservation-rules-static" aria-labelledby="reservationRulesTitle">
+      <h2 id="reservationRulesTitle"><img class="reservation-help-icon" src="images/reservation/help.webp" alt=""><span>活动规则与常见问题</span></h2>
+      <ul class="reservation-rule-list">
+        <li><div><h3><img src="images/reservation/star.png" alt="">参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
+        <li><div><h3><img src="images/reservation/star.png" alt="">礼物解锁规则</h3><p>人数达到 2 万、5 万、10 万后，分别解锁专属称号、永久配饰、永久服装。仅已解锁档位可领取；无保底奖励。老用户也可主动预约。</p></div></li>
+        <li><div><h3><img src="images/reservation/star.png" alt="">如何领取预约奖励</h3><p>App 正式上线后，可以在预约页面点击领取按钮，获取道具激活码，在 App 内活动页面输入激活码进行兑换，每个激活码仅可兑换一次。领取时验证一次预约手机号，即可领取多个已解锁奖励。请在上线后 30 天内领取并兑换。激活码可由任意 App 账号兑换一次，请妥善保管；若兑换账号已拥有同款资产，该码仍会视为已兑换，不重复发放且不提供补偿。</p></div></li>
+        <li><div><h3><img src="images/reservation/star.png" alt="">查询记录与上线提醒</h3><p>预约期间，点击右上角“查询预约”并输入手机号即可查看预约信息；正式上线后，请点击左上角“登录”，验证预约手机号后查看和领取奖励。登录有效期为验证后 30 天，退出后可换号；换设备需重新验证，领取记录不会丢失。订阅上线短信为可选项，不订阅不影响预约或奖励。目前不提供自助取消预约入口；删除预约或取消提醒请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
+      </ul>
+    </section>
   </div>
 </section>
 
@@ -487,7 +497,9 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   </div>
 </section>
 
-<a class="reservation-sticky" href="#reservation" id="reservationSticky" data-reservation-entry hidden>查看预约活动</a>
+<button class="scroll-hint first-screen-scroll" id="firstScreenScroll" type="button" aria-label="查看下方内容" onclick="document.getElementById(document.getElementById('reservation').hidden?'modules':'pv').scrollIntoView({behavior:'smooth'})"><img class="app-icon" src="images/app-ui/down.png" alt=""></button>
+</div>
+
 
 <!-- PRODUCT MODULES -->
 <section class="modules" id="modules">
@@ -574,7 +586,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 </footer>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => { if(window.lucide) lucide.createIcons(); });
+
 const moduleData = [
   {subs:["人设定制","外观定制","拟真语音"],descs:["结合你的喜好与个性，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
   {subs:["独家记忆","独立生活","情绪反馈"],descs:["根据聊天内容，日积月累形成专属记忆库\n记忆库可编辑可删减，制造你们独一无二的回忆\n在日常聊天里主动提起曾经的回忆","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表","待补充"],["真实情绪"]]},
@@ -1166,6 +1178,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20260927b" defer></script>
+<script src="reservation.js?v=20261021-public" defer></script>
 </body>
 </html>
