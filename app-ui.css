@@ -60,3 +60,7 @@
 .pv-title-intro{font-size:.58em}
 .pv-title-name{font-size:1em}
 @media(max-width:768px){.tab-detail-title{min-width:120px;min-height:48px}.pv-title{min-width:min(280px,100%);min-height:64px;padding:12px 16px}}
+
+/* Avoid the long headline's intrinsic minimum widening the 320px grid. */
+@media(max-width:768px){.module-content{grid-template-columns:minmax(0,1fr)}.module-content>*{min-width:0}}
+@media(max-width:360px){.module-title{padding-left:16px;padding-right:16px}.module-title .char{font-size:1rem!important}.module-title .char.first-word{font-size:1.5rem!important}}
