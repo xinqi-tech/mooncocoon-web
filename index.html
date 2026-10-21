@@ -266,7 +266,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261020n">
+<link rel="stylesheet" href="reservation.css?v=20261021-form-loading">
 <link rel="stylesheet" href="app-ui.css?v=20261020n">
 <script src="title-plates.js?v=20261020n" defer></script>
 </head>
@@ -454,7 +454,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
         <fieldset class="reservation-new-only reservation-platform-tabs"><legend>目标平台</legend><label><input type="radio" name="platform" value="ANDROID"><span><img src="images/app-ui/platform-android.svg" alt="">Android</span></label><label><input type="radio" name="platform" value="IOS"><span><img src="images/app-ui/platform-ios.svg" alt="">iOS</span></label></fieldset>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="adult"> 我已年满 18 周岁</label>
         <label class="reservation-check reservation-new-only"><input type="checkbox" name="terms"> 我已阅读并同意<a href="user-agreement/" target="_blank" rel="noopener">用户协议</a>、<a href="privacy-policy/" target="_blank" rel="noopener">隐私政策</a>与活动规则</label>
-        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 订阅上线提醒（自愿，正式上线时发送一条短信）</label>
+        <label class="reservation-check reservation-new-only"><input type="checkbox" name="reminder"> 订阅上线提醒（可选）</label>
         <div class="reservation-buttons"><button type="submit" id="reservationSubmit">确认预约</button></div>
       </form>
       <div id="reservationMine" hidden>
@@ -1176,6 +1176,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20261021-subscribe" defer></script>
+<script src="reservation.js?v=20261021-form-loading" defer></script>
 </body>
 </html>

@@ -315,7 +315,9 @@
 .reservation-dialog input[type=tel],.reservation-dialog input[type=text]{font-family:ReservationJHT,sans-serif;font-size:19px;color:#153553;caret-color:#153553;-webkit-text-fill-color:#153553}
 .reservation-dialog input::placeholder{color:#42607b;opacity:1}
 .reservation-dialog input[type=checkbox]{appearance:none;-webkit-appearance:none;display:inline-block;vertical-align:middle;width:27px;height:27px;flex-shrink:0;margin:0 4px 0 0;border:0;border-radius:0;padding:0;background:transparent url('images/app-ui/checkbox-off.png') center/contain no-repeat}
-.reservation-dialog input[type=checkbox]:checked{background-image:url('images/app-ui/checkbox-on.png')}
+.reservation-dialog input[type=checkbox]:checked{background-image:url('images/app-ui/checkbox-on.png?v=20261021')}
+.reservation-submit-spinner{width:36px;height:36px;object-fit:contain;vertical-align:middle;animation:reservation-submit-spin .9s linear infinite}
+@keyframes reservation-submit-spin{to{transform:rotate(360deg)}}
 .reservation-dialog input[type=checkbox]:focus-visible{outline:2px solid #bee4ff;outline-offset:2px}
 .reservation-dialog .reservation-platform-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:0;padding:0;margin:14px 0 18px;min-width:0}
 .reservation-dialog .reservation-platform-tabs legend{padding:0;margin-bottom:8px}

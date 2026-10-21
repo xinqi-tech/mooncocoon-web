@@ -37,11 +37,11 @@
     const el=id=>doc.getElementById(id);
     const message=value=>{if(value!==null)el('reservationMessage').textContent=value};
     const errorHint=error=>error?.stale?null:error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
-    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false,flow:0,cleaning:Promise.resolve()};
+    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false,submitting:false,flow:0,cleaning:Promise.resolve()};
     const dialog=el('reservationDialog');
     async function openFlow(queryOnly){
       const flow=++state.flow;
-      state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;state.queryOnly=queryOnly;
+      state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;state.submitting=false;state.queryOnly=queryOnly;
       form.reset();form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
       el('reservationMine').hidden=true;
       if(state.activity)renderActivity(state.activity);message('');
@@ -59,7 +59,7 @@
     dialog.addEventListener('close',()=>{
       doc.documentElement.classList.remove('reservation-modal-open');
       if(state.csrf)state.cleaning=request('/logout','POST',{}).catch(()=>{});
-      state.flow++;state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;
+      state.flow++;state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;state.submitting=false;
       form.reset();el('reservationMine').hidden=true;message('');
       if(state.activity)renderActivity(state.activity);
     });
@@ -180,7 +180,7 @@
       form.hidden=(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
       el('reservationCodeRow').hidden=state.queryOnly;
       el('reservationSubmit').hidden=upcoming&&!state.queryOnly;
-      el('reservationSubmit').textContent=canReserve?'确认预约':'查询预约';
+      renderSubmit(canReserve?'确认预约':'查询预约');
       for(const control of form.querySelectorAll('.reservation-new-only'))control.hidden=!canReserve;
       form.elements.reminder.closest('label').hidden=!canReserve||!reminderAllowed;
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
@@ -204,6 +204,16 @@
         }
         group.append(node);links.append(group);
       }
+    }
+    function renderSubmit(label){
+      const button=el('reservationSubmit');
+      if(label)button.dataset.label=label;
+      button.disabled=state.submitting;
+      button.setAttribute('aria-busy',String(state.submitting));
+      button.setAttribute('aria-label',state.submitting?'提交中':button.dataset.label||'确认预约');
+      button.replaceChildren();
+      if(state.submitting){const icon=doc.createElement('img');icon.src='images/app-ui/loading-spinner.png';icon.alt='';icon.className='reservation-submit-spinner';button.append(icon)}
+      else button.textContent=button.dataset.label||'确认预约';
     }
     function renderReminderSubscription(){
       const reservation=state.mine?.reservation;if(!reservation)return;
@@ -291,6 +301,8 @@
         smsSending=true;renderSmsCooldown();
         await state.cleaning;
         if(flow!==state.flow)return;
+        const existing=await request('/lookup','POST',{phone});
+        if(existing?.reservation){message('该手机号已预约，请前往查询预约查看详情');return}
         await request('/sms','POST',{phone});
         smsRetryAt=Date.now()+60000;root.sessionStorage.setItem('reservation_sms_retry_at',String(smsRetryAt));message('');
       }catch(error){message(errorHint(error))}
@@ -298,8 +310,10 @@
     });
     form.addEventListener('submit',async event=>{
       event.preventDefault();
+      if(state.submitting)return;
       const flow=state.flow;
       let submitted=false;
+      state.submitting=true;renderSubmit();message('');
       try{
         if(state.queryOnly){
           const phone=form.elements.phone.value.trim();
@@ -334,7 +348,7 @@
           try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
         }
         if(flow===state.flow)message(errorHint(error));
-      }
+      }finally{if(flow===state.flow){state.submitting=false;renderSubmit()}}
     });
     el('reservationCopy').addEventListener('click',async()=>{const code=state.mine?.reservation?.code;if(!code)return;
       try{await root.navigator.clipboard.writeText(code);el('reservationCopyStatus').textContent='已复制'}
