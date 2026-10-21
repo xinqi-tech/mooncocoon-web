@@ -112,7 +112,7 @@
       const available=!!data?.available;
       data=data||{};
       const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
-      el('reservationQuery').hidden=upcoming;
+      el('reservationQuery').hidden=upcoming||['CLAIMING','ENDED'].includes(phase);
       doc.querySelector('.reservation-panel').dataset.state=upcoming?'upcoming':'active';
       if(upcoming)el('reservationNotice').before(el('reservationPhase'));
       else doc.querySelector('.reservation-panel').prepend(el('reservationPhase'));
@@ -142,7 +142,7 @@
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
       el('reservationOpen').disabled=upcoming;
-      el('reservationOpen').hidden=upcoming;
+      el('reservationOpen').hidden=upcoming||['CLAIMING','ENDED'].includes(phase);
       el('reservationOpen').textContent='立即预约';
       const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
       const dates=upcoming?'':
@@ -202,9 +202,12 @@
       if(state.claimTier!==null){el('reservationMine').hidden=true;renderCodeClaims()}
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
       const links=el('reservationDownloadLinks');links.replaceChildren();
-      if(released)for(const [platform,url,label] of [['ANDROID',data.androidUrl,'下载 Android 版'],['IOS',data.iosUrl,'前往 App Store']]){
+      if(released)for(const [platform,url,label] of [['ANDROID',data.androidUrl,'Android 版'],['IOS',data.iosUrl,'iOS 版']]){
         const safe=safeUrl(url),group=doc.createElement('div');group.className='reservation-download-option';
-        const node=doc.createElement(safe?'a':'span');node.textContent=safe?label:label+' · 即将开放';
+        const node=doc.createElement(safe?'a':'span');node.className='reservation-download-button';
+        const icon=doc.createElement('img');icon.src=platform==='ANDROID'?'images/app-ui/platform-android.svg':'images/app-ui/platform-ios.svg';icon.alt='';node.append(icon);
+        const text=doc.createElement('span');text.textContent=label;node.append(text);
+        if(!safe){node.setAttribute('aria-disabled','true');const hint=doc.createElement('small');hint.textContent='即将开放';node.append(hint)}
         if(safe){node.href=safe;node.rel='noopener';node.dataset.platform=platform;
           if(typeof root.qrcode==='function'){
             const qr=root.qrcode(0,'M');qr.addData(safe);qr.make();

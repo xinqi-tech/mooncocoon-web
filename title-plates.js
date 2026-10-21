@@ -17,7 +17,7 @@
     }
     title.prepend(plate);
   }
-  for (const title of document.querySelectorAll('.module-title, .tab-detail-title, .reservation-content > h2, #reservationFormHeading')) {
+  for (const title of document.querySelectorAll('.module-title, .tab-detail-title, .reservation-panel-title, #reservationFormHeading')) {
     decorate(title);
     new MutationObserver(() => decorate(title)).observe(title, {childList:true});
   }
