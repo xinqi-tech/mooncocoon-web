@@ -432,20 +432,6 @@
     refreshActivity();
     return state;
   }
-  function setupPreviewGate(doc){
-    const title=doc.getElementById('reservationRevealTitle');if(!title)return;
-    let clicks=0;
-    const reveal=()=>{
-      if(++clicks<10)return;
-      title.removeEventListener('click',reveal);
-      for(const entry of doc.querySelectorAll('[data-reservation-entry]'))entry.hidden=false;
-      doc.getElementById('firstScreen').after(doc.getElementById('pv'));
-      init(doc);
-      doc.getElementById('hero').scrollIntoView({behavior:'smooth',block:'start'});
-    };
-    title.addEventListener('click',reveal);
-    if(doc.body.dataset.reservationAutoOpen==='true'){clicks=9;reveal()}
-  }
-  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>setupPreviewGate(root.document));
+  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
   return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,formatCountdown,RESERVATION_START};
 });
