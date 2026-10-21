@@ -64,3 +64,11 @@
 /* Avoid the long headline's intrinsic minimum widening the 320px grid. */
 @media(max-width:768px){.module-content{grid-template-columns:minmax(0,1fr)}.module-content>*{min-width:0}}
 @media(max-width:360px){.module-title{padding-left:16px;padding-right:16px}.module-title .char{font-size:1rem!important}.module-title .char.first-word{font-size:1.5rem!important}}
+
+/* Filming placeholders are explicit cards, never empty or fabricated videos. */
+.pending-video{background:radial-gradient(ellipse at 50% 20%,#80a8db45,transparent 65%),linear-gradient(160deg,#29456b,#10213d);border:1px solid #bddbff55}
+.pending-video-content{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;color:#e7f3ff}
+.pending-video-badge{border:1px solid #bbd9ff66;border-radius:30px;padding:4px 12px;font-size:12px;color:#bcd5f1}
+.pending-video-title{font-size:20px;line-height:1.6}
+.pending-video-duration{font-size:12px;color:#adc6e1}
+@media(max-width:768px){.sub-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sub-tab,.sub-tab.active{min-width:0;width:100%}.pending-video-content{gap:12px;padding:12px}.pending-video-title{font-size:15px}.pending-video-duration{font-size:10px}}

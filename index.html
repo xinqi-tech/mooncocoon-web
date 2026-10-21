@@ -266,7 +266,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261021-content3">
+<link rel="stylesheet" href="reservation.css?v=20261021-content4">
 <link rel="stylesheet" href="app-ui.css?v=20261021-content3">
 <script src="title-plates.js?v=20261021-content3" defer></script>
 </head>
@@ -514,6 +514,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="sub-tab" data-tab="0">人设定制</div>
       <div class="sub-tab" data-tab="1">外观定制</div>
       <div class="sub-tab" data-tab="2">拟真语音</div>
+      <div class="sub-tab" data-tab="3">自定义环境</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">人设定制</h3>
@@ -530,12 +531,13 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <!-- MODULE 2 -->
 <div class="module" data-module="1">
   <div class="module-content">
-    <h2 class="module-title">陪伴有日常，回忆有回应</h2>
+    <h2 class="module-title">超绝活人感，越陪伴越懂你</h2>
     <div class="module-row">
     <div class="sub-tabs">
       <div class="sub-tab" data-tab="0">独家记忆</div>
       <div class="sub-tab" data-tab="1">独立生活</div>
       <div class="sub-tab" data-tab="2">情绪反馈</div>
+      <div class="sub-tab" data-tab="3">陪伴模式</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">独家记忆</h3>
@@ -558,10 +560,11 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="sub-tab" data-tab="0">灵赋生态</div>
       <div class="sub-tab" data-tab="1">梦境剧场</div>
       <div class="sub-tab" data-tab="2">跨次元互动</div>
+      <div class="sub-tab" data-tab="3">一起听</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">灵赋生态</h3>
-      <p class="tab-detail-desc">▸ 在灵赋中发现不同的陪伴玩法<br>▸ 选择喜欢的灵赋，带进你们的聊天<br>▸ 从日常小互动开始，探索更多相处方式</p>
+      <p class="tab-detail-desc">▸ 是娱乐玩伴，也是全能管家<br>▸ 选择喜欢的灵赋，带进你们的聊天<br>▸ 从日常小互动开始，探索更多相处方式</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -590,9 +593,216 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <script>
 
 const moduleData = [
-  {subs:["人设定制","外观定制","拟真语音"],descs:["从已有角色开始，也可以设定自己的角色\n编辑性格与背景，慢慢找到喜欢的相处方式\n支持手动编辑或 AI 辅助生成人设","调整发型、妆容与穿搭，搭配喜欢的外观\n自设角色可进一步调整五官与身形\n已有角色的可编辑范围以 App 内为准","选择喜欢的音色，听他把话说给你\n语音回应呈现不同的情绪与语气\n在日常对话里，找到熟悉的声音"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
-  {subs:["独家记忆","独立生活","情绪反馈"],descs:["从日常对话中积累关于你的记忆\n查看、编辑和整理你们的记忆库\n让聊过的人与事，有机会在之后的对话里被想起","看看他今天去了哪里、做了什么\n通过日程与日记，了解他的日常\n聊天之外，也有可以慢慢翻看的生活片段","同一句问候，也会遇见不同的心情\n相处中的对话与日常影响他的情绪状态\n在回应里感受这一次相处的变化"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4"],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表"],["情绪回应"]]},
-  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["在灵赋中发现不同的陪伴玩法\n选择喜欢的灵赋，带进你们的聊天\n从日常小互动开始，探索更多相处方式","挑选一个故事，与他走进新的情境\n通过对话和选择，参与剧情的发展\n在不同故事里，经历平日之外的相遇","用文字、语音与图片分享眼前的生活\n拍照送礼，把日常的小心意带给他\n通过触摸与互动反馈，让陪伴多一种回应"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4"],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4"],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4","videos/03_intimate_interaction/cross_dimension_interaction.mp4"]],captions:[["灵赋市场","娱乐互动"],["剧场入口","剧情演示"],["随手分享","体感互动","拍照送礼"]]}
+  {
+    "subs": [
+      "人设定制",
+      "外观定制",
+      "拟真语音",
+      "自定义环境"
+    ],
+    "descs": [
+      "从已有角色开始，也可以设定自己的角色\n编辑性格与背景，慢慢找到喜欢的相处方式\n支持手动编辑或 AI 辅助生成人设",
+      "调整发型、妆容与穿搭，搭配喜欢的外观\n自设角色可进一步调整五官与身形\n已有角色的可编辑范围以 App 内为准",
+      "选择喜欢的音色，听他把话说给你\n语音回应呈现不同的情绪与语气\n在日常对话里，找到熟悉的声音",
+      "选择喜欢的环境与氛围\n按自己的喜好调整布置\n为每一次相见，留一处熟悉的空间"
+    ],
+    "videos": [
+      [
+        "videos/01_persona_setup/user_initial_setup.mp4",
+        "videos/01_persona_setup/boyfriend_style_selection.mp4",
+        "videos/01_persona_setup/persona_manual_ai_voice.mp4",
+        {
+          "pending": true,
+          "id": "persona-slots",
+          "title": "人设扩展插槽",
+          "seconds": 18,
+          "file": "videos/01_persona_setup/persona_extension_slots.mp4"
+        }
+      ],
+      [
+        "videos/02_appearance_customization/appearance_hair_color.mp4",
+        "videos/02_appearance_customization/appearance_facial_detail.mp4",
+        "videos/02_appearance_customization/appearance_body_adjust.mp4",
+        {
+          "pending": true,
+          "id": "clothing-doodle",
+          "title": "服装涂鸦",
+          "seconds": 20,
+          "file": "videos/02_appearance_customization/clothing_doodle.mp4"
+        }
+      ],
+      [
+        "videos/07_voice_customization/voice_emotion_tts.mp4"
+      ],
+      [
+        {
+          "pending": true,
+          "id": "custom-environment",
+          "title": "自定义环境",
+          "seconds": 20,
+          "file": "videos/10_custom_environment/custom_environment.mp4"
+        }
+      ]
+    ],
+    "captions": [
+      [
+        "初始设定",
+        "风格选择",
+        "编辑人设",
+        "人设扩展插槽"
+      ],
+      [
+        "发色调整",
+        "五官细节",
+        "身材调整",
+        "服装涂鸦"
+      ],
+      [
+        "情绪语音"
+      ],
+      [
+        "自定义环境"
+      ]
+    ]
+  },
+  {
+    "subs": [
+      "独家记忆",
+      "独立生活",
+      "情绪反馈",
+      "陪伴模式"
+    ],
+    "descs": [
+      "从日常对话中积累关于你的记忆\n查看、编辑和整理你们的记忆库\n让聊过的人与事，有机会在之后的对话里被想起",
+      "看看他今天去了哪里、做了什么\n通过日程与日记，了解他的日常\n聊天之外，也有可以慢慢翻看的生活片段",
+      "同一句问候，也会遇见不同的心情\n相处中的对话与日常影响他的情绪状态\n在回应里感受这一次相处的变化",
+      "学习、工作，或安静做自己的事\n选择适合此刻的陪伴场景\n不必一直找话题，也能一起度过这段时间"
+    ],
+    "videos": [
+      [
+        "videos/08_exclusive_memory/memory_edit.mp4"
+      ],
+      [
+        "videos/04_boyfriend_daily/boyfriend_diary.mp4",
+        "videos/04_boyfriend_daily/boyfriend_schedule.mp4",
+        {
+          "pending": true,
+          "id": "schedule-plan",
+          "title": "日程安排",
+          "seconds": 20,
+          "file": "videos/04_boyfriend_daily/schedule_planning.mp4"
+        },
+        {
+          "pending": true,
+          "id": "travel-journal",
+          "title": "远行与旅行手账",
+          "seconds": 30,
+          "file": "videos/04_boyfriend_daily/travel_journal.mp4"
+        }
+      ],
+      [
+        "videos/09_emotion_feedback/emotion_feedback.mp4"
+      ],
+      [
+        {
+          "pending": true,
+          "id": "companion-mode",
+          "title": "陪伴模式",
+          "seconds": 20,
+          "file": "videos/11_companion_mode/companion_mode.mp4"
+        }
+      ]
+    ],
+    "captions": [
+      [
+        "记忆库编辑"
+      ],
+      [
+        "日记本",
+        "日程表",
+        "日程安排",
+        "远行与旅行手账"
+      ],
+      [
+        "情绪回应"
+      ],
+      [
+        "陪伴模式"
+      ]
+    ]
+  },
+  {
+    "subs": [
+      "灵赋生态",
+      "梦境剧场",
+      "跨次元互动",
+      "一起听"
+    ],
+    "descs": [
+      "是娱乐玩伴，也是全能管家\n选择喜欢的灵赋，带进你们的聊天\n从日常小互动开始，探索更多相处方式",
+      "挑选一个故事，与他走进新的情境\n通过对话和选择，参与剧情的发展\n在不同故事里，经历平日之外的相遇",
+      "用文字、语音与图片分享眼前的生活\n拍照送礼，把日常的小心意带给他\n通过触摸与互动反馈，让陪伴多一种回应",
+      "选一首此刻想听的歌\n一边播放，一边聊聊感受\n让旋律成为你们共同的话题"
+    ],
+    "videos": [
+      [
+        "videos/06_skill_system/skill_market_install.mp4",
+        "videos/06_skill_system/skill_chat_emoji.mp4"
+      ],
+      [
+        "videos/05_dream_theater/dream_theater_page.mp4",
+        "videos/05_dream_theater/story_gameplay_demo.mp4",
+        {
+          "pending": true,
+          "id": "theater-resume",
+          "title": "剧场互动与继续",
+          "seconds": 25,
+          "file": "videos/05_dream_theater/theater_resume.mp4"
+        }
+      ],
+      [
+        "videos/03_intimate_interaction/chat_text_image.mp4",
+        "videos/03_intimate_interaction/body_touch_feedback.mp4",
+        "videos/03_intimate_interaction/cross_dimension_interaction.mp4",
+        {
+          "pending": true,
+          "id": "photo-gift",
+          "title": "拍照送礼／礼物图鉴",
+          "seconds": 25,
+          "file": "videos/03_intimate_interaction/photo_gift_collection.mp4"
+        }
+      ],
+      [
+        {
+          "pending": true,
+          "id": "listen-together",
+          "title": "一起听",
+          "seconds": 20,
+          "file": "videos/12_listen_together/listen_together.mp4"
+        }
+      ]
+    ],
+    "captions": [
+      [
+        "灵赋市场",
+        "娱乐互动"
+      ],
+      [
+        "剧场入口",
+        "剧情演示",
+        "剧场互动与继续"
+      ],
+      [
+        "随手分享",
+        "体感互动",
+        "拍照送礼",
+        "拍照送礼／礼物图鉴"
+      ],
+      [
+        "一起听"
+      ]
+    ]
+  }
 ];
 // BG switch on scroll
 const bgLower=document.querySelector('.page-bg-lower');
@@ -654,10 +864,21 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       const card=document.createElement('div');
       card.className='video-card';
       card.dataset.idx=i;
-      const v=document.createElement('video');
-      v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
-      v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
-      card.appendChild(v);
+      if(vids[i]?.pending){
+        card.classList.add('pending-video');
+        card.dataset.pendingId=vids[i].id;
+        const placeholder=document.createElement('div');
+        placeholder.className='pending-video-content';
+        for(const [className,text] of [['pending-video-badge','待录制'],['pending-video-title',vids[i].title],['pending-video-duration','计划成片 '+vids[i].seconds+' 秒']]){
+          const line=document.createElement('span');line.className=className;line.textContent=text;placeholder.appendChild(line);
+        }
+        card.appendChild(placeholder);
+      }else{
+        const v=document.createElement('video');
+        v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
+        v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
+        card.appendChild(v);
+      }
       const overlay=document.createElement('div');
       overlay.className='card-overlay';
       const label=document.createElement('span');
@@ -689,6 +910,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       } else {
         card.style.display='none';
       }
+      card.classList.toggle('pending-video',!!currentVids[i]?.pending);
       // Explicitly drive playback: autoplay alone is unreliable on mobile for
       // dynamically-created / initially-hidden videos. Play visible cards, pause hidden.
       const vid=card.querySelector('video');
