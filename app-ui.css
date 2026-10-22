@@ -31,8 +31,8 @@
 .title-plate .title-plate-middle{width:0;flex:1 1 0;object-fit:fill}
 .tab-detail-title{position:relative;isolation:isolate;width:fit-content;max-width:100%;min-height:64px;padding:12px 22px;display:flex;align-items:center;justify-content:center}
 .tab-detail-title::after{display:none}
-.tab-detail-desc .feature-point{display:flex;align-items:center;gap:9px;margin:7px 0}
-.feature-point>img{width:12px;height:12px;flex:0 0 12px;object-fit:contain}
+.tab-detail-desc .feature-point{display:flex;align-items:flex-start;gap:9px;margin:7px 0}
+.feature-point>img{width:12px;height:12px;flex:0 0 12px;object-fit:contain;margin-top:calc(.5lh - 6px)}
 .feature-point>span{min-width:0}
 
 /* Display only the title plate artwork, excluding Figma transparent gutters. */
