@@ -410,7 +410,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
-  <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
+  <p class="hero-slogan">专属记忆，为你而生——“把相处的点滴，慢慢写进我们的故事”</p>
 </section>
 
 <section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry>
@@ -647,9 +647,9 @@ const moduleData = [
     ],
     "descs": [
       "从日常对话中积累关于你的记忆\n查看、编辑和整理你们的记忆库\n让聊过的人与事，有机会在之后的对话里被想起",
-      "看看他今天去了哪里、做了什么\n通过日程与日记，了解他的日常\n聊天之外，也有可以慢慢翻看的生活片段",
+      "安排日常，也期待一次远行\n看看他带回的见闻与纪念\n把旅途收藏进旅行手账",
       "同一句问候，也会遇见不同的心情\n相处中的对话与日常影响他的情绪状态\n在回应里感受这一次相处的变化",
-      "学习、工作，或安静做自己的事\n选择适合此刻的陪伴场景\n不必一直找话题，也能一起度过这段时间"
+      "睡前放松，或安静做自己的事\n选择适合此刻的陪伴场景\n不必一直找话题，也能一起度过这段时间"
     ],
     "videos": [
       [
@@ -757,6 +757,39 @@ window.addEventListener('scroll',()=>{
     _rafPending=false;
   });
 },{passive:true});
+// Media sound: autoplay previews start muted; a visitor gesture enables sound.
+const featureSound={enabled:false};
+function refreshSoundButtons(){
+  document.querySelectorAll('.video-sound').forEach(button=>{
+    const audible=!button.parentElement.querySelector('video').muted;
+    button.textContent=audible?'关闭声音':'开启声音';
+    button.setAttribute('aria-label',audible?'关闭视频声音':'开启视频声音');
+    button.setAttribute('aria-pressed',String(audible));
+  });
+}
+function silenceVideos(except){
+  document.querySelectorAll('video').forEach(video=>{if(video!==except)video.muted=true;});
+  refreshSoundButtons();
+}
+function pauseBackgroundMusic(){
+  const bgm=document.getElementById('bgmAudio'),button=document.getElementById('bgmToggle');
+  bgm.pause();button.classList.remove('playing');
+  button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','播放背景音乐');
+}
+function playFeature(video,audible){
+  if(audible){silenceVideos(video);pauseBackgroundMusic();}
+  video.muted=!audible;
+  refreshSoundButtons();
+  const playing=video.play();
+  if(playing&&playing.catch)playing.catch(()=>{video.muted=true;refreshSoundButtons();});
+}
+document.getElementById('bgmAudio').addEventListener('play',()=>{
+  featureSound.enabled=false;silenceVideos();
+});
+// Also arbitrate native PV controls when a visitor unmutes them.
+document.querySelector('#pvVideo video').addEventListener('volumechange',event=>{
+  if(!event.target.muted){silenceVideos(event.target);pauseBackgroundMusic();}
+});
 // PV Video fullscreen
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
@@ -768,6 +801,7 @@ if(!pvVideo.src){
 }
   // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
   // and requires playback; ensure it's playing then request fullscreen with fallbacks.
+  featureSound.enabled=false;silenceVideos(pvVideo);pauseBackgroundMusic();pvVideo.muted=false;
   const p=pvVideo.play();
   if(p&&p.catch)p.catch(()=>{});
   if(pvVideo.requestFullscreen)pvVideo.requestFullscreen().catch(()=>{});
@@ -787,6 +821,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
   let currentCaps=[];
 
   function renderCarousel(vids,caps){
+    carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});
     carousel.innerHTML='';
     currentVids=vids;
     currentCaps=caps;
@@ -814,7 +849,15 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
         const v=document.createElement('video');
         v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
         v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
+        v.preload='none';
         card.appendChild(v);
+        // The emotion clip has no audio stream; do not offer a dead sound control.
+        if(!vids[i].endsWith('/emotion_feedback.mp4')){
+          const sound=document.createElement('button');sound.type='button';sound.className='video-sound';
+          sound.textContent='开启声音';sound.setAttribute('aria-label','开启视频声音');sound.setAttribute('aria-pressed','false');
+          sound.addEventListener('click',event=>{event.stopPropagation();featureSound.enabled=v.muted;playFeature(v,featureSound.enabled);});
+          card.appendChild(sound);
+        }
       }
       const overlay=document.createElement('div');
       overlay.className='card-overlay';
@@ -822,7 +865,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       label.textContent=caps[i]||'';
       overlay.appendChild(label);
       card.appendChild(overlay);
-      card.onclick=()=>{if(i!==centerIdx)focusTo(i);};
+      card.onclick=()=>{featureSound.enabled=true;if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video,true);}};
       carousel.appendChild(card);
     }
     applyPositions(false);
@@ -853,9 +896,9 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       const vid=card.querySelector('video');
       if(vid){
         if(card.style.display==='none'){
-          try{vid.pause();}catch(e){}
+          try{vid.pause();vid.muted=true;}catch(e){}
         } else {
-          const pr=vid.play(); if(pr&&pr.catch)pr.catch(()=>{});
+          playFeature(vid,i===centerIdx&&featureSound.enabled);
         }
       }
     });
@@ -885,7 +928,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     renderCarousel(moduleData[mi].videos[si],moduleData[mi].captions[si]);
   }
 
-  tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
+  tabs.forEach((t,i)=>{t.onclick=()=>{featureSound.enabled=true;const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
   let modInitDone=false;
   let activeTabIdx=0;
   const modRow=mod.querySelector('.module-row');
@@ -901,6 +944,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
         },400);
       }
     } else {
+      carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});refreshSoundButtons();
       if(modRow){modRow.classList.remove('visible');modRow.style.opacity='0';modRow.style.transform='translateY(32px)';}
       if(modVideoWrap){modVideoWrap.classList.remove('visible');modVideoWrap.style.opacity='0';modVideoWrap.style.transform='translateY(32px)';}
       detail.style.opacity='0';
