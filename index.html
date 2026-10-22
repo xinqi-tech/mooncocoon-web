@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#06142f">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>月光茧 - 虚实有别，爱意无界</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="images/banner_bg.webp" as="image" fetchpriority="high">
 <link rel="preload" href="fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
 <style>
 @font-face{font-family:"QingNiao Serif";src:url("fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-weight:normal;font-style:normal;font-display:swap}
@@ -33,7 +33,7 @@ canvas#cursor-particles{position:fixed;inset:0;z-index:999997;pointer-events:non
 html{scroll-behavior:smooth}
 body{font-family:var(--font-sans);color:var(--text-primary);background:var(--night-960);overflow-x:hidden;line-height:1.72;position:relative;min-height:100vh}
 .page-bg{position:fixed;inset:0;z-index:0;overflow:hidden;will-change:opacity;transform:translateZ(0)}
-.page-bg-inner{position:absolute;inset:-12px;background:url('images/banner_bg.jpg') center/cover no-repeat;filter:blur(2px);transform:scale(1.03)}
+.page-bg-inner{position:absolute;inset:-12px;background:url('images/banner_bg.webp') center/cover no-repeat;filter:blur(2px);transform:scale(1.03)}
 .page-overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(6,20,47,0.15) 0%,rgba(6,20,47,0.25) 50%,rgba(6,20,47,0.45) 80%,rgba(6,20,47,0.50) 100%);z-index:1;pointer-events:none}
 .page-bg-lower{position:fixed;inset:0;z-index:0;opacity:0;overflow:hidden;will-change:opacity;transform:translateZ(0)}
 .page-bg-lower-inner{position:absolute;inset:0;background:url('images/bg.png') center/cover no-repeat;filter:blur(4px);transform:scale(1.02)}
@@ -122,7 +122,7 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 .video-card.side:hover{opacity:0.75;filter:brightness(0.8)}
 .video-card.side-left{transform:translate(calc(-50% - 170px),-50%) scale(0.88);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 40%);mask-image:linear-gradient(to right,transparent 0%,black 40%)}
 .video-card.side-right{transform:translate(calc(-50% + 170px),-50%) scale(0.88);-webkit-mask-image:linear-gradient(to left,transparent 0%,black 40%);mask-image:linear-gradient(to left,transparent 0%,black 40%)}
-.video-card .card-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(0,0,0,0.25);opacity:0;transition:opacity .3s;border-radius:20px;z-index:2;pointer-events:none}
+.video-card .card-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);opacity:0;transition:opacity .3s;border-radius:20px;z-index:2;pointer-events:none}
 .video-card .card-overlay span{color:#fff;font-size:13px;font-weight:500;text-align:center;padding:0 10px;letter-spacing:0.03em}
 .video-card.side:hover .card-overlay{opacity:1}
 .video-caption-wrap{text-align:center;min-height:20px;margin-top:16px}
@@ -240,10 +240,10 @@ body.is-loading .hero-title,body.is-loading .hero-slogan,body.is-loading .hero-v
 }
 /* ===== LOADER ===== */
 body.is-loading{overflow:hidden}
-.loader{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .6s ease,visibility .6s ease}
+.loader{position:fixed;inset:0;z-index:100000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .25s ease,visibility .25s ease}
 .loader.is-done{opacity:0;visibility:hidden;pointer-events:none}
 .loader-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 36%,rgba(120,170,235,0.30),transparent 58%),radial-gradient(circle at 78% 76%,rgba(150,205,255,0.16),transparent 52%),linear-gradient(180deg,#081e48 0%,#06142f 56%,#030d20 100%)}
-.loader-bg::after{content:'';position:absolute;inset:0;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))}
+.loader-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))}
 .loader-stage{position:relative;width:320px;height:320px;display:grid;place-items:center}
 .loader-orbit,.loader-textring{position:absolute;inset:0;border-radius:50%;pointer-events:none;will-change:transform}
 .orbit-1{animation:loaderSpin 26s linear infinite}
@@ -255,7 +255,7 @@ body.is-loading{overflow:hidden}
 .orbit-bf{position:absolute;width:34px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 12px rgba(205,232,255,0.85));opacity:0.95}
 .loader-ring{position:absolute;width:188px;height:188px;transform:rotate(-90deg);overflow:visible;filter:drop-shadow(0 0 11px rgba(210,236,255,0.92))}
 .loader-ring .rt{fill:none;stroke:rgba(220,240,255,0.16);stroke-width:4}
-.loader-ring .rf{fill:none;stroke:url(#lgrad);stroke-width:4.5;stroke-linecap:round;transition:stroke-dashoffset .25s ease}
+.loader-ring .rf{fill:none;stroke:url(#lgrad);stroke-width:4.5;stroke-linecap:round}
 .loader-center{position:relative;display:flex;align-items:baseline;justify-content:center}
 .loader-percent{font-family:var(--font-serif);font-size:46px;font-weight:300;color:#fff;letter-spacing:0.02em;text-shadow:0 0 22px rgba(215,236,255,0.78);font-variant-numeric:tabular-nums;line-height:1}
 .loader-percent i{font-size:20px;font-style:normal;color:rgba(236,247,255,0.74);margin-left:2px}
@@ -266,9 +266,9 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261021-download">
-<link rel="stylesheet" href="app-ui.css?v=20261020n">
-<script src="title-plates.js?v=20261021-download" defer></script>
+<link rel="stylesheet" href="reservation.css?v=20261021-content4">
+<link rel="stylesheet" href="app-ui.css?v=20261021-content3">
+<script src="title-plates.js?v=20261021-content3" defer></script>
 </head>
 <body class="is-loading">
 <!-- LOADER -->
@@ -294,6 +294,7 @@ body.is-loading{overflow:hidden}
       <defs><linearGradient id="lgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eaf7ff"/><stop offset="1" stop-color="#bfe3ff"/></linearGradient></defs>
       <circle class="rt" cx="50" cy="50" r="46"/>
       <circle class="rf" id="loaderRingFill" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+      <image id="loaderProgressLight" href="images/app-ui/reservation-progress-light.png" x="82" y="36" width="28" height="28"/>
     </svg>
     <div class="loader-center">
       <div class="loader-percent"><span id="loaderNum">0</span><i>%</i></div>
@@ -308,73 +309,63 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 (function(){
   var loader=document.getElementById('loader');
   var ringFill=document.getElementById('loaderRingFill');
+  var light=document.getElementById('loaderProgressLight');
   var numEl=document.getElementById('loaderNum');
-  var CIRC=289.03; // 2*pi*46
+  var CIRC=289.03;
   var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // Only the hero background and logo block entry. Lower-page media and fonts
+  // continue loading independently; never wait for window.load or video data.
+  var assets=['images/banner_bg.webp','images/app-logo.jpg'];
+  var loaded=0, target=0, shown=0, done=false, frame=0;
+  var started=performance.now(), previous=started;
+  var minTime=reduce?0:350;
+  var deadline=setTimeout(finish,4500);
 
-  // First-screen assets weighted by approx download cost
-  var assets=[
-    {src:'images/banner_bg.jpg',w:40,type:'img'},
-    {src:'images/pv_poster.jpg',w:2,type:'img'},
-    {src:'images/bg.png',w:8,type:'img'},
-    {src:'images/app-logo.jpg',w:7,type:'img'},
-    {src:'images/title.jpg',w:4,type:'img'},
-    {src:'images/light.png',w:1,type:'img'},
-    {src:'images/butterfly.png',w:1,type:'img'}
-  ];
-  var totalW=assets.reduce(function(a,b){return a+b.w;},0);
-  var loadedW=0, done=false;
-  var target=0;    // real progress 0..1
-  var shown=0;     // smoothed displayed progress
-  var minTime=1500, started=performance.now();
-
-  function bump(w){ loadedW+=w; target=Math.min(loadedW/totalW,1); }
-
-  assets.forEach(function(a){
-    if(a.type==='img'){
-      var im=new Image();
-      im.onload=im.onerror=function(){bump(a.w);};
-      im.src=a.src;
-    }else{
-      var v=document.createElement('video');
-      v.preload='auto'; v.muted=true;
-      var fired=false, fire=function(){if(fired)return;fired=true;bump(a.w);};
-      v.addEventListener('canplaythrough',fire);
-      v.addEventListener('loadeddata',function(){setTimeout(fire,1200);}); // fallback if canplaythrough never fires
-      v.addEventListener('error',fire);
-      v.src=a.src;
-      // hard cap so a stalled video can't trap the loader
-      setTimeout(fire,9000);
-    }
-  });
-
-  // window load as a final safety net
-  window.addEventListener('load',function(){ if(target<1){loadedW=totalW;target=1;} });
-
-  function finish(){
-    if(done)return; done=true;
-    loader.setAttribute('aria-valuenow','100');
-    setTimeout(function(){
-      loader.classList.add('is-done');
-      document.body.classList.remove('is-loading');
-      window.dispatchEvent(new Event('loader:done'));
-      setTimeout(function(){ if(loader&&loader.parentNode)loader.parentNode.removeChild(loader); },700);
-    },reduce?60:340);
-  }
-
-  function tick(){
-    // ease the shown value toward target so it never snaps
-    shown += (target-shown)*0.12;
-    if(target>=1 && shown>0.997) shown=1;
-    var pct=Math.round(shown*100);
+  function paint(value){
+    var pct=Math.round(value*100), angle=value*Math.PI*2;
     numEl.textContent=pct;
-    ringFill.setAttribute('stroke-dashoffset',(CIRC*(1-shown)).toFixed(2));
+    ringFill.setAttribute('stroke-dashoffset',(CIRC*(1-value)).toFixed(2));
+    // SVG is rotated -90deg: start at twelve o'clock, follow the arc clockwise.
+    light.setAttribute('x',(50+46*Math.cos(angle)-14).toFixed(2));
+    light.setAttribute('y',(50+46*Math.sin(angle)-14).toFixed(2));
     loader.setAttribute('aria-valuenow',pct);
-    var elapsed=performance.now()-started;
-    if(shown>=1 && elapsed>=minTime){ finish(); return; }
-    requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+  function finish(){
+    if(done)return;
+    done=true;
+    clearTimeout(deadline);
+    cancelAnimationFrame(frame);
+    paint(1);
+    // Independent of animation frames: a suspended/stalled RAF cannot trap entry.
+    loader.classList.add('is-done');
+    document.body.classList.remove('is-loading');
+    window.dispatchEvent(new Event('loader:done'));
+    setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader);},300);
+  }
+  assets.forEach(function(src){
+    var im=new Image(), settled=false;
+    function settle(){
+      if(settled)return;
+      settled=true;
+      im.onload=im.onerror=null;
+      target=++loaded/assets.length;
+    }
+    im.onload=im.onerror=settle;
+    im.src=src;
+    if(im.complete)settle();
+  });
+  function tick(now){
+    if(done)return;
+    var delta=Math.min(Math.max(now-previous,0),100);
+    previous=now;
+    shown+=(target-shown)*(1-Math.exp(-delta/70));
+    if(target===1&&shown>.995)shown=1;
+    paint(shown);
+    if(shown===1&&now-started>=minTime){finish();return;}
+    frame=requestAnimationFrame(tick);
+  }
+  paint(0);
+  frame=requestAnimationFrame(tick);
 })();
 </script>
 <div class="page-bg"><div class="page-bg-inner"></div></div>
@@ -419,7 +410,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <section class="hero" id="hero">
   <img class="hero-logo" src="images/title.jpg" alt="月光茧">
   <h1 class="hero-title">虚实有别，爱意无界</h1>
-  <p class="hero-slogan">专属记忆，为你而生——“星河流转，而我始终记得你”</p>
+  <p class="hero-slogan">专属记忆，为你而生——“把相处的点滴，慢慢写进我们的故事”</p>
 </section>
 
 <section class="reservation-section" id="reservation" aria-labelledby="reservationHeading" data-reservation-entry>
@@ -496,7 +487,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 
 
 <section class="reservation-pv" id="pv" aria-labelledby="pvHeading">
-  <h2 id="pvHeading">走近月光茧</h2>
+  <h2 id="pvHeading" class="pv-title"><span class="pv-title-intro">走进</span><span class="pv-title-name">月光茧</span></h2>
   <div class="hero-video" id="pvVideo">
     <video muted playsinline controls preload="none" poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
@@ -514,10 +505,11 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="sub-tab" data-tab="0">人设定制</div>
       <div class="sub-tab" data-tab="1">外观定制</div>
       <div class="sub-tab" data-tab="2">拟真语音</div>
+      <div class="sub-tab" data-tab="3">自定义环境</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">人设定制</h3>
-      <p class="tab-detail-desc">▸ 结合你的喜好与个性，设定他的性格，塑造独家灵魂<br>▸ 官设和自设任选<br>▸ 支持手动深度编辑或AI一键生成</p>
+      <p class="tab-detail-desc">▸ 从已有角色开始，也可以设定自己的角色<br>▸ 编辑性格与背景，慢慢找到喜欢的相处方式<br>▸ 支持手动编辑或 AI 辅助生成人设</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -536,10 +528,11 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="sub-tab" data-tab="0">独家记忆</div>
       <div class="sub-tab" data-tab="1">独立生活</div>
       <div class="sub-tab" data-tab="2">情绪反馈</div>
+      <div class="sub-tab" data-tab="3">陪伴模式</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">独家记忆</h3>
-      <p class="tab-detail-desc">▸ 根据聊天内容，日积月累形成专属记忆库<br>▸ 记忆库可编辑可删减，制造你们独一无二的回忆<br>▸ 在日常聊天里主动提起曾经的回忆</p>
+      <p class="tab-detail-desc">▸ 从日常对话中积累关于你的记忆<br>▸ 查看、编辑和整理你们的记忆库<br>▸ 让聊过的人与事，有机会在之后的对话里被想起</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -558,10 +551,11 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
       <div class="sub-tab" data-tab="0">灵赋生态</div>
       <div class="sub-tab" data-tab="1">梦境剧场</div>
       <div class="sub-tab" data-tab="2">跨次元互动</div>
+      <div class="sub-tab" data-tab="3">一起听</div>
     </div>
     <div class="tab-detail">
       <h3 class="tab-detail-title">灵赋生态</h3>
-      <p class="tab-detail-desc">▸ 是娱乐玩伴，也是全能管家<br>▸ 从喝水提醒到游戏陪玩一应俱全<br>▸ 可自定义底层规则</p>
+      <p class="tab-detail-desc">▸ 是娱乐玩伴，也是全能管家<br>▸ 选择喜欢的灵赋，带进你们的聊天<br>▸ 从日常小互动开始，探索更多相处方式</p>
     </div>
     </div>
     <div class="tab-video-wrap">
@@ -590,9 +584,162 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <script>
 
 const moduleData = [
-  {subs:["人设定制","外观定制","拟真语音"],descs:["结合你的喜好与个性，设定他的性格，塑造独家灵魂\n官设和自设任选\n支持手动深度编辑或AI一键生成","捏脸换装，精准击中审美\n五官身材穿搭360度全景定制\n兽耳、覆面、项圈自由搭配","听见情绪起伏，连呼吸都真实可感\n多种超拟人TTS音色任选\n精准传达喜怒哀乐"],videos:[["videos/01_persona_setup/user_initial_setup.mp4","videos/01_persona_setup/boyfriend_style_selection.mp4","videos/01_persona_setup/persona_manual_ai_voice.mp4"],["videos/02_appearance_customization/appearance_hair_color.mp4","videos/02_appearance_customization/appearance_facial_detail.mp4","videos/02_appearance_customization/appearance_body_adjust.mp4"],["videos/07_voice_customization/voice_emotion_tts.mp4"]],captions:[["初始设定","风格选择","编辑人设"],["发色调整","五官细节","身材调整"],["情绪语音"]]},
-  {subs:["独家记忆","独立生活","情绪反馈"],descs:["根据聊天内容，日积月累形成专属记忆库\n记忆库可编辑可删减，制造你们独一无二的回忆\n在日常聊天里主动提起曾经的回忆","你不在时，他也在好好生活\n拥有自己的日程轨迹\n心事悄悄写在日记本里","你的举动，牵动他的喜怒哀乐\n底层动态情绪建模\n拒绝机械式回复"],videos:[["videos/08_exclusive_memory/memory_edit.mp4"],["videos/04_boyfriend_daily/boyfriend_diary.mp4","videos/04_boyfriend_daily/boyfriend_schedule.mp4",""],["videos/09_emotion_feedback/emotion_feedback.mp4"]],captions:[["记忆库编辑"],["日记本","日程表","待补充"],["真实情绪"]]},
-  {subs:["灵赋生态","梦境剧场","跨次元互动"],descs:["是娱乐玩伴，也是全能管家\n从喝水提醒到游戏陪玩一应俱全\n可自定义底层规则","用户共创共享，海量剧本机制\n你的选择，决定着下一步的发展\n剧情千变，他始终陪你","支持文字、语音、图片、文件、链接等多种畅聊方式\n拍照送礼，将心意打破次元传递\n智能硬件加持，双向体感互动，他也能给予你现实的快乐"],videos:[["videos/06_skill_system/skill_market_install.mp4","videos/06_skill_system/skill_chat_emoji.mp4"],["videos/05_dream_theater/dream_theater_page.mp4","videos/05_dream_theater/story_gameplay_demo.mp4",""],["videos/03_intimate_interaction/chat_text_image.mp4","videos/03_intimate_interaction/body_touch_feedback.mp4","videos/03_intimate_interaction/cross_dimension_interaction.mp4"]],captions:[["灵赋市场","娱乐互动"],["剧场入口","剧情演示","待补充"],["随手分享","体感互动","拍照送礼"]]}
+  {
+    "subs": [
+      "人设定制",
+      "外观定制",
+      "拟真语音",
+      "自定义环境"
+    ],
+    "descs": [
+      "从已有角色开始，也可以设定自己的角色\n编辑性格与背景，慢慢找到喜欢的相处方式\n支持手动编辑或 AI 辅助生成人设",
+      "调整发型、妆容与穿搭，搭配喜欢的外观\n自设角色可进一步调整五官与身形\n已有角色的可编辑范围以 App 内为准",
+      "选择喜欢的音色，听他把话说给你\n语音回应呈现不同的情绪与语气\n在日常对话里，找到熟悉的声音",
+      "选择喜欢的环境与氛围\n按自己的喜好调整布置\n为每一次相见，留一处熟悉的空间"
+    ],
+    "videos": [
+      [
+        "videos/01_persona_setup/user_initial_setup.mp4",
+        "videos/01_persona_setup/boyfriend_style_selection.mp4",
+        "videos/01_persona_setup/persona_manual_ai_voice.mp4",
+        "videos/01_persona_setup/persona_extension_slots.mp4"
+      ],
+      [
+        "videos/02_appearance_customization/appearance_hair_color.mp4",
+        "videos/02_appearance_customization/appearance_facial_detail.mp4",
+        "videos/02_appearance_customization/appearance_body_adjust.mp4",
+        "videos/02_appearance_customization/clothing_doodle.mp4"
+      ],
+      [
+        "videos/07_voice_customization/voice_emotion_tts.mp4"
+      ],
+      [
+        "videos/10_custom_environment/custom_environment.mp4"
+      ]
+    ],
+    "captions": [
+      [
+        "初始设定",
+        "风格选择",
+        "编辑人设",
+        "人设扩展插槽"
+      ],
+      [
+        "发色调整",
+        "五官细节",
+        "身材调整",
+        "服装涂鸦"
+      ],
+      [
+        "情绪语音"
+      ],
+      [
+        "自定义环境"
+      ]
+    ]
+  },
+  {
+    "subs": [
+      "独家记忆",
+      "独立生活",
+      "情绪反馈",
+      "陪伴模式"
+    ],
+    "descs": [
+      "从日常对话中积累关于你的记忆\n查看、编辑和整理你们的记忆库\n让聊过的人与事，有机会在之后的对话里被想起",
+      "安排日常，也期待一次远行\n看看他带回的见闻与纪念\n把旅途收藏进旅行手账",
+      "同一句问候，也会遇见不同的心情\n相处中的对话与日常影响他的情绪状态\n在回应里感受这一次相处的变化",
+      "睡前放松，或安静做自己的事\n选择适合此刻的陪伴场景\n不必一直找话题，也能一起度过这段时间"
+    ],
+    "videos": [
+      [
+        "videos/08_exclusive_memory/memory_function_20261022.mp4"
+      ],
+      [
+        "videos/04_boyfriend_daily/boyfriend_diary.mp4",
+        "videos/04_boyfriend_daily/boyfriend_schedule.mp4",
+        "videos/04_boyfriend_daily/boyfriend_schedule_2.mp4",
+        "videos/04_boyfriend_daily/schedule_planning.mp4",
+        "videos/04_boyfriend_daily/travel_journal.mp4"
+      ],
+      [
+        "videos/09_emotion_feedback/emotion_feedback.mp4"
+      ],
+      [
+        "videos/11_companion_mode/companion_mode.mp4"
+      ]
+    ],
+    "captions": [
+      [
+        "记忆库编辑"
+      ],
+      [
+        "日记本",
+        "日程表",
+        "日程表 · 更多日程",
+        "日程安排",
+        "远行与旅行手账"
+      ],
+      [
+        "情绪回应"
+      ],
+      [
+        "陪伴模式"
+      ]
+    ]
+  },
+  {
+    "subs": [
+      "灵赋生态",
+      "梦境剧场",
+      "跨次元互动",
+      "一起听"
+    ],
+    "descs": [
+      "是娱乐玩伴，也是全能管家\n选择喜欢的灵赋，带进你们的聊天\n从日常小互动开始，探索更多相处方式",
+      "挑选一个故事，与他走进新的情境\n通过对话和选择，参与剧情的发展\n在不同故事里，经历平日之外的相遇",
+      "用文字、语音与图片分享眼前的生活\n拍照送礼，把日常的小心意带给他\n通过触摸与互动反馈，让陪伴多一种回应",
+      "选一首此刻想听的歌\n一边播放，一边聊聊感受\n让旋律成为你们共同的话题"
+    ],
+    "videos": [
+      [
+        "videos/06_skill_system/skill_market_install.mp4",
+        "videos/06_skill_system/skill_chat_emoji.mp4"
+      ],
+      [
+        "videos/05_dream_theater/story_list_20261022.mp4",
+        "videos/05_dream_theater/theater_resume.mp4"
+      ],
+      [
+        "videos/03_intimate_interaction/chat_text_image.mp4",
+        "videos/03_intimate_interaction/body_touch_feedback.mp4",
+        "videos/03_intimate_interaction/cross_dimension_interaction.mp4",
+        "videos/03_intimate_interaction/photo_gift_collection.mp4"
+      ],
+      [
+        "videos/12_listen_together/listen_together.mp4"
+      ]
+    ],
+    "captions": [
+      [
+        "灵赋市场",
+        "娱乐互动"
+      ],
+      [
+        "剧情列表",
+        "剧场互动与继续"
+      ],
+      [
+        "随手分享",
+        "体感互动",
+        "拍照送礼",
+        "拍照送礼／礼物图鉴"
+      ],
+      [
+        "一起听"
+      ]
+    ]
+  }
 ];
 // BG switch on scroll
 const bgLower=document.querySelector('.page-bg-lower');
@@ -610,6 +757,39 @@ window.addEventListener('scroll',()=>{
     _rafPending=false;
   });
 },{passive:true});
+// Media sound: autoplay previews start muted; a visitor gesture enables sound.
+const featureSound={enabled:false};
+function refreshSoundButtons(){
+  document.querySelectorAll('.video-sound').forEach(button=>{
+    const audible=!button.parentElement.querySelector('video').muted;
+    button.textContent=audible?'关闭声音':'开启声音';
+    button.setAttribute('aria-label',audible?'关闭视频声音':'开启视频声音');
+    button.setAttribute('aria-pressed',String(audible));
+  });
+}
+function silenceVideos(except){
+  document.querySelectorAll('video').forEach(video=>{if(video!==except)video.muted=true;});
+  refreshSoundButtons();
+}
+function pauseBackgroundMusic(){
+  const bgm=document.getElementById('bgmAudio'),button=document.getElementById('bgmToggle');
+  bgm.pause();button.classList.remove('playing');
+  button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','播放背景音乐');
+}
+function playFeature(video,audible){
+  if(audible){silenceVideos(video);pauseBackgroundMusic();}
+  video.muted=!audible;
+  refreshSoundButtons();
+  const playing=video.play();
+  if(playing&&playing.catch)playing.catch(()=>{video.muted=true;refreshSoundButtons();});
+}
+document.getElementById('bgmAudio').addEventListener('play',()=>{
+  featureSound.enabled=false;silenceVideos();
+});
+// Also arbitrate native PV controls when a visitor unmutes them.
+document.querySelector('#pvVideo video').addEventListener('volumechange',event=>{
+  if(!event.target.muted){silenceVideos(event.target);pauseBackgroundMusic();}
+});
 // PV Video fullscreen
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
@@ -621,6 +801,7 @@ if(!pvVideo.src){
 }
   // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
   // and requires playback; ensure it's playing then request fullscreen with fallbacks.
+  featureSound.enabled=false;silenceVideos(pvVideo);pauseBackgroundMusic();pvVideo.muted=false;
   const p=pvVideo.play();
   if(p&&p.catch)p.catch(()=>{});
   if(pvVideo.requestFullscreen)pvVideo.requestFullscreen().catch(()=>{});
@@ -640,6 +821,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
   let currentCaps=[];
 
   function renderCarousel(vids,caps){
+    carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});
     carousel.innerHTML='';
     currentVids=vids;
     currentCaps=caps;
@@ -654,17 +836,36 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       const card=document.createElement('div');
       card.className='video-card';
       card.dataset.idx=i;
-      const v=document.createElement('video');
-      v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
-      v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
-      card.appendChild(v);
+      if(vids[i]?.pending){
+        card.classList.add('pending-video');
+        card.dataset.pendingId=vids[i].id;
+        const placeholder=document.createElement('div');
+        placeholder.className='pending-video-content';
+        for(const [className,text] of [['pending-video-badge','待录制'],['pending-video-title',vids[i].title],['pending-video-duration','计划成片 '+vids[i].seconds+' 秒']]){
+          const line=document.createElement('span');line.className=className;line.textContent=text;placeholder.appendChild(line);
+        }
+        card.appendChild(placeholder);
+      }else{
+        const v=document.createElement('video');
+        v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
+        v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
+        v.preload='none';
+        card.appendChild(v);
+        // The emotion clip has no audio stream; do not offer a dead sound control.
+        if(!vids[i].endsWith('/emotion_feedback.mp4')){
+          const sound=document.createElement('button');sound.type='button';sound.className='video-sound';
+          sound.textContent='开启声音';sound.setAttribute('aria-label','开启视频声音');sound.setAttribute('aria-pressed','false');
+          sound.addEventListener('click',event=>{event.stopPropagation();featureSound.enabled=v.muted;playFeature(v,featureSound.enabled);});
+          card.appendChild(sound);
+        }
+      }
       const overlay=document.createElement('div');
       overlay.className='card-overlay';
       const label=document.createElement('span');
       label.textContent=caps[i]||'';
       overlay.appendChild(label);
       card.appendChild(overlay);
-      card.onclick=()=>{if(i!==centerIdx)focusTo(i);};
+      card.onclick=()=>{featureSound.enabled=true;if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video,true);}};
       carousel.appendChild(card);
     }
     applyPositions(false);
@@ -689,14 +890,15 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       } else {
         card.style.display='none';
       }
+      card.classList.toggle('pending-video',!!currentVids[i]?.pending);
       // Explicitly drive playback: autoplay alone is unreliable on mobile for
       // dynamically-created / initially-hidden videos. Play visible cards, pause hidden.
       const vid=card.querySelector('video');
       if(vid){
         if(card.style.display==='none'){
-          try{vid.pause();}catch(e){}
+          try{vid.pause();vid.muted=true;}catch(e){}
         } else {
-          const pr=vid.play(); if(pr&&pr.catch)pr.catch(()=>{});
+          playFeature(vid,i===centerIdx&&featureSound.enabled);
         }
       }
     });
@@ -726,22 +928,28 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     renderCarousel(moduleData[mi].videos[si],moduleData[mi].captions[si]);
   }
 
-  tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
+  tabs.forEach((t,i)=>{t.onclick=()=>{featureSound.enabled=true;const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
   let modInitDone=false;
+  let modVisible=false,modEnterTimer=null;
   let activeTabIdx=0;
   const modRow=mod.querySelector('.module-row');
   const modVideoWrap=mod.querySelector('.tab-video-wrap');
   const modObserver=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){
+    modVisible=entries[0].isIntersecting;
+    if(modVisible){
       if(!modInitDone){
         modInitDone=true;
-        setTimeout(()=>{
+        modEnterTimer=setTimeout(()=>{
+          modEnterTimer=null;
+          if(!modVisible)return;
           if(modRow){modRow.style.opacity='';modRow.style.transform='';modRow.classList.add('visible');}
           if(modVideoWrap){modVideoWrap.style.opacity='';modVideoWrap.style.transform='';modVideoWrap.classList.add('visible');}
           setTab(activeTabIdx);
         },400);
       }
     } else {
+      clearTimeout(modEnterTimer);modEnterTimer=null;
+      carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});refreshSoundButtons();
       if(modRow){modRow.classList.remove('visible');modRow.style.opacity='0';modRow.style.transform='translateY(32px)';}
       if(modVideoWrap){modVideoWrap.classList.remove('visible');modVideoWrap.style.opacity='0';modVideoWrap.style.transform='translateY(32px)';}
       detail.style.opacity='0';

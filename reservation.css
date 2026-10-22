@@ -289,7 +289,6 @@
 .first-screen .reservation-reward-orb{width:69.12px;height:69.12px}
 .first-screen .reservation-rewards{--track-y:60.56px}
 
-.preview-environment{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:99999;border:1px solid #a8d5ff88;border-radius:12px;padding:6px 14px;background:#081e48ed;color:#eaf7ff;font-size:12px;pointer-events:none;max-width:90vw;text-align:center}
 
 /* Figma 40000758:81950, original 796 × 180 artwork including its glow. */
 @font-face{font-family:ReservationJHT;src:url('fonts/QingNiaoHuaGuang-Sans.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
@@ -421,3 +420,8 @@
 .first-screen .reservation-rule-list h3{display:inline-flex;align-items:center;gap:8px;margin-left:-18px;vertical-align:baseline}
 .first-screen .reservation-rule-list h3>img{display:block;flex:0 0 10px;width:10px;height:12px;object-fit:contain;opacity:.8;margin:0}
 @media(max-width:768px){.reservation-login-bar #reservationLogin{width:104px;height:34px;font-size:15px}.first-screen .reservation-panel .reservation-panel-title{font-size:21px;padding:8px 14px}.first-screen .reservation-rule-list h3{display:flex;margin-left:-18px}#reservationDownloadLinks{grid-template-columns:repeat(2,minmax(0,130px));gap:16px}.reservation-download .reservation-download-button{font-size:16px;border-radius:16px}.reservation-download-button>img{width:32px;height:32px}}
+
+/* Same outer width as the reservation panel; the PV no longer inherits the old 680px cap. */
+.reservation-pv{scroll-margin-top:90px;width:min(calc(100% - 40px),1200px);max-width:none;padding:30px 0 72px}
+.reservation-pv .hero-video{width:100%;max-width:none;margin:24px auto 0}
+@media(max-width:768px){.reservation-pv{width:calc(100% - 28px);padding:30px 0 64px}}
