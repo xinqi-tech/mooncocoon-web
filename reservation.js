@@ -12,6 +12,7 @@
   'use strict';
   const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
+  const DEFAULT_REQUEST_TIMEOUT_MS=12000;
   const RESERVATION_START='2026-10-24T00:00:00+08:00';
   function formatCountdown(start,now){
     const seconds=Math.max(0,Math.ceil((start-now)/1000));
@@ -28,10 +29,11 @@
     if(checked)return checked.value;
     return /iPhone|iPad/i.test(ua||'')?'IOS':'ANDROID';
   };
-  function init(doc,fetchImpl){
+  function init(doc,fetchImpl,requestTimeoutMs=DEFAULT_REQUEST_TIMEOUT_MS){
     const form=doc.getElementById('reservationForm');if(!form)return;
     if(!form.querySelector('input[name="platform"]:checked'))form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
     const fetcher=fetchImpl||root.fetch.bind(root);
+    const timeoutMs=Number.isFinite(requestTimeoutMs)&&requestTimeoutMs>0?requestTimeoutMs:DEFAULT_REQUEST_TIMEOUT_MS;
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
     const el=id=>doc.getElementById(id);
@@ -87,8 +89,8 @@
       const stale=()=>path!=='/activity'&&path!=='/logout'&&flow!==state.flow;
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
-      const controller=path==='/activity'?new AbortController():null;
-      const timeout=controller?root.setTimeout(()=>controller.abort(),12000):null;
+      const controller=['/activity','/reserve-with-code'].includes(path)?new AbortController():null;
+      const timeout=controller?root.setTimeout(()=>controller.abort(),timeoutMs):null;
       try{
         const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
@@ -431,5 +433,5 @@
     return state;
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,formatCountdown,RESERVATION_START};
+  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
 });

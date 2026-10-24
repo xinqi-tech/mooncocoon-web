@@ -14,7 +14,7 @@ let browser;
 before(async()=>{browser=await webkit.launch({headless:true})});
 after(async()=>{await browser?.close()});
 
-async function fixture(t,{failure,loseResponse,delay=0}={}){
+async function fixture(t,{failure,loseResponse,hangResponse=false,saveBeforeHang=false,delay=0,timeoutMs=12000}={}){
   const context=await browser.newContext({...devices['iPhone 13']});
   context.setDefaultTimeout(8000);
   t.after(()=>context.close());
@@ -38,6 +38,11 @@ async function fixture(t,{failure,loseResponse,delay=0}={}){
       attempts++;
       if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
       if(failure&&attempts===1)return respond({},failure);
+      if(hangResponse&&attempts===1){
+        if(saveBeforeHang)receipt={code:'RG-SYNTHETIC',platform:body.platform,reminderSubscribed:body.reminder,rewards:[]};
+        await new Promise(resolve=>setTimeout(resolve,Math.max(timeoutMs*4,200)));
+        return route.abort('failed').catch(()=>{});
+      }
       receipt={code:'RG-SYNTHETIC',platform:body.platform,reminderSubscribed:body.reminder,rewards:[]};
       if(loseResponse)return route.abort('failed');
       return respond(mine());
@@ -51,7 +56,7 @@ async function fixture(t,{failure,loseResponse,delay=0}={}){
   // The site's media loader is unrelated to reservation and its script is excluded above.
   await page.evaluate(()=>document.getElementById('loader')?.remove());
   await page.addScriptTag({content:script});
-  await page.evaluate(()=>window.LunaKoruReservation.init(document));
+  await page.evaluate(timeout=>window.LunaKoruReservation.init(document,undefined,timeout),timeoutMs);
   await page.locator('#reservationOpen').waitFor({state:'visible'});
   await page.locator('#reservationOpen').click();
   await page.locator('[name=phone]').fill('13800138000');
@@ -96,6 +101,30 @@ test('lost response recovers the saved receipt through cookie-free lookup',async
   await submit(page);await success(page);
   assert.equal(calls.filter(c=>c.path==='/lookup').length,1);
   assert.equal(calls.some(c=>c.path==='/mine'),false);
+});
+test('pending response times out and recovers a receipt saved by the server',async t=>{
+  const {page,calls}=await fixture(t,{hangResponse:true,saveBeforeHang:true,timeoutMs:50});
+  await submit(page);await success(page);
+  assert.equal(calls.filter(c=>c.path==='/reserve-with-code').length,1);
+  assert.equal(calls.filter(c=>c.path==='/lookup').length,1);
+  assert.equal(await page.locator('[name=code]').inputValue(),'');
+});
+test('pending response with no saved record restores retryable form state',async t=>{
+  const {page,calls}=await fixture(t,{hangResponse:true,timeoutMs:50});
+  await submit(page);
+  await page.waitForFunction(()=>document.getElementById('reservationMessage').textContent.includes('请求超时'));
+  assert.equal(await page.locator('[name=code]').inputValue(),'123456');
+  assert.equal(await page.locator('#reservationSubmit').isDisabled(),false);
+  await submit(page);await success(page);
+  assert.equal(calls.filter(c=>c.path==='/reserve-with-code').length,2);
+});
+test('source, rate-limit and missing-login errors keep their distinct recovery messages',async t=>{
+  for(const [status,text,cleared] of [[403,'请刷新页面后重试',false],[429,'请求太频繁',false],[401,'未能识别登录状态',true]]){
+    const {page}=await fixture(t,{failure:status});
+    await submit(page);
+    await page.waitForFunction(expected=>document.getElementById('reservationMessage').textContent.includes(expected),text);
+    assert.equal(await page.locator('[name=code]').inputValue()==='',cleared);
+  }
 });
 test('double submission saves once and missing consent never sends a code',async t=>{
   const {page,calls}=await fixture(t,{delay:200});
