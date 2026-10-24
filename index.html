@@ -305,7 +305,7 @@ body.is-loading{overflow:hidden}
 <script>
 // Pick PV source by viewport: mobile gets the lighter 720p file (faster on cellular).
 // PV source is selected only when the visitor asks to play it.
-window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').matches)?'videos/pv_720.mp4':'videos/pv.mp4';
+window.__PV_SRC='videos/pv.mp4?v=20261024';
 (function(){
   var loader=document.getElementById('loader');
   var ringFill=document.getElementById('loaderRingFill');
@@ -489,7 +489,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
 <section class="reservation-pv" id="pv" aria-labelledby="pvHeading">
   <h2 id="pvHeading" class="pv-title"><span class="pv-title-intro">走进</span><span class="pv-title-name">月光茧</span></h2>
   <div class="hero-video" id="pvVideo">
-    <video muted playsinline controls preload="none" poster="images/pv_poster.jpg" data-src-desktop="videos/pv.mp4" data-src-mobile="videos/pv_720.mp4"></video>
+    <video playsinline controls preload="none" poster="images/pv_poster.jpg?v=20261024" data-src-desktop="videos/pv.mp4?v=20261024" data-src-mobile="videos/pv.mp4?v=20261024"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
   </div>
 </section>
@@ -757,34 +757,25 @@ window.addEventListener('scroll',()=>{
     _rafPending=false;
   });
 },{passive:true});
-// Media sound: autoplay previews start muted; a visitor gesture enables sound.
-const featureSound={enabled:false};
-function refreshSoundButtons(){
-  document.querySelectorAll('.video-sound').forEach(button=>{
-    const audible=!button.parentElement.querySelector('video').muted;
-    button.textContent=audible?'关闭声音':'开启声音';
-    button.setAttribute('aria-label',audible?'关闭视频声音':'开启视频声音');
-    button.setAttribute('aria-pressed',String(audible));
-  });
-}
+// Media sound: the focused clip defaults to sound; blocked autoplay waits for a tap.
 function silenceVideos(except){
   document.querySelectorAll('video').forEach(video=>{if(video!==except)video.muted=true;});
-  refreshSoundButtons();
 }
 function pauseBackgroundMusic(){
   const bgm=document.getElementById('bgmAudio'),button=document.getElementById('bgmToggle');
   bgm.pause();button.classList.remove('playing');
   button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','播放背景音乐');
 }
-function playFeature(video,audible){
+function playFeature(video,audible=true){
   if(audible){silenceVideos(video);pauseBackgroundMusic();}
   video.muted=!audible;
-  refreshSoundButtons();
   const playing=video.play();
-  if(playing&&playing.catch)playing.catch(()=>{video.muted=true;refreshSoundButtons();});
+  // Keep sound enabled when autoplay is denied. The existing card click retries
+  // playback directly inside a visitor gesture, rather than silently muting it.
+  if(playing&&playing.catch)playing.catch(()=>{});
 }
 document.getElementById('bgmAudio').addEventListener('play',()=>{
-  featureSound.enabled=false;silenceVideos();
+  silenceVideos();
 });
 // Also arbitrate native PV controls when a visitor unmutes them.
 document.querySelector('#pvVideo video').addEventListener('volumechange',event=>{
@@ -793,15 +784,15 @@ document.querySelector('#pvVideo video').addEventListener('volumechange',event=>
 // PV Video fullscreen
 const pvWrap=document.getElementById('pvVideo');
 const pvVideo=pvWrap.querySelector('video');
-// Set the right source for this viewport (mobile=720p, desktop=1080p). Poster shows
+// The new PV is 720p for both viewports. Its matching poster shows
 // immediately so the hero is never an empty box while the video buffers.
 pvWrap.addEventListener('click',()=>{
 if(!pvVideo.src){
-  pvVideo.src=window.__PV_SRC||pvVideo.getAttribute('data-src-desktop')||'videos/pv.mp4';
+  pvVideo.src=window.__PV_SRC||pvVideo.getAttribute('data-src-desktop')||'videos/pv.mp4?v=20261024';
 }
   // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
   // and requires playback; ensure it's playing then request fullscreen with fallbacks.
-  featureSound.enabled=false;silenceVideos(pvVideo);pauseBackgroundMusic();pvVideo.muted=false;
+  silenceVideos(pvVideo);pauseBackgroundMusic();pvVideo.muted=false;
   const p=pvVideo.play();
   if(p&&p.catch)p.catch(()=>{});
   if(pvVideo.requestFullscreen)pvVideo.requestFullscreen().catch(()=>{});
@@ -847,17 +838,10 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
         card.appendChild(placeholder);
       }else{
         const v=document.createElement('video');
-        v.src=vids[i];v.muted=true;v.playsInline=true;v.autoplay=true;v.loop=true;
+        v.src=vids[i];v.muted=false;v.playsInline=true;v.loop=true;
         v.poster=vids[i].replace(/\.mp4$/,'.jpg');// 首帧封面图，缓冲时不显示黑盒
         v.preload='none';
         card.appendChild(v);
-        // The emotion clip has no audio stream; do not offer a dead sound control.
-        if(!vids[i].endsWith('/emotion_feedback.mp4')){
-          const sound=document.createElement('button');sound.type='button';sound.className='video-sound';
-          sound.textContent='开启声音';sound.setAttribute('aria-label','开启视频声音');sound.setAttribute('aria-pressed','false');
-          sound.addEventListener('click',event=>{event.stopPropagation();featureSound.enabled=v.muted;playFeature(v,featureSound.enabled);});
-          card.appendChild(sound);
-        }
       }
       const overlay=document.createElement('div');
       overlay.className='card-overlay';
@@ -865,7 +849,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       label.textContent=caps[i]||'';
       overlay.appendChild(label);
       card.appendChild(overlay);
-      card.onclick=()=>{featureSound.enabled=true;if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video,true);}};
+      card.onclick=()=>{if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video);}};
       carousel.appendChild(card);
     }
     applyPositions(false);
@@ -898,7 +882,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
         if(card.style.display==='none'){
           try{vid.pause();vid.muted=true;}catch(e){}
         } else {
-          playFeature(vid,i===centerIdx&&featureSound.enabled);
+          playFeature(vid,i===centerIdx);
         }
       }
     });
@@ -928,7 +912,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     renderCarousel(moduleData[mi].videos[si],moduleData[mi].captions[si]);
   }
 
-  tabs.forEach((t,i)=>{t.onclick=()=>{featureSound.enabled=true;const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
+  tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
   let modInitDone=false;
   let modVisible=false,modEnterTimer=null;
   let activeTabIdx=0;
@@ -949,7 +933,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       }
     } else {
       clearTimeout(modEnterTimer);modEnterTimer=null;
-      carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});refreshSoundButtons();
+      carousel.querySelectorAll('video').forEach(video=>{video.pause();video.muted=true;});
       if(modRow){modRow.classList.remove('visible');modRow.style.opacity='0';modRow.style.transform='translateY(32px)';}
       if(modVideoWrap){modVideoWrap.classList.remove('visible');modVideoWrap.style.opacity='0';modVideoWrap.style.transform='translateY(32px)';}
       detail.style.opacity='0';
