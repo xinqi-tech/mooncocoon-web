@@ -23,6 +23,12 @@
       verified=true;return response({mine:mine()});
     }
     if(path==='/sms')return response({sent:true});
+    if(path==='/reserve-with-code'){
+      await new Promise(resolve=>setTimeout(resolve,600));
+      if(acceptanceScenario==='failure')return response({},500);
+      receipt={code:'RG-SYNTHETIC',platform:body.platform,reminderSubscribed:!!body.reminder,rewards:[]};
+      return response({publicLookup:true,phoneMasked:'*** **** 8000',reservation:receipt});
+    }
     if(path==='/reserve'){receipt={code:'RG-SYNTHETIC',platform:body.platform,reminderSubscribed:!!body.reminder,rewards:[]};return response(receipt);}
     if(path==='/mine')return verified?response(mine()):response({},401);
     if(path==='/activation-code'){
