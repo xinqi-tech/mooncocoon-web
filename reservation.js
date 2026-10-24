@@ -2,7 +2,7 @@
  * @fileoverview 国内官网预约有礼页面交互。
  * AI Context
  * 上游: index.html 和服务端 /api/reservation-gift；下游: 活动状态、短信验证、预约查询、退订和下载入口。
- * 核心概念: 默认隐藏，首页标题点击十次后才初始化；查询 Cookie 仅由浏览器持有，服务端字段仅以 textContent 呈现。
+ * 核心概念: 预约同请求完成短信校验和保存，不依赖跨站 Cookie；领奖会话仍使用 HttpOnly Cookie。
  */
 (function(root,factory){
   const api=factory(root);
@@ -12,6 +12,7 @@
   'use strict';
   const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
+  const DEFAULT_REQUEST_TIMEOUT_MS=12000;
   const RESERVATION_START='2026-10-24T00:00:00+08:00';
   function formatCountdown(start,now){
     const seconds=Math.max(0,Math.ceil((start-now)/1000));
@@ -28,10 +29,11 @@
     if(checked)return checked.value;
     return /iPhone|iPad/i.test(ua||'')?'IOS':'ANDROID';
   };
-  function init(doc,fetchImpl){
+  function init(doc,fetchImpl,requestTimeoutMs=DEFAULT_REQUEST_TIMEOUT_MS){
     const form=doc.getElementById('reservationForm');if(!form)return;
     if(!form.querySelector('input[name="platform"]:checked'))form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
     const fetcher=fetchImpl||root.fetch.bind(root);
+    const timeoutMs=Number.isFinite(requestTimeoutMs)&&requestTimeoutMs>0?requestTimeoutMs:DEFAULT_REQUEST_TIMEOUT_MS;
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
     const el=id=>doc.getElementById(id);
@@ -87,14 +89,15 @@
       const stale=()=>path!=='/activity'&&path!=='/logout'&&flow!==state.flow;
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
-      const controller=path==='/activity'?new AbortController():null;
-      const timeout=controller?root.setTimeout(()=>controller.abort(),12000):null;
+      const controller=['/activity','/reserve-with-code'].includes(path)?new AbortController():null;
+      const timeout=controller?root.setTimeout(()=>controller.abort(),timeoutMs):null;
       try{
         const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
-        if(response.status===401&&state.session){state.session=null;state.verified=false;state.csrf=null;renderLogin()}
-        if(!response.ok)throw new Error(response.status===401?'验证已过期，请重新获取验证码':
+        if(response.status===401){state.session=null;state.mine=null;state.verified=false;state.csrf=null;form.elements.code.value='';if(state.activity)renderActivity(state.activity);else renderLogin()}
+        if(!response.ok)throw new Error(response.status===401?'未能识别登录状态，请重新验证':
+          response.status===422&&path==='/reserve-with-code'?'验证码错误或已过期，请重新获取验证码':
           response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');
         const envelope=await response.json();
         if(envelope.result!==0){
@@ -374,6 +377,7 @@
       if(state.submitting)return;
       const flow=state.flow;
       let submitted=false;
+      let submittedPhone=null;
       state.submitting=true;renderSubmit();message('');
       try{
         if(state.claimTier!==null){
@@ -389,29 +393,25 @@
           if(!state.mine?.reservation)message('该手机号暂未查询到预约信息');
           return;
         }
-        if(!state.verified)verificationInput();
+        const {phone,code}=verificationInput();
         const accepting=!state.queryOnly&&state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
         if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
-        if(!state.verified)await verify();
-        if(state.mine?.reservation){
-          if(form.elements.reminder.checked&&!state.mine.reservation.reminderSubscribed)
-            renderMine(await request('/subscribe','POST',{}),true);
-          return;
-        }
-        if(state.queryOnly){message('该手机号暂未查询到预约信息');return}
         if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
         const platform=selectedPlatform(form,root.navigator.userAgent);
-        submitted=true;
-        await request('/reserve','POST',{platform,adult:true,terms:true,reminder:form.elements.reminder.checked,
+        await state.cleaning;
+        if(flow!==state.flow)return;
+        submitted=true;submittedPhone=phone;
+        const receipt=await request('/reserve-with-code','POST',{phone,code,platform,adult:true,terms:true,reminder:form.elements.reminder.checked,
           source,campaignTag,deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'});
-        renderMine(await request('/mine'));
+        form.elements.phone.value=phone;form.elements.code.value='';
+        renderMine(receipt);refreshActivity();
       }catch(error){
         if(error.stale||flow!==state.flow)return;
         if(submitted){
           refreshActivity();
-          try{const mine=await request('/mine');if(mine.reservation){renderMine(mine);return}}catch(_){}
+          try{const mine=await request('/lookup','POST',{phone:submittedPhone});if(mine.reservation){form.elements.phone.value=submittedPhone;form.elements.code.value='';renderMine(mine);return}}catch(_){}
         }
         if(flow===state.flow)message(errorHint(error));
       }finally{if(flow===state.flow){state.submitting=false;renderSubmit()}}
@@ -433,5 +433,5 @@
     return state;
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,formatCountdown,RESERVATION_START};
+  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
 });
