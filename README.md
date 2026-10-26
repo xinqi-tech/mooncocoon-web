@@ -32,6 +32,15 @@
 
 ## 独立充值页本地预览
 
+### 支付开通审核材料
+
+- 公开审核路径：`https://www.lunakoru.com/recharge/review/`。仅在正式发布并回读验证后作为可访问链接交付。
+- 审核页沿用充值页样式，纯静态、无 JavaScript、无表单，不登录、不收集手机号、不访问 API，不展示虚假付款或到账成功。CSP 禁止脚本、接口请求和表单提交。
+- 示例档位来自本地演示数据，全部明确标注不可购买；不代表实际价格、优惠或已获支付许可。交易入口 `/recharge/` 继续 fail-closed，并链接审核页。
+- 定向检查：`node --test tests/recharge.test.mjs tests/recharge-review.test.mjs`。发布只包含网页资源，不上传 `tests/`、预览服务器、文档、压缩源素材或本地凭据。
+
+### 本地验证
+
 充值页位于 `recharge/`，生产 HTML 不引用测试夹具。安全态和内存接口状态可通过仅监听 loopback 的预览服务检查：
 
 ```bash
