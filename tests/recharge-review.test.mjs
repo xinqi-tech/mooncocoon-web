@@ -39,12 +39,12 @@ test('所有资源、条款和页内跳转目标真实存在',async()=>{
   }
 });
 
-test('交易入口仅添加审核链接，未开启公网支付配置',async()=>{
+test('交易入口保留审核链接，正式 API 固定且初始支付控件关闭',async()=>{
   const entry=await readFile(new URL('../recharge/index.html',import.meta.url),'utf8');
   assert.match(entry,/href="review\/"/);
   assert.match(entry,/id="loginButton"[^>]*disabled/);
   assert.match(entry,/id="checkoutButton"[^>]*disabled/);
   const {createRequire}=await import('node:module');
   const recharge=createRequire(import.meta.url)('../recharge/recharge.js');
-  assert.equal(recharge.resolveApiBase({protocol:'https:',hostname:'www.lunakoru.com'}),'');
+  assert.equal(recharge.resolveApiBase({protocol:'https:',hostname:'www.lunakoru.com',port:''}),recharge.PRODUCTION_API_BASE);
 });
