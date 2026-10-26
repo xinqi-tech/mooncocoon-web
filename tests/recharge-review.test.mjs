@@ -5,6 +5,15 @@ import test from 'node:test';
 const pageUrl=new URL('../recharge/review/index.html',import.meta.url);
 const html=await readFile(pageUrl,'utf8');
 
+test('充值与审核页共用背景只保留横向纹理，不绘制中央竖线',async()=>{
+  const css=await readFile(new URL('../recharge/recharge.css',import.meta.url),'utf8');
+  const overlay=css.match(/body::before\s*\{([^}]+)\}/)?.[1];
+  assert.ok(overlay,'共用背景层存在');
+  assert.doesNotMatch(overlay,/linear-gradient\(90deg|49\.92%|50\.08%/);
+  assert.match(overlay,/background-size:\s*100% 72px/);
+  assert.match(html,/href="\.\.\/recharge\.css"/);
+});
+
 test('审核展示无需登录，商品、确认和售后信息在 HTML 中可见',()=>{
   for(const text of ['审核演示 · 暂未开放收款','商品说明','演示档位','¥6.00','¥30.00','¥68.00','支付确认示意','未生成订单','到账与售后说明','feedback@heabo.cn'])assert.ok(html.includes(text),text);
   for(const id of ['product','checkout','delivery'])assert.match(html,new RegExp(`id="${id}"`));
