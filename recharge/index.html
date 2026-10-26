@@ -1,0 +1,155 @@
+<!doctype html>
+<!--
+  AI Context
+  本文件是什么：月光茧国内官网的独立月绸充值页，默认处于未配置安全态。
+  关联文件：recharge.css 负责视觉；recharge.js 负责鉴权、订单与支付状态机；后端 Aildo-JAVA 提供可信运行配置和商城接口。
+  核心概念：浏览器回跳不代表到账；只有服务端订单 fulfilled 才展示充值成功。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06142f">
+  <meta name="referrer" content="no-referrer">
+  <title>月光茧 · 月绸充值</title>
+  <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="recharge.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="返回月光茧官网">
+      <img src="../images/ip-logo.jpg" alt="" width="36" height="36">
+      <span>月光茧</span>
+    </a>
+    <span id="environmentBadge" class="environment-badge" hidden>沙箱验证</span>
+  </header>
+
+  <main class="recharge-shell">
+    <section class="page-intro" aria-labelledby="pageTitle">
+      <p class="page-kicker">月绸充值</p>
+      <h1 id="pageTitle">充值到你的游戏账号</h1>
+      <p>登录后请核对昵称和 UID。月绸会在服务端确认付款后进入同一游戏钱包。</p>
+    </section>
+
+    <div id="configurationNotice" class="configuration-notice" role="status" aria-live="polite">
+      <strong>充值暂不可用</strong>
+      <span>当前环境尚未完成可信配置，登录、短信和付款均已锁定。</span>
+      <a href="review/">查看商品与支付流程审核演示（不收款）</a>
+    </div>
+
+    <section id="loginPanel" class="transaction-section" aria-labelledby="loginHeading">
+      <div class="section-heading">
+        <span class="section-mark" aria-hidden="true">月</span>
+        <div>
+          <h2 id="loginHeading">验证游戏账号</h2>
+          <p>使用注册游戏时绑定的中国大陆手机号。</p>
+        </div>
+      </div>
+
+      <form id="loginForm" class="login-form" novalidate>
+        <label for="phone">手机号</label>
+        <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" placeholder="请输入 11 位手机号" disabled required>
+        <label for="smsCode">短信验证码</label>
+        <div class="code-row">
+          <input id="smsCode" name="smsCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="请输入 6 位验证码" disabled required>
+          <button id="sendSmsButton" class="secondary-button" type="button" disabled>获取验证码</button>
+        </div>
+        <button id="loginButton" class="primary-button" type="submit" disabled>登录并查看账号</button>
+        <p class="form-note">登录只用于确认本人游戏账号，不支持输入 UID 为他人充值。继续即表示你同意<a href="../user-agreement/" target="_blank" rel="noopener">用户协议</a>和<a href="../privacy-policy/" target="_blank" rel="noopener">隐私政策</a>。</p>
+      </form>
+    </section>
+
+    <div id="accountWorkspace" hidden>
+      <section class="account-ledger" aria-labelledby="accountHeading">
+        <div class="section-heading account-heading">
+          <span class="section-mark" aria-hidden="true">账</span>
+          <div>
+            <h2 id="accountHeading">到账账号</h2>
+            <p>付款前请再次核对。</p>
+          </div>
+          <button id="switchAccountButton" class="text-button" type="button">切换账号</button>
+        </div>
+        <dl class="account-identity">
+          <div><dt>昵称</dt><dd id="accountNickname">—</dd></div>
+          <div><dt>UID</dt><dd id="accountUid">—</dd></div>
+        </dl>
+        <div class="balance-line">
+          <span>当前月绸</span>
+          <strong id="moonSilkBalance">—</strong>
+        </div>
+      </section>
+
+      <section class="transaction-section tier-section" aria-labelledby="tierHeading">
+        <div class="section-heading">
+          <span class="section-mark" aria-hidden="true">充</span>
+          <div>
+            <h2 id="tierHeading">选择充值档位</h2>
+            <p>价格、月绸与首充加赠均以服务端显示为准。</p>
+          </div>
+        </div>
+        <div id="tierList" class="tier-list" role="radiogroup" aria-labelledby="tierHeading">
+          <p class="empty-copy">正在等待服务端档位。</p>
+        </div>
+        <button id="retryTiersButton" class="secondary-button compact-button" type="button" hidden>重新加载</button>
+      </section>
+    </div>
+
+    <section id="orderPanel" class="order-panel" aria-labelledby="orderHeading" hidden>
+      <div id="orderGlyph" class="order-glyph" aria-hidden="true">···</div>
+      <p id="orderLabel" class="order-label">正在确认</p>
+      <h2 id="orderHeading">正在等待服务端确认到账</h2>
+      <p id="orderMessage">可以保留此页面，也可以稍后使用同一账号重新登录查询。</p>
+      <dl class="order-summary">
+        <div><dt>订单</dt><dd id="orderNumber">—</dd></div>
+        <div><dt>到账账号</dt><dd id="orderAccount">—</dd></div>
+        <div><dt>充值内容</dt><dd id="orderProduct">—</dd></div>
+      </dl>
+      <div class="order-actions">
+        <button id="refreshOrderButton" class="primary-button" type="button">查询最新状态</button>
+        <button id="orderSwitchAccountButton" class="secondary-button" type="button">切换账号</button>
+        <button id="backToTiersButton" class="secondary-button" type="button" hidden>返回充值档位</button>
+      </div>
+    </section>
+
+    <p id="pageMessage" class="page-message" role="status" aria-live="polite"></p>
+  </main>
+
+  <aside id="checkoutBar" class="checkout-bar" hidden>
+    <div>
+      <span>将充值到 <strong id="checkoutAccount">—</strong></span>
+      <b id="checkoutAmount">请选择充值档位</b>
+    </div>
+    <button id="checkoutButton" class="primary-button" type="button" disabled>确认充值</button>
+  </aside>
+
+  <dialog id="confirmationDialog" class="confirmation-dialog" aria-labelledby="confirmationHeading">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="关闭确认窗口">×</button>
+      <p class="dialog-kicker">确认本次充值</p>
+      <h2 id="confirmationHeading">请核对到账账号和金额</h2>
+      <dl class="confirmation-details">
+        <div><dt>昵称</dt><dd id="confirmationNickname">—</dd></div>
+        <div><dt>UID</dt><dd id="confirmationUid">—</dd></div>
+        <div><dt>充值</dt><dd id="confirmationProduct">—</dd></div>
+        <div><dt>支付金额</dt><dd id="confirmationAmount">—</dd></div>
+      </dl>
+      <p>离开支付宝后，页面会继续向服务端查询到账结果。</p>
+      <div class="dialog-actions">
+        <button class="secondary-button" value="cancel">返回修改</button>
+        <button id="startPaymentButton" class="primary-button" type="button">前往支付宝付款</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <p>付款结果与月绸到账状态以月光茧服务端记录为准。</p>
+    <nav aria-label="服务条款">
+      <a href="../user-agreement/">用户协议</a>
+      <a href="../privacy-policy/">隐私政策</a>
+    </nav>
+  </footer>
+
+  <script src="recharge.js"></script>
+</body>
+</html>

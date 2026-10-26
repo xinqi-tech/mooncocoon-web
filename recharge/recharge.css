@@ -1,0 +1,116 @@
+/*
+ * AI Context
+ * 本文件是什么：独立充值页的手机优先交易视觉，复用国内官网夜蓝、冰白和青鸟华光字体。
+ * 关联文件：index.html 提供语义结构；recharge.js 只切换状态类和 hidden 属性。
+ * 核心概念：页面保留原生指针、减少非必要动效，并让环境、账号与订单状态始终可见。
+ */
+@font-face{font-family:"QingNiao Serif";src:url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-display:swap}
+@font-face{font-family:"QingNiao Sans";src:url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-display:swap}
+:root{
+  --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
+  --mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;--moon-080:#f6fbff;
+  --text-primary:#f6fbff;--text-secondary:rgba(236,247,255,.8);--text-muted:rgba(236,247,255,.6);
+  --line:rgba(220,240,255,.2);--line-strong:rgba(220,240,255,.44);--glass:rgba(130,174,230,.1);
+  --warning:#ffd99a;--success:#bcebcf;--danger:#ffc2c2;
+  --font-serif:"QingNiao Serif","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-sans:"QingNiao Sans","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{color-scheme:dark;background:var(--night-960)}
+body{margin:0;min-height:100vh;color:var(--text-primary);font:15px/1.65 var(--font-sans);background:
+  radial-gradient(circle at 50% -12%,rgba(156,203,255,.18),transparent 42rem),
+  linear-gradient(180deg,var(--night-920),var(--night-960) 34%,var(--night-990));
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:
+  linear-gradient(90deg,transparent 0 49.92%,rgba(199,229,255,.04) 50%,transparent 50.08%),
+  linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px);background-size:100% 100%,100% 72px}
+button,input{font:inherit}
+button,a,input{cursor:auto}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--ice-340);outline-offset:3px}
+a{color:var(--ice-340)}
+.site-header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:rgba(3,13,32,.72);backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text-primary);font:20px var(--font-serif);letter-spacing:.08em;text-decoration:none}
+.brand img{border-radius:9px;box-shadow:0 0 16px rgba(199,229,255,.28)}
+.environment-badge{padding:5px 10px;border:1px solid rgba(255,217,154,.52);border-radius:999px;color:var(--warning);font-size:12px;letter-spacing:.08em;background:rgba(255,217,154,.07)}
+.recharge-shell{width:min(100% - 32px,760px);margin:0 auto;padding:56px 0 148px;position:relative}
+.page-intro{margin-bottom:30px}
+.page-kicker,.dialog-kicker,.order-label{margin:0 0 8px;color:var(--ice-340);font-size:12px;letter-spacing:.14em}
+.page-intro h1{margin:0;font:clamp(32px,8vw,48px)/1.25 var(--font-serif);font-weight:400;letter-spacing:.04em}
+.page-intro>p:last-child{max-width:600px;margin:14px 0 0;color:var(--text-secondary)}
+.configuration-notice{display:flex;gap:5px;flex-direction:column;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(255,217,154,.38);border-radius:16px;background:rgba(255,217,154,.07);color:var(--warning)}
+.configuration-notice span{font-size:13px;color:var(--text-secondary)}
+.transaction-section,.account-ledger,.order-panel{margin-top:18px;padding:24px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(150deg,rgba(130,174,230,.13),rgba(8,30,72,.36));box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 24px 70px rgba(0,5,20,.2)}
+.section-heading{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+.section-heading h2{margin:0;font:25px/1.3 var(--font-serif);font-weight:400;letter-spacing:.05em}
+.section-heading p{margin:2px 0 0;color:var(--text-muted);font-size:13px}
+.section-mark{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line-strong);border-radius:50%;color:var(--ice-340);font-family:var(--font-serif);background:rgba(199,229,255,.05)}
+.account-heading .text-button{margin-left:auto}
+.login-form{display:grid;gap:10px}
+.login-form label{color:var(--text-secondary);font-size:13px;margin-top:3px}
+input{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(246,251,255,.95);color:#153553;font-size:16px}
+input::placeholder{color:#6d8095}
+input:disabled{opacity:.55;cursor:not-allowed}
+.code-row{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:10px}
+.primary-button,.secondary-button,.text-button{min-height:46px;border-radius:999px;padding:10px 20px;border:1px solid transparent}
+.primary-button{background:linear-gradient(120deg,#eefaff,#b6dcf9);color:#123253;border-color:rgba(255,255,255,.7);font-weight:600}
+.secondary-button{background:rgba(199,229,255,.07);border-color:var(--line-strong);color:var(--text-primary)}
+.text-button{min-height:40px;padding:6px 9px;background:transparent;border:0;color:var(--ice-340);text-decoration:underline;text-underline-offset:4px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.form-note{margin:5px 0 0;color:var(--text-muted);font-size:12px}
+.account-identity,.order-summary,.confirmation-details{margin:0;display:grid;gap:0}
+.account-identity>div,.order-summary>div,.confirmation-details>div{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+dt{color:var(--text-muted);font-size:13px}
+dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
+#accountNickname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#accountUid{font-variant-numeric:tabular-nums;user-select:all}
+.balance-line{display:flex;align-items:baseline;justify-content:space-between;margin-top:16px;padding-top:18px;border-top:1px solid var(--line-strong);color:var(--text-secondary)}
+.balance-line strong{font:36px var(--font-serif);color:var(--ice-340);font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(156,203,255,.34)}
+.tier-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.tier-option{position:relative;min-height:112px;padding:17px;text-align:left;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;background:rgba(199,229,255,.025);color:var(--text-primary)}
+.tier-option[aria-checked=true]{background:rgba(156,203,255,.14);box-shadow:inset 0 0 0 1px var(--ice-340)}
+.tier-option strong,.tier-option span,.tier-option small{display:block}
+.tier-option strong{font:24px var(--font-serif)}
+.tier-option span{margin-top:5px;color:var(--ice-340)}
+.tier-option small{margin-top:4px;color:var(--text-muted)}
+.empty-copy{grid-column:1/-1;margin:0;padding:26px;text-align:center;color:var(--text-muted)}
+.compact-button{display:block;margin:16px auto 0}
+.checkout-bar{position:fixed;z-index:20;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px max(18px,calc((100vw - 760px)/2));padding-bottom:max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--line-strong);background:rgba(3,13,32,.92);backdrop-filter:blur(18px)}
+.checkout-bar>div{min-width:0}
+.checkout-bar span,.checkout-bar b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.checkout-bar span{color:var(--text-muted);font-size:12px}
+.checkout-bar b{margin-top:2px;color:var(--text-primary);font-weight:500}
+.checkout-bar button{flex:0 0 auto}
+.confirmation-dialog{width:min(100% - 28px,520px);padding:0;border:1px solid var(--line-strong);border-radius:24px;background:radial-gradient(circle at 30% 0,rgba(111,160,214,.2),transparent 55%),var(--night-920);color:var(--text-primary);box-shadow:0 28px 100px rgba(0,5,20,.7)}
+.confirmation-dialog::backdrop{background:rgba(1,7,20,.76);backdrop-filter:blur(6px)}
+.confirmation-dialog form{padding:28px;position:relative}
+.confirmation-dialog h2{margin:0 36px 20px 0;font:27px/1.35 var(--font-serif);font-weight:400}
+.confirmation-dialog form>p:not(.dialog-kicker){color:var(--text-muted);font-size:13px}
+.dialog-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--text-primary);font-size:24px}
+.dialog-actions,.order-actions{display:flex;gap:10px;margin-top:22px}
+.dialog-actions>*{flex:1}
+.order-panel{text-align:center}
+.order-glyph{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border:1px solid var(--line-strong);border-radius:50%;color:var(--ice-340);font:24px var(--font-serif)}
+.order-panel h2{margin:0;font:28px/1.35 var(--font-serif);font-weight:400}
+.order-panel>p:not(.order-label){color:var(--text-secondary)}
+.order-summary{margin-top:22px;text-align:left}
+.order-actions{justify-content:center}
+.page-message{min-height:25px;margin:18px 6px;color:var(--ice-340);text-align:center}
+.site-footer{padding:28px 18px 34px;border-top:1px solid var(--line);color:var(--text-muted);font-size:12px;text-align:center;background:var(--night-990)}
+.site-footer p{margin:0 0 8px}
+.site-footer nav{display:flex;gap:18px;justify-content:center}
+.site-footer a{color:var(--text-secondary)}
+@media(min-width:720px){
+  .recharge-shell{padding-top:74px}.transaction-section,.account-ledger,.order-panel{padding:30px}
+  .tier-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:480px){
+  .recharge-shell{width:min(100% - 24px,760px);padding-top:38px}.page-intro{margin-bottom:23px}
+  .transaction-section,.account-ledger,.order-panel{padding:20px 16px;border-radius:18px}
+  .section-heading{align-items:flex-start}.section-mark{width:36px;height:36px;flex-basis:36px}
+  .section-heading h2{font-size:22px}.account-heading{flex-wrap:wrap}.account-heading .text-button{margin-left:49px}
+  .code-row{grid-template-columns:minmax(0,1fr) 108px}.code-row button{padding-inline:10px}
+  .tier-option{min-height:105px;padding:14px}.checkout-bar{gap:10px}.checkout-bar button{padding-inline:16px}
+  .dialog-actions,.order-actions{flex-direction:column-reverse}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
