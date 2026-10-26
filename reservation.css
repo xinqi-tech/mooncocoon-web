@@ -422,6 +422,14 @@
 .first-screen .reservation-rule-list h3>img{display:block;flex:0 0 10px;width:10px;height:12px;object-fit:contain;opacity:.8;margin:0}
 @media(max-width:768px){.reservation-login-bar #reservationLogin{width:104px;height:34px;font-size:15px}.first-screen .reservation-panel .reservation-panel-title{font-size:21px;padding:8px 14px}.first-screen .reservation-rule-list h3{display:flex;margin-left:-18px}#reservationDownloadLinks{grid-template-columns:repeat(2,minmax(0,130px));gap:16px}.reservation-download .reservation-download-button{font-size:16px;border-radius:16px}.reservation-download-button>img{width:32px;height:32px}}
 
+/* Keep rule descriptions aligned below one fixed heading column on wide layouts. */
+.first-screen .reservation-rule-list li>div{display:grid;grid-template-columns:128px minmax(0,1fr);column-gap:8px;align-items:start}
+.first-screen .reservation-rule-list h3{display:flex;align-items:flex-start;margin-right:0}
+.first-screen .reservation-rule-list p{display:block}
+@media(max-width:768px){
+ .first-screen .reservation-rule-list li>div{display:block}
+}
+
 /* Same outer width as the reservation panel; the PV no longer inherits the old 680px cap. */
 .reservation-pv{scroll-margin-top:90px;width:min(calc(100% - 40px),1200px);max-width:none;padding:30px 0 72px}
 .reservation-pv .hero-video{width:100%;max-width:none;margin:24px auto 0}
