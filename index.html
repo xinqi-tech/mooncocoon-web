@@ -758,7 +758,7 @@ window.addEventListener('scroll',()=>{
 },{passive:true});
 // Media sound: the focused clip defaults to sound; blocked autoplay waits for a tap.
 function silenceVideos(except){
-  document.querySelectorAll('video').forEach(video=>{if(video!==except)video.muted=true;});
+  document.querySelectorAll('video').forEach(video=>{if(video!==except&&!video.paused)video.muted=true;});
 }
 function pauseBackgroundMusic(){
   const bgm=document.getElementById('bgmAudio'),button=document.getElementById('bgmToggle');
@@ -766,6 +766,9 @@ function pauseBackgroundMusic(){
   button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','播放背景音乐');
 }
 function playFeature(video,audible=true){
+  const pv=document.querySelector('#pvVideo video');
+  // Scroll-triggered previews must not steal sound from a PV the visitor started.
+  if(pv&&!pv.paused&&!pv.ended)audible=false;
   if(audible){silenceVideos(video);pauseBackgroundMusic();}
   video.muted=!audible;
   const playing=video.play();
@@ -835,7 +838,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
       label.textContent=caps[i]||'';
       overlay.appendChild(label);
       card.appendChild(overlay);
-      card.onclick=()=>{if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video);}};
+      card.onclick=()=>{pvVideo.pause();if(i!==centerIdx)focusTo(i);else{const video=card.querySelector('video');if(video)playFeature(video);}};
       carousel.appendChild(card);
     }
     applyPositions(false);
@@ -881,6 +884,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
   }
 
   function focusTo(idx){
+    pvVideo.pause();
     centerIdx=idx;
     applyPositions(true);
   }
@@ -898,7 +902,7 @@ document.querySelectorAll('.module').forEach((mod,mi)=>{
     renderCarousel(moduleData[mi].videos[si],moduleData[mi].captions[si]);
   }
 
-  tabs.forEach((t,i)=>{t.onclick=()=>{const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
+  tabs.forEach((t,i)=>{t.onclick=()=>{pvVideo.pause();const dir=i>activeTabIdx?'left':i<activeTabIdx?'right':null;setTab(i,dir);}});
   let modInitDone=false;
   let modVisible=false,modEnterTimer=null;
   let activeTabIdx=0;
