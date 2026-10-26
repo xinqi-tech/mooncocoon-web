@@ -29,7 +29,7 @@ test('首页预约在 PV 前，视频不自动预加载',async()=>{
   assert.match(html,/name="adult"/);
   assert.match(html,/name="terms"/);
   assert.match(html,/name="reminder"/);
-  assert.match(html,/preload="none" poster="images\/pv_poster.jpg\?v=20261024"/);
+  assert.match(html,/preload="none" poster="images\/pv_poster.jpg\?v=20261026-new2"/);
   assert.doesNotMatch(html,/\{src:window\.__PV_SRC,w:34,type:'video'\}/);
 });
 test('接口请求带 Cookie 且个人资料不用 HTML 字符串插值',async()=>{
