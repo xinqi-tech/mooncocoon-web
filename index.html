@@ -488,7 +488,7 @@ body.is-loading{overflow:hidden}
 <section class="reservation-pv" id="pv" aria-labelledby="pvHeading">
   <h2 id="pvHeading" class="pv-title"><span class="pv-title-intro">走进</span><span class="pv-title-name">月光茧</span></h2>
   <div class="hero-video" id="pvVideo">
-    <video playsinline webkit-playsinline controls preload="none" poster="images/pv_poster.jpg?v=20261024" src="videos/pv.mp4?v=20261024"></video>
+    <video playsinline webkit-playsinline controls preload="none" poster="images/pv_poster.jpg?v=20261026-new2" src="videos/pv_720.mp4?v=20261026-new2" data-desktop-src="videos/pv.mp4?v=20261026-new2"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
   </div>
 </section>
@@ -786,6 +786,8 @@ document.querySelector('#pvVideo video').addEventListener('volumechange',event=>
 // PV Video fullscreen and playback belong to the native controls. In particular,
 // iOS native play clicks need not bubble to the wrapper; never wait for one to set src.
 const pvVideo=document.querySelector('#pvVideo video');
+// A real mobile source exists from first paint; select desktop quality during setup.
+if(window.matchMedia&&window.matchMedia('(min-width:769px)').matches)pvVideo.src=pvVideo.dataset.desktopSrc;
 pvVideo.addEventListener('play',()=>{
   silenceVideos(pvVideo);pauseBackgroundMusic();
 });
