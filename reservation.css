@@ -1,44 +1,42 @@
 /* 月光茧预约区：人数驱动轨道，服务端解锁状态驱动节点光效。 */
 [data-reservation-entry][hidden]{display:none!important}
-#reservationRevealTitle{appearance:none;border:0;padding:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;line-height:inherit;text-shadow:inherit;text-align:inherit;user-select:none;touch-action:manipulation}
-#reservationRevealTitle:focus-visible{outline:1px solid var(--ice-340);outline-offset:8px;border-radius:4px}
 .reservation-hero-copy{font-size:16px;line-height:1.8;color:#e8efff;max-width:600px;margin:0 auto 24px}
 .reservation-hero-cta,.reservation-sticky{display:inline-block;color:#10233f;background:linear-gradient(120deg,#eaf8ff,#aacdeb);border-radius:999px;padding:14px 30px;text-decoration:none;font-weight:700;box-shadow:0 8px 28px #6b9cd155}
 .reservation-hero-progress{color:#d2e8ff;margin-top:22px}
 .reservation-section,.reservation-pv{position:relative;z-index:3;max-width:1200px;margin:0 auto;padding:72px 24px;text-align:center}
-.reservation-panel{position:relative;overflow:hidden;border:1px solid rgba(220,240,255,.28);border-radius:34px;padding:64px clamp(24px,6vw,78px) 42px;background:radial-gradient(ellipse at 50% 0%,rgba(127,184,236,.19),transparent 50%),linear-gradient(155deg,rgba(8,26,58,.86),rgba(9,28,62,.70) 52%,rgba(7,23,52,.88));box-shadow:0 24px 80px rgba(1,10,33,.48),inset 0 1px 0 rgba(255,255,255,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.reservation-panel::before{content:"";position:absolute;left:10%;right:10%;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(240,250,255,.8),transparent);box-shadow:0 0 24px rgba(210,235,255,.55)}
-.reservation-panel::after{content:"";position:absolute;top:18px;right:28px;width:110px;height:110px;background:url('images/butterfly.png') center/contain no-repeat;opacity:.12;transform:rotate(-18deg);filter:drop-shadow(0 0 18px #b9dbff);pointer-events:none}
+.reservation-panel{position:relative;isolation:isolate;overflow:hidden;border:1px solid #a6c8ef3b;border-radius:32px;padding:64px clamp(24px,6vw,72px) 32px;background:radial-gradient(ellipse at 50% 0%,#8caee71f,transparent 58%),linear-gradient(145deg,#243c60cc,#172d4ccc 55%,#102440cc);box-shadow:0 28px 90px #020b204d,inset 0 1px 0 #e1efff26;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.reservation-panel::before{content:"";position:absolute;inset:10px;border:1px solid #d4e7ff12;border-radius:23px;pointer-events:none;z-index:-1}
+.reservation-panel::after{content:"";position:absolute;inset:0;z-index:-1;background:url('images/reservation/star-chain.webp') left top / 114px auto no-repeat,url('images/reservation/star-chain.webp') right -110px / 84px auto no-repeat;opacity:.35;pointer-events:none}
 .reservation-eyebrow{font-size:11px;letter-spacing:.28em;color:var(--ice-340);text-transform:uppercase}
-.reservation-eyebrow span{display:inline-block;margin:0 7px;color:#d9f1ff;text-shadow:0 0 12px #a8d7ff}
+.reservation-eyebrow{display:flex;align-items:center;justify-content:center;gap:12px}.reservation-eyebrow img{width:15px;height:15px;object-fit:contain;opacity:.8}
 .reservation-panel h2,.reservation-pv h2{font-family:var(--font-serif);font-weight:300;font-size:clamp(30px,4.2vw,52px);letter-spacing:.07em;color:var(--moon-080);line-height:1.35}
 .reservation-panel h2{margin:14px 0 8px;text-shadow:0 0 28px rgba(198,229,255,.34)}
 .reservation-panel p{line-height:1.7;color:var(--text-secondary)}
 .reservation-lead{font-size:15px;letter-spacing:.1em}
-.reservation-overview{margin:36px auto 0}
+.reservation-overview{margin:32px auto 0;max-width:720px}
 .reservation-phase{display:inline-block;padding:5px 16px;border:1px solid rgba(199,229,255,.3);border-radius:999px;background:rgba(179,217,255,.08);color:#cce8ff!important;font-size:12px;letter-spacing:.12em}
 .reservation-count{margin-top:14px;font-family:var(--font-serif);font-size:clamp(22px,3vw,34px);font-variant-numeric:tabular-nums;letter-spacing:.04em;color:#fff!important;text-shadow:0 0 20px rgba(180,226,255,.35)}
 .reservation-next{margin-top:3px;font-size:13px;letter-spacing:.04em;color:#a7cae9!important}
-.reservation-milestones{margin:22px auto 0;max-width:900px;padding:28px 0 18px}
-.reservation-rewards{--milestone-progress:0%;--track-y:50px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;isolation:isolate}
+.reservation-milestones{margin:40px auto 0;max-width:900px;padding:24px 0 44px}
+.reservation-rewards{--milestone-progress:0%;--track-y:64px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;isolation:isolate}
 .reservation-rewards::before,.reservation-rewards::after{content:"";position:absolute;top:var(--track-y);left:16.6667%;height:1px;pointer-events:none}
 .reservation-rewards::before{right:16.6667%;background:linear-gradient(90deg,rgba(200,229,255,.16),rgba(200,229,255,.24),rgba(200,229,255,.16))}
 .reservation-rewards::after{top:calc(var(--track-y) - 2px);height:5px;width:max(0%,calc(var(--milestone-progress) - 16.6667%));max-width:66.6667%;background:radial-gradient(circle at calc(100% - 2px) 50%,#eefaff 0 1px,transparent 2px),linear-gradient(90deg,#b4d3ed,#e1f1ff) left center / 100% 1px no-repeat;filter:drop-shadow(0 0 3px rgba(168,219,255,.5));transition:width .8s cubic-bezier(.22,1,.36,1)}
 .reservation-reward{display:flex;flex-direction:column;align-items:center;min-width:0;position:relative;z-index:1;color:var(--text-secondary)}
-.reservation-reward-target{height:24px;margin-bottom:12px;color:#a9cbe8;font-size:13px;letter-spacing:.08em;font-variant-numeric:tabular-nums}
-.reservation-reward-orb{width:28px;height:28px;display:grid;place-items:center;position:relative;border-radius:50%;border:1px solid rgba(191,224,251,.26);background:#142642;color:transparent;font-size:0;line-height:1;transition:box-shadow .45s,border-color .45s}
+.reservation-reward-target{height:24px;margin-bottom:16px;color:#c3d7ee;font-size:13px;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+.reservation-reward-orb{width:48px;height:48px;display:grid;place-items:center;position:relative;border-radius:50%;border:1px solid rgba(191,224,251,.26);background:#142642;color:transparent;font-size:0;line-height:1;transition:box-shadow .45s,border-color .45s}
 .reservation-reward-orb::before{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;border:1px solid rgba(183,215,239,.5);border-radius:.5px;transform:translate(-50%,-50%) rotate(45deg);background:transparent}
 .reservation-reward-orb:has(img)::before{display:none}
-.reservation-reward-orb img{width:70%;height:70%;object-fit:contain;filter:grayscale(.7);opacity:.7}
+.reservation-reward-orb img{width:56%;height:56%;object-fit:contain;filter:grayscale(.3);opacity:.8}
 .reservation-reward.is-unlocked .reservation-reward-orb{border-color:rgba(221,241,255,.76);background:#182f4f;box-shadow:0 0 12px rgba(173,222,255,.16),inset 0 0 7px rgba(173,222,255,.08)}
 .reservation-reward.is-unlocked .reservation-reward-orb::before{width:6px;height:6px;border-color:#f1faff;background:#e2f3ff;box-shadow:0 0 7px rgba(214,240,255,.65)}
 .reservation-reward.is-unlocked .reservation-reward-orb img{filter:none;opacity:1}
 .reservation-reward.is-unlocked .reservation-reward-orb::after{content:"";position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,rgba(177,222,255,.16),transparent 68%);opacity:.5;pointer-events:none;animation:reservationGlowBreath 5s ease-in-out infinite}
-.reservation-reward strong{margin-top:20px;font-family:var(--font-serif);font-size:21px;font-weight:400;letter-spacing:.1em;color:#eaf6ff}
+.reservation-reward strong{margin-top:22px;font-family:var(--font-serif);font-size:22px;font-weight:400;letter-spacing:.1em;color:#eaf6ff}
 .reservation-reward small{font-size:11px;letter-spacing:.12em;color:#b0c7db}
 .reservation-reward-status{margin-top:12px;min-height:22px;font-size:12px;letter-spacing:.03em;color:#9bb3cb}
 .reservation-reward.is-unlocked .reservation-reward-status{color:#d5eaff}
-.reservation-dates{max-width:760px;margin:0 auto 35px;font-size:12px;line-height:1.9!important;color:var(--text-muted)!important}
+.reservation-dates{max-width:760px;margin:0 auto 24px;font-size:12px;line-height:1.9!important;color:var(--text-muted)!important}
 .reservation-actions{max-width:650px;margin:0 auto;padding:28px clamp(18px,4vw,38px);border:1px solid rgba(218,239,255,.18);border-radius:24px;background:linear-gradient(150deg,rgba(179,217,255,.09),rgba(38,80,129,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.06);text-align:left}
 .reservation-form-heading{display:flex;align-items:center;gap:13px;margin-bottom:24px}
 .reservation-form-heading>span{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(206,235,255,.4);font-size:20px;color:#e9f8ff;box-shadow:0 0 16px rgba(141,204,255,.2)}
@@ -60,14 +58,14 @@
 .reservation-actions #reservationQuery{background:transparent;color:#d2ebff;border-color:rgba(207,234,255,.4)}
 .reservation-check a{color:#bee4ff}
 .reservation-message{min-height:2em;color:#fff!important;margin:16px auto}
-.reservation-rules{text-align:left;border-top:1px solid rgba(190,219,245,.2);margin-top:12px;padding-top:22px;color:#e6efff}
-.reservation-rules summary{cursor:pointer;color:#bfd9ef;font-size:13px;letter-spacing:.04em}
-.reservation-rules p{font-size:13px;margin-top:12px}
+.reservation-rules{text-align:left;border-top:1px solid #c5def529;margin-top:42px;padding:24px 0 0;color:#e6efff}
+.reservation-rules summary{display:flex;align-items:center;gap:12px;min-height:40px;list-style:none;cursor:pointer;color:#e0edfc;font-size:16px;letter-spacing:.04em}
+.reservation-rules p{font-size:13px;margin-top:8px;line-height:1.95;color:#bfd0e5}
 .reservation-open{display:inline-flex;align-items:center;justify-content:center;gap:30px;min-width:260px;min-height:56px;padding:14px 32px;border:1px solid rgba(240,250,255,.85);border-radius:999px;background:linear-gradient(120deg,#f0faff,#b7dcf7);box-shadow:0 0 30px rgba(149,207,253,.23),inset 0 1px 0 #fff;color:#153553;font-family:var(--font-serif);font-size:21px;letter-spacing:.08em;transition:transform .2s,box-shadow .2s}
 .reservation-open:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(149,207,253,.4)}
 .reservation-open:disabled{opacity:.5}
-.reservation-notice{margin:20px auto;font-size:13px}
-.reservation-notice:empty{min-height:12px;margin:12px auto}
+.reservation-notice{margin:16px auto 0;font-size:13px;color:#b2c8df!important}
+.reservation-notice:empty{display:none}
 .reservation-open:focus-visible,.reservation-dialog button:focus-visible{outline:2px solid #c8e9ff;outline-offset:4px}
 .reservation-modal-open{overflow:hidden}
 .reservation-dialog{position:fixed;inset:0;margin:auto;width:min(540px,calc(100% - 28px));max-height:calc(100dvh - 40px);padding:0;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(218,239,255,.42);border-radius:26px;background:radial-gradient(ellipse at 30% 0%,rgba(129,181,228,.23),transparent 65%),#0c203f;color:var(--text-primary);box-shadow:0 28px 100px rgba(0,8,25,.65),inset 0 1px 0 rgba(255,255,255,.15);text-align:left}
@@ -87,21 +85,21 @@
 @media(max-width:768px){
   .hero-social{display:none}
   .reservation-section{padding:34px 14px 96px}
-  .reservation-panel{padding:38px 18px 28px;border-radius:26px}
-  .reservation-panel::after{width:78px;height:78px;right:2px;top:10px}
+  .reservation-panel{padding:38px 22px 24px;border-radius:26px}
+  .reservation-panel::after{background-size:70px auto,50px auto;opacity:.2}
   .reservation-eyebrow{font-size:10px;letter-spacing:.16em}
   .reservation-panel h2{font-size:30px;margin-top:14px}
   .reservation-lead{font-size:13px;letter-spacing:.04em}
   .reservation-overview{margin-top:25px}
   .reservation-count{font-size:23px}
   .reservation-next{font-size:12px}
-  .reservation-milestones{margin-top:6px;padding:28px 0 10px}
-  .reservation-rewards{--track-y:47px}
-  .reservation-reward-target{font-size:11px;height:21px;margin-bottom:13px;white-space:nowrap}
-  .reservation-reward-orb{width:26px;height:26px}
-  .reservation-reward strong{font-size:17px;margin-top:15px}
+  .reservation-milestones{margin-top:24px;padding:20px 0 32px}
+  .reservation-rewards{--track-y:55px}
+  .reservation-reward-target{font-size:11px;height:21px;margin-bottom:14px;white-space:nowrap}
+  .reservation-reward-orb{width:40px;height:40px}
+  .reservation-reward strong{font-size:17px;margin-top:18px;letter-spacing:.02em}
   .reservation-reward small{font-size:10px}
-  .reservation-reward-status{font-size:10px;line-height:1.4;max-width:95px;min-height:30px}
+  .reservation-reward-status{font-size:10px;line-height:1.4;max-width:95px;min-height:18px}
   .reservation-dates{font-size:11px;margin:10px auto 25px}
   .reservation-actions{padding:22px 17px;border-radius:19px}
   .reservation-form-heading{margin-bottom:18px}
@@ -116,3 +114,315 @@
 }
 @media(max-width:370px){.reservation-panel{padding-left:13px;padding-right:13px}.reservation-reward-status{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.reservation-rewards::after{transition:none}.reservation-reward.is-unlocked .reservation-reward-orb::after{animation:none}}
+
+/* Shared App assets: see images/reservation/README.md. */
+.reservation-panel [hidden]{display:none!important}
+.reservation-cta{position:relative;padding:28px 12px 0;min-height:64px}
+.reservation-cta::before{content:"";position:absolute;top:0;left:22%;right:22%;height:1px;background:linear-gradient(90deg,transparent,#c3dcf33d,transparent)}
+.reservation-panel[data-state="upcoming"] .reservation-count{font-size:clamp(22px,3vw,30px);letter-spacing:.08em;text-shadow:none;margin-top:18px}
+.reservation-panel[data-state="upcoming"] .reservation-next{margin-top:10px;color:#b4c9df!important}
+.reservation-panel[data-state="upcoming"] .reservation-phase{background:#c6dff511;border-color:#bed6ee33;color:#d3e6f7!important}
+.reservation-panel[data-state="upcoming"] .reservation-cta{padding-top:26px}
+.reservation-panel[data-state="upcoming"] .reservation-notice{margin:0 auto}
+.reservation-panel[data-state="loading"] .reservation-milestones,.reservation-panel[data-state="error"] .reservation-milestones{display:none}
+.reservation-panel[data-state="loading"] .reservation-cta{display:none}
+.reservation-panel[data-state="error"] .reservation-count{font-size:26px}
+.reservation-open{cursor:pointer!important}
+.reservation-rules summary::-webkit-details-marker{display:none}
+.reservation-rules summary::marker{content:""}
+.reservation-rules summary:focus-visible{outline:2px solid #c8e9ff;outline-offset:6px;border-radius:8px}
+.reservation-help-icon{width:28px;height:28px;object-fit:contain}
+.reservation-rules-toggle{margin-left:auto;width:24px;height:24px;position:relative;opacity:.7}
+.reservation-rules-toggle::before,.reservation-rules-toggle::after{content:"";position:absolute;inset:11px 5px;background:#cbe0f4;height:1px}
+.reservation-rules-toggle::after{transform:rotate(90deg);transition:transform .2s}
+.reservation-rules[open] .reservation-rules-toggle::after{transform:rotate(0)}
+.reservation-rule-list{list-style:none;display:grid;grid-template-columns:1fr;gap:24px;padding:28px 0 8px}
+.reservation-rule-list li{display:flex;align-items:flex-start;gap:12px}
+.reservation-rule-list li>img{flex:0 0 14px;width:14px;height:16px;object-fit:contain;margin-top:4px;opacity:.8}
+.reservation-rule-list h3{font-family:var(--font-sans);font-size:14px;font-weight:400;color:#e2efff;letter-spacing:.04em;line-height:1.7}
+.reservation-rule-list a{color:#c8e5ff;text-underline-offset:4px;overflow-wrap:anywhere}
+.reservation-retry{border:1px solid #d1e7fd66;background:#d1e7fd12;color:#e0efff;font:inherit;font-size:14px;border-radius:999px;padding:10px 28px;cursor:pointer!important}
+.reservation-retry:focus-visible{outline:2px solid #c8e9ff;outline-offset:4px}
+@media(max-width:768px){
+  .reservation-rules{margin-top:32px;padding-top:20px}
+  .reservation-rules summary{font-size:14px;gap:10px}
+  .reservation-help-icon{width:24px;height:24px}
+  .reservation-rule-list{grid-template-columns:1fr;gap:22px;padding-top:24px}
+  .reservation-rule-list li{gap:10px}
+  .reservation-rule-list p{font-size:12px}
+  .reservation-rule-list h3{font-size:13px}
+  .reservation-cta{padding-top:26px}
+  .reservation-open{min-width:0;width:min(100%,280px)}
+}
+/* First screen: show the reservation preview or the PV beneath the brand. */
+.first-screen{min-height:100svh;display:flex;flex-direction:column;align-items:center;padding:76px 20px 18px;position:relative;z-index:3;gap:18px}
+.first-screen .hero{min-height:0;width:100%;padding:0;flex:none;contain:none}
+.first-screen .hero-logo{width:180px;margin-bottom:12px}
+.first-screen .hero-title{font-size:clamp(26px,3vw,42px);margin-bottom:10px}
+.first-screen .hero-slogan{font-size:14px;margin-bottom:0}
+.first-screen .reservation-section{width:min(100%,1040px);padding:0;margin:0 auto}
+.first-screen .reservation-panel{padding:22px 40px 20px;border-radius:28px}
+.first-screen .reservation-panel h2{font-size:28px;margin:8px 0}
+.first-screen .reservation-lead{font-size:12px}
+.first-screen .reservation-overview{margin-top:14px}
+.first-screen .reservation-count{font-size:23px;margin-top:8px}
+.first-screen .reservation-milestones{margin-top:14px;padding:8px 0 24px}
+.first-screen .reservation-cta{padding-top:18px}
+.first-screen .reservation-notice{margin-top:10px}
+.first-screen .reservation-pv{padding:0;width:min(100%,700px);margin:0 auto}
+.first-screen .reservation-pv h2{display:none}
+.first-screen .hero-video{width:100%;max-height:43svh;margin:0 auto;aspect-ratio:16/9}
+.first-screen-scroll{margin:0!important;margin-top:auto!important;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid #dcefff4d;background:#b4d7ff1a;display:grid;place-items:center}
+.reservation-rules-static{max-width:1040px;margin:24px auto 64px;padding:30px 28px;border:1px solid #dcefff2e;border-radius:24px;background:linear-gradient(140deg,#243c60d9,#102440eb)}
+.reservation-rules-static>h2{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:400;color:#e0edfc}
+@media(max-width:768px){
+ .first-screen{padding:76px 14px 16px;gap:16px}
+ .first-screen .hero-logo{width:140px;margin-bottom:8px}
+ .first-screen .hero-title{font-size:26px}
+ .first-screen .hero-slogan{font-size:12px;max-width:330px;margin:0 auto}
+ .first-screen .reservation-panel{padding:20px 16px}
+ .first-screen .reservation-panel h2{font-size:24px}
+ .first-screen .reservation-count{font-size:20px}
+ .first-screen .reservation-next{font-size:11px}
+ .reservation-rules-static{margin:20px 14px 48px;padding:24px 18px}
+}
+.first-screen .reservation-panel .reservation-count{font-size:22px;line-height:1.45;margin-top:10px}
+.first-screen .reservation-panel .reservation-next{margin-top:5px}
+.first-screen .reservation-panel .reservation-cta{padding-top:18px;min-height:42px}
+.first-screen .reservation-reward strong{font-size:19px;margin-top:12px}
+.first-screen .reservation-reward-status{margin-top:6px}
+.first-screen .reservation-panel .reservation-notice{margin:0}
+@media(max-width:768px){
+ .first-screen .hero-logo{width:120px}
+ .first-screen .reservation-panel .reservation-count{font-size:19px}
+ .first-screen .reservation-reward strong{font-size:16px}
+ .first-screen .reservation-panel .reservation-overview{margin-top:10px}
+ .first-screen .reservation-panel .reservation-milestones{margin-top:10px}
+}
+
+@media(max-height:800px){.first-screen .hero-logo{width:80px;margin-bottom:4px}.first-screen .hero-title{font-size:24px}.first-screen{gap:12px}.first-screen .reservation-panel{padding-top:16px;padding-bottom:16px}}
+
+/* Rules share the same glass frame; retain four readable rows. */
+.first-screen .reservation-section{width:min(100%,1240px)}
+.first-screen .reservation-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+.reservation-content{min-width:0}
+.first-screen .reservation-rules-static{margin:0;padding:8px 0 8px 28px;border:0;border-left:1px solid #dcefff2e;border-radius:0;background:none;max-width:none}
+.first-screen .reservation-rules-static>h2{font-family:var(--font-sans);font-size:16px;text-align:left;margin:0;letter-spacing:.04em}
+.first-screen .reservation-rule-list{gap:16px;padding:20px 0 0}
+.first-screen .reservation-rule-list p{font-size:12px;line-height:1.8;margin-top:4px}
+@media(max-width:900px){
+ .first-screen .reservation-panel{grid-template-columns:1fr;gap:22px}
+ .first-screen .reservation-rules-static{border-left:0;border-top:1px solid #dcefff2e;padding:22px 0 0}
+}
+
+/* Vertical reservation + four always-visible rule rows. */
+.first-screen:has(#reservation:not([hidden])) .hero-logo{width:88px;margin-bottom:4px}
+.first-screen:has(#reservation:not([hidden])) .hero-title{font-size:28px;margin-bottom:6px}
+.first-screen:has(#reservation:not([hidden])){gap:12px}
+.first-screen .reservation-panel{display:block;padding:18px 32px}
+.first-screen .reservation-content>h2{width:min(420px,100%);margin:4px auto;background:url('images/app-ui/title-plate.webp') center/100% 100% no-repeat;padding:8px 20px;font-size:24px}
+.first-screen .reservation-lead{font-size:11px}
+.first-screen .reservation-overview{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
+.first-screen .reservation-panel .reservation-count{font-size:19px;line-height:1.4;margin:0}
+.first-screen .reservation-panel .reservation-next{flex-basis:100%;margin:0;font-size:11px}
+.first-screen .reservation-milestones{margin-top:8px;padding:6px 0 16px;max-width:760px}
+.first-screen .reservation-reward strong{margin-top:6px;font-size:17px}
+.first-screen .reservation-reward-status{margin-top:3px;font-size:10px;min-height:16px}
+.first-screen .reservation-panel .reservation-cta{padding-top:12px;min-height:32px}
+.first-screen .reservation-notice{font-size:11px}
+.first-screen .reservation-rules-static{margin:14px 0 0;padding:14px 0 0;border:0;border-top:1px solid #dcefff2e;background:none}
+.first-screen .reservation-rules-static>h2{font-size:13px;gap:8px}
+.first-screen .reservation-help-icon{width:22px;height:22px}
+.first-screen .reservation-rule-list{gap:7px;padding:10px 0 0}
+.first-screen .reservation-rule-list li{gap:8px}
+.first-screen .reservation-rule-list li>img{width:10px;height:12px;flex-basis:10px;margin-top:3px}
+.first-screen .reservation-rule-list h3{display:inline;font-size:11px;margin-right:10px;color:#deedff}
+.first-screen .reservation-rule-list p{display:inline;font-size:11px;line-height:1.65;margin:0}
+.first-screen .reservation-rule-list li>div{line-height:1.65}
+@media(max-width:768px){
+ .first-screen .reservation-panel{padding:18px 16px}
+ .first-screen .reservation-content>h2{font-size:21px;padding:8px 14px}
+ .first-screen:has(#reservation:not([hidden])) .hero-title{font-size:24px}
+ .first-screen .reservation-rule-list h3{display:block;margin:0 0 2px}
+ .first-screen .reservation-rule-list p{font-size:12px;line-height:1.7}
+ .first-screen .reservation-rule-list{gap:12px}
+}
+
+.first-screen .reservation-content>h2{width:fit-content;max-width:100%;margin:0 auto}
+.first-screen .reservation-eyebrow{display:none}
+.first-screen .reservation-panel[data-state="upcoming"] .reservation-cta{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.first-screen .reservation-cta .reservation-phase{font-size:10px;padding:3px 12px}
+.first-screen:has(#reservation:not([hidden])) .hero-logo,.first-screen .hero-logo{width:300px;margin-bottom:4px}
+.first-screen:has(#reservation:not([hidden])) .hero-title,.first-screen .hero-title{font-size:22px}
+.first-screen .hero-slogan{font-size:12px}
+@media(max-width:768px){
+ .first-screen:has(#reservation:not([hidden])) .hero-logo,.first-screen .hero-logo{width:240px}
+ .first-screen:has(#reservation:not([hidden])) .hero-title,.first-screen .hero-title{font-size:18px}
+ .first-screen .hero-slogan{font-size:11px}
+}
+.first-screen .reservation-reward-target{height:18px;margin-bottom:8px;font-size:11px}
+.first-screen .reservation-rewards{--track-y:42px}
+.first-screen .reservation-reward-orb{width:32px;height:32px}
+.first-screen .reservation-reward-orb img{width:25.92px;height:25.92px}
+.first-screen .reservation-reward strong{font-size:16px;line-height:1.4;margin-top:4px}
+.first-screen .reservation-reward small{line-height:1.4}
+.first-screen .reservation-reward-status{line-height:1.4}
+.first-screen .reservation-milestones{padding-bottom:10px}
+.first-screen .reservation-panel{padding-top:12px;padding-bottom:12px}
+.first-screen .reservation-rules-static{margin-top:10px;padding-top:10px}
+@media(max-width:768px){.first-screen .reservation-reward-orb img{width:21.6px;height:21.6px}}
+
+.first-screen .reservation-rule-list li{align-items:flex-start}
+.first-screen .reservation-rule-list li>div{font-size:11px;line-height:1.7}
+.first-screen .reservation-rule-list li>img{margin-top:calc((11px * 1.7 - 12px)/2);align-self:flex-start}
+
+.first-screen .reservation-panel{padding-top:30px;padding-bottom:30px}
+.first-screen .reservation-content>h2{min-height:60px;padding-top:8px;padding-bottom:8px}
+.first-screen .reservation-overview{margin-top:0}
+.first-screen .reservation-panel .reservation-next{line-height:1.5}
+.first-screen .reservation-reward-orb{width:57.6px;height:57.6px}
+.first-screen .reservation-rewards{--track-y:54.8px}
+@media(max-width:768px){.first-screen .reservation-panel{padding-top:24px;padding-bottom:24px}}
+.first-screen .reservation-reward-orb,.first-screen .reservation-reward.is-unlocked .reservation-reward-orb{border:0;border-radius:0;background:transparent url('images/app-ui/gift-base.png') center/contain no-repeat;box-shadow:none}
+.first-screen .reservation-reward-orb::before{display:none}
+
+.first-screen .reservation-reward-orb{width:69.12px;height:69.12px}
+.first-screen .reservation-rewards{--track-y:60.56px}
+
+
+/* Figma 40000758:81950, original 796 × 180 artwork including its glow. */
+@font-face{font-family:ReservationJHT;src:url('fonts/QingNiaoHuaGuang-Sans.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+.reservation-open{width:min(100%,320px);min-width:0;min-height:0;aspect-ratio:796/180;padding:0 38px;gap:20px;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font-family:ReservationJHT,sans-serif;font-weight:400;font-size:21px;line-height:1.3;text-shadow:0 1px 6px #24447666}
+.reservation-open:hover{box-shadow:none;filter:brightness(1.08)}
+.reservation-panel[data-state="active"]>.reservation-phase{position:absolute;top:18px;left:26px;margin:0;z-index:1}
+@media(max-width:768px){
+ .reservation-open{width:min(100%,280px);font-size:19px;gap:16px;padding-inline:30px}
+ .first-screen .reservation-panel[data-state="active"]{padding-top:54px}
+ .reservation-panel[data-state="active"]>.reservation-phase{top:14px;left:16px;font-size:10px;padding:3px 12px}
+}
+
+/* Reservation dialog shares the main panel's translucent moonlight surface. */
+.reservation-dialog{background:radial-gradient(ellipse at 30% 0%,#8caee71f,transparent 58%),linear-gradient(145deg,#243c60cc,#172d4ccc 55%,#102440cc);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.reservation-dialog::backdrop{background:#02091859;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.reservation-dialog .reservation-form-heading{gap:8px;align-items:center}
+.reservation-form-heading>.reservation-edit-icon{position:relative;display:block;width:56px;height:56px;flex:0 0 56px;border:0;border-radius:0;box-shadow:none}
+.reservation-edit-base{display:block;width:100%;height:100%;object-fit:contain}
+.reservation-edit-glyph{position:absolute;left:29.762%;top:29.762%;width:40.476%;height:40.476%;overflow:hidden}
+.reservation-edit-glyph>img{position:absolute;left:-17.65%;top:-19.12%;width:138.24%;height:138.24%;max-width:none}
+#reservationFormHeading{position:relative;isolation:isolate;display:inline-flex;width:fit-content;max-width:100%;min-height:48px;align-items:center;padding:5px 14px;margin-left:-14px}
+.reservation-dialog input[type=tel],.reservation-dialog input[type=text]{font-family:ReservationJHT,sans-serif;font-size:19px;color:#153553;caret-color:#153553;-webkit-text-fill-color:#153553}
+.reservation-dialog input::placeholder{color:#42607b;opacity:1}
+/* Embed both original checkbox images: hidden dialogs must not defer a first-use request. */
+.reservation-dialog input[type=checkbox]{appearance:none;-webkit-appearance:none;display:inline-block;vertical-align:middle;width:27px;height:27px;flex-shrink:0;margin:0 4px 0 0;border:0;border-radius:0;padding:0;background:transparent url('data:image/png;base64,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') center/contain no-repeat}
+.reservation-dialog input[type=checkbox]:checked{background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF4AAABeCAYAAACq0qNuAAAKOmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAASImdU3dYU3cXPvfe7MFKiICMsJdsgQAiI+whU5aoxCRAGCGGBNwDERWsKCqyFEWqAhasliF1IoqDgqjgtiBFRK3FKi4cfaLP09o+/b6vX98/7n2f8zvn3t9533MAaAEhInEWqgKQKZZJI/292XHxCWxiD6BABgLYAfD42ZLQKL9oAIBAXy47O9LfG/6ElwOAKN5XrQLC2Wz4/6DKl0hlAEg4ADgIhNl8ACQfADJyZRJFfBwAmAvSFRzFKbg0Lj4BANVQ8JTPfNqnnM/cU8EFmWIBAKq4s0SQKVDwTgBYnyMXCgCwEAAoyBEJcwGwawBglCHPFAFgrxW1mUJeNgCOpojLhPxUAJwtANCk0ZFcANwMABIt5Qu+4AsuEy6SKZriZkkWS0UpqTK2Gd+cbefiwmEHCHMzhDKZVTiPn86TCtjcrEwJT7wY4HPPn6Cm0JYd6Mt1snNxcrKyt7b7Qqj/evgPofD2M3se8ckzhNX9R+zv8rJqADgTANjmP2ILygFa1wJo3PojZrQbQDkfoKX3i35YinlJlckkrjY2ubm51iIh31oh6O/4nwn/AF/8z1rxud/lYfsIk3nyDBlboRs/KyNLLmVnS3h8Idvqr0P8rwv//h7TIoXJQqlQzBeyY0TCXJE4hc3NEgtEMlGWmC0S/ycT/2XZX/B5rgGAUfsBmPOtQaWXCdjP3YBjUAFL3KVw/XffQsgxoNi8WL3Rz3P/CZ+2+c9AixWPbFHKpzpuZDSbL5fmfD5TrCXggQLKwARN0AVDMAMrsAdncANP8IUgCINoiId5wIdUyAQp5MIyWA0FUASbYTtUQDXUQh00wmFohWNwGs7BJbgM/XAbBmEEHsM4vIRJBEGICB1hIJqIHmKMWCL2CAeZifgiIUgkEo8kISmIGJEjy5A1SBFSglQge5A65FvkKHIauYD0ITeRIWQM+RV5i2IoDWWiOqgJaoNyUC80GI1G56Ip6EJ0CZqPbkLL0Br0INqCnkYvof3oIPoYncAAo2IsTB+zwjgYFwvDErBkTIqtwAqxUqwGa8TasS7sKjaIPcHe4Ag4Bo6Ns8K54QJws3F83ELcCtxGXAXuAK4F14m7ihvCjeM+4Ol4bbwl3hUfiI/Dp+Bz8QX4Uvw+fDP+LL4fP4J/SSAQWARTgjMhgBBPSCMsJWwk7CQ0EU4R+gjDhAkikahJtCS6E8OIPKKMWEAsJx4kniReIY4QX5OoJD2SPcmPlEASk/JIpaR60gnSFdIoaZKsQjYmu5LDyALyYnIxuZbcTu4lj5AnKaoUU4o7JZqSRllNKaM0Us5S7lCeU6lUA6oLNYIqoq6illEPUc9Th6hvaGo0CxqXlkiT0zbR9tNO0W7SntPpdBO6Jz2BLqNvotfRz9Dv0V8rMZSslQKVBEorlSqVWpSuKD1VJisbK3spz1NeolyqfES5V/mJClnFRIWrwlNZoVKpclTlusqEKkPVTjVMNVN1o2q96gXVh2pENRM1XzWBWr7aXrUzasMMjGHI4DL4jDWMWsZZxgiTwDRlBjLTmEXMb5g9zHF1NfXp6jHqi9Qr1Y+rD7IwlgkrkJXBKmYdZg2w3k7RmeI1RThlw5TGKVemvNKYquGpIdQo1GjS6Nd4q8nW9NVM19yi2ap5VwunZaEVoZWrtUvrrNaTqcypblP5UwunHp56SxvVttCO1F6qvVe7W3tCR1fHX0eiU65zRueJLkvXUzdNd5vuCd0xPYbeTD2R3ja9k3qP2OpsL3YGu4zdyR7X19YP0Jfr79Hv0Z80MDWYbZBn0GRw15BiyDFMNtxm2GE4bqRnFGq0zKjB6JYx2ZhjnGq8w7jL+JWJqUmsyTqTVpOHphqmgaZLTBtM75jRzTzMFprVmF0zJ5hzzNPNd5pftkAtHC1SLSotei1RSydLkeVOy75p+Gku08TTaqZdt6JZeVnlWDVYDVmzrEOs86xbrZ/aGNkk2Gyx6bL5YOtom2Fba3vbTs0uyC7Prt3uV3sLe759pf01B7qDn8NKhzaHZ9Mtpwun75p+w5HhGOq4zrHD8b2Ts5PUqdFpzNnIOcm5yvk6h8kJ52zknHfBu3i7rHQ55vLG1clV5nrY9Rc3K7d0t3q3hzNMZwhn1M4Ydjdw57nvcR+cyZ6ZNHP3zEEPfQ+eR43HfU9DT4HnPs9RL3OvNK+DXk+9bb2l3s3er7iu3OXcUz6Yj79PoU+Pr5rvbN8K33t+Bn4pfg1+4/6O/kv9TwXgA4IDtgRcD9QJ5AfWBY4HOQctD+oMpgVHBVcE3w+xCJGGtIeioUGhW0PvzDKeJZ7VGgZhgWFbw+6Gm4YvDP8+ghARHlEZ8SDSLnJZZFcUI2p+VH3Uy2jv6OLo27PNZstnd8QoxyTG1MW8ivWJLYkdjLOJWx53KV4rXhTflkBMiEnYlzAxx3fO9jkjiY6JBYkDc03nLpp7YZ7WvIx5x+crz+fNP5KET4pNqk96xwvj1fAmFgQuqFowzufyd/AfCzwF2wRjQndhiXA02T25JPlhinvK1pSxVI/U0tQnIq6oQvQsLSCtOu1Velj6/vSPGbEZTZmkzKTMo2I1cbq4M0s3a1FWn8RSUiAZXOi6cPvCcWmwdF82kj03u03GlElk3XIz+Vr5UM7MnMqc17kxuUcWqS4SL+pebLF4w+LRJX5Lvl6KW8pf2rFMf9nqZUPLvZbvWYGsWLCiY6XhyvyVI6v8Vx1YTVmdvvqHPNu8krwXa2LXtOfr5K/KH17rv7ahQKlAWnB9ndu66vW49aL1PRscNpRv+FAoKLxYZFtUWvRuI3/jxa/svir76uOm5E09xU7FuzYTNos3D2zx2HKgRLVkScnw1tCtLdvY2wq3vdg+f/uF0uml1TsoO+Q7BstCytrKjco3l7+rSK3or/SubKrSrtpQ9WqnYOeVXZ67Gqt1qouq3+4W7b6xx39PS41JTelewt6cvQ9qY2q7vuZ8XbdPa1/Rvvf7xfsHD0Qe6Kxzrqur164vbkAb5A1jBxMPXv7G55u2RqvGPU2spqJDcEh+6NG3Sd8OHA4+3HGEc6TxO+PvqpoZzYUtSMvilvHW1NbBtvi2vqNBRzva3dqbv7f+fv8x/WOVx9WPF5+gnMg/8fHkkpMTpySnnpxOOT3cMb/j9pm4M9c6Izp7zgafPX/O79yZLq+uk+fdzx+74Hrh6EXOxdZLTpdauh27m39w/KG5x6mnpde5t+2yy+X2vhl9J654XDl91efquWuB1y71z+rvG5g9cON64vXBG4IbD29m3Hx2K+fW5O1Vd/B3Cu+q3C29p32v5kfzH5sGnQaPD/kMdd+Pun97mD/8+Kfsn96N5D+gPygd1Rute2j/8NiY39jlR3MejTyWPJ58UvCz6s9VT82efveL5y/d43HjI8+kzz7+uvG55vP9L6a/6JgIn7j3MvPl5KvC15qvD7zhvOl6G/t2dDL3HfFd2Xvz9+0fgj/c+Zj58eNv94Tz+8WoiUIAAAAJcEhZcwAACxMAAAsTAQCanBgAAATxaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSAxMC4wLWMwMDAgMjUuRy5kMjBlNDY2LCAyMDI1LzEyLzA4LTIwOjUwOjIxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjcuNCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDI2LTAzLTE3VDE5OjQyOjQ3KzA4OjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyNi0wMy0xN1QxOTo0Nzo0MyswODowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNi0wMy0xN1QxOTo0Nzo0MyswODowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODk0ZGJlODItZDYyYS04ODQ2LThkODAtMjRiM2JkNzc4YzA3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjg5NGRiZTgyLWQ2MmEtODg0Ni04ZDgwLTI0YjNiZDc3OGMwNyIgeG1wTU06T3JpZ2luYWxEb2N1bWVu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')}
+.reservation-submit-spinner{width:36px;height:36px;object-fit:contain;vertical-align:middle;animation:reservation-submit-spin .9s linear infinite}
+@keyframes reservation-submit-spin{to{transform:rotate(360deg)}}
+.reservation-login-bar{position:absolute;left:26px;top:18px;display:flex;align-items:center;gap:12px;color:#d7eaff;font:14px ReservationJHT,sans-serif}
+.reservation-login-bar button,.reservation-tier-claim{border:1px solid #b9dfff88;border-radius:999px;background:#a8cfff24;color:#fff;padding:7px 20px;cursor:pointer;font:inherit}
+.reservation-tier-claim{position:relative;z-index:2;margin:8px auto 0;min-width:80px}
+.reservation-tier-claim:disabled{opacity:.5;cursor:default}
+.reservation-activation-row{padding:18px 0;border-top:1px solid #bddaff33;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.reservation-activation-row strong{width:100%}
+.reservation-activation-row code{display:block;width:100%;overflow-wrap:anywhere;color:#fff;font-size:15px;user-select:all}
+@media(max-width:768px){.reservation-login-bar{left:16px;top:14px;font-size:11px;gap:5px}.reservation-login-bar button{padding:5px 8px}.reservation-tier-claim{min-width:64px;padding:6px 12px;font-size:12px}}
+.reservation-dialog input[type=checkbox]:focus-visible{outline:2px solid #bee4ff;outline-offset:2px}
+.reservation-dialog .reservation-platform-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:0;padding:0;margin:14px 0 18px;min-width:0}
+.reservation-dialog .reservation-platform-tabs legend{padding:0;margin-bottom:8px}
+.reservation-platform-tabs label{position:relative;min-width:0;cursor:pointer!important}
+.reservation-platform-tabs input[type=radio]{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0}
+.reservation-platform-tabs label>span{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #bedcff44;border-radius:12px;background:#c1dfff0d;color:#c6d9eb;font-family:ReservationJHT,sans-serif;font-size:17px;transition:background .2s,border-color .2s}
+.reservation-platform-tabs input:checked+span{color:#fff;border-color:#cce9ff99;background:linear-gradient(120deg,#9ebfe547,#c9edff2e);box-shadow:inset 0 1px 0 #eaf9ff33,0 0 12px #b5dcff20}
+.reservation-platform-tabs input:focus-visible+span{outline:2px solid #c8e9ff;outline-offset:3px}
+@media(max-width:768px){.reservation-dialog input[type=tel],.reservation-dialog input[type=text]{font-size:18px}.reservation-form-heading>.reservation-edit-icon{width:48px;height:48px;flex-basis:48px}.reservation-dialog .reservation-actions{padding-inline:18px}}
+
+.reservation-form-heading>div{min-width:0;flex:1}
+#reservationFormHeading{display:block;width:max-content;white-space:nowrap;box-sizing:content-box;max-width:none}
+#reservationFormHeading>.title-plate{height:46px;top:50%;bottom:auto;transform:translateY(-50%);overflow:visible}
+
+/* One aligned form header, consistent field captions and a single primary action. */
+.reservation-dialog .reservation-form-heading{padding-right:0;min-height:56px}
+.reservation-dialog .reservation-form-heading #reservationClose{position:static;align-self:center;flex:0 0 32px;width:32px;height:32px;margin:0}
+.reservation-dialog .reservation-field-label,.reservation-dialog .reservation-platform-tabs legend{font-family:ReservationJHT,sans-serif;font-size:15px;font-weight:400;line-height:1.6;color:#eaf4ff;letter-spacing:0}
+.reservation-platform-tabs label>span{gap:8px}
+.reservation-platform-tabs label>span>img{width:23px;height:23px;object-fit:contain;opacity:.75}
+.reservation-platform-tabs input:checked+span>img{opacity:1}
+.reservation-dialog .reservation-buttons{display:flex;justify-content:center;margin-top:4px}
+.reservation-dialog .reservation-buttons #reservationSubmit{width:min(100%,280px);aspect-ratio:796/180;min-height:0;margin:0;padding:0 30px;display:flex;align-items:center;justify-content:center;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font:400 19px/1.3 ReservationJHT,sans-serif;letter-spacing:.06em}
+.reservation-dialog .reservation-buttons #reservationSubmit:hover{filter:brightness(1.08)}
+.reservation-code-row #reservationSms:disabled{opacity:1;background:linear-gradient(120deg,#b4c1ce,#8d9dad);color:#344b62;border-color:#c4cfda77;box-shadow:none;transform:none}
+
+#reservationFormHeading{display:flex;align-items:center}
+
+/* Feedback uses the same typography as the consent labels. */
+.reservation-dialog .reservation-check,.reservation-dialog .reservation-message{font-size:14px;font-weight:400;line-height:1.8}
+.reservation-dialog .reservation-form-heading #reservationClose{border:0;background:transparent;box-shadow:none;border-radius:0}
+.reservation-dialog .reservation-form-heading #reservationClose:hover{background:transparent;box-shadow:none}
+@media(max-width:768px){.reservation-dialog .reservation-check,.reservation-dialog .reservation-message{font-size:12px}}
+
+.reservation-close-art{position:relative;display:block;width:28px;height:28px;overflow:hidden}
+.reservation-close-art>img{position:absolute;left:0;top:4.48%;width:100%;height:101.49%;max-width:none}
+
+.reservation-dialog .reservation-message{text-align:center;color:#ff9999!important;margin:12px auto 0;width:100%}
+/* Receipt: quiet rows, fine moonlight rules, copy action beside the number. */
+.reservation-panel{position:relative}
+.reservation-query{position:absolute;right:26px;top:18px;z-index:2;width:115px;height:37px;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;color:#5779b6;font:400 17px/1 ReservationJHT,sans-serif;cursor:pointer}
+.reservation-query>span:last-child{position:relative}
+.reservation-query-art{position:absolute;inset:0;display:grid;grid-template-columns:50.6px minmax(0,1fr) 50.6px;pointer-events:none}
+.reservation-query-art>img{width:100%;height:37px;display:block}
+.reservation-receipt{margin:10px 0 18px;font:400 15px/1.7 ReservationJHT,sans-serif}
+.reservation-receipt>div{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:18px;padding:14px 0;border-bottom:1px solid #bfdcff30}
+.reservation-receipt>div:first-child{border-top:1px solid #bfdcff30}
+.reservation-receipt dt{color:#b8cde4}
+.reservation-receipt dd{margin:0;color:#f0f7ff;min-width:0;overflow-wrap:anywhere}
+.reservation-code{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#reservationMineCode{user-select:all}
+.reservation-dialog #reservationCopy{display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;height:32px;min-height:0;padding:0;margin:0;border:0;background:transparent;box-shadow:none;border-radius:0}
+#reservationCopy>img{display:block;width:28px;height:28px;object-fit:contain}
+#reservationCopyStatus{color:#c0dcf8;font-size:12px}
+.reservation-dialog .reservation-receipt-note{font:400 13px/1.8 ReservationJHT,sans-serif;color:#b8cde4;text-align:center;margin:12px 0}
+.reservation-dialog #reservationSubscribe{width:min(100%,280px);aspect-ratio:796/180;padding:0 24px;min-height:0;margin:0;border:0;border-radius:0;background:transparent url('images/app-ui/reservation-button.png') center/contain no-repeat;box-shadow:none;color:#fff;font:400 19px/1.3 ReservationJHT,sans-serif}
+.reservation-dialog #reservationSubscribe:disabled{filter:grayscale(.8);opacity:.65;cursor:default}
+@media(max-width:768px){.reservation-query{right:16px;top:14px;width:104px;height:34px;font-size:15px}.reservation-query-art{grid-template-columns:46.5px minmax(0,1fr) 46.5px}.reservation-query-art>img{height:34px}.reservation-receipt{font-size:13px}.reservation-receipt>div{grid-template-columns:76px minmax(0,1fr);gap:10px;padding:12px 0}.reservation-dialog .reservation-receipt-note{font-size:12px}}
+/* Milestones start at zero, then interpolate between the three real thresholds. */
+.reservation-rewards{--track-start:2%}
+.reservation-rewards::before{left:var(--track-start);right:16.66667%;height:1px}
+.reservation-rewards::after{left:var(--track-start);top:calc(var(--track-y) - 2px);height:4px;width:max(0%,calc(var(--milestone-progress) - var(--track-start)));max-width:81.33334%;border-radius:4px;background:linear-gradient(90deg,#5b97f5,#8cc6ff 70%,#d5efff);filter:drop-shadow(0 0 4px #69a7ff) drop-shadow(0 0 8px #72adff88)}
+.reservation-track{position:absolute;inset:0;pointer-events:none}
+.reservation-track-start{position:absolute;left:var(--track-start);top:var(--track-y);width:7px;height:7px;transform:translate(-50%,-50%);border:1px solid #c5dbf277;border-radius:50%;background:#526984}
+.reservation-rewards[data-progress-active="true"] .reservation-track-start{background:#a4d4ff;box-shadow:0 0 8px #78b9ff}
+.reservation-progress-light{position:absolute;left:var(--milestone-progress);top:var(--track-y);width:38px;height:38px;object-fit:contain;transform:translate(-50%,-50%);z-index:2;transition:left .8s cubic-bezier(.22,1,.36,1)}
+.reservation-rewards[data-progress-active="false"] .reservation-progress-light{visibility:hidden}
+.first-screen .reservation-reward:not(.is-unlocked) .reservation-reward-orb{background:none}
+.reservation-orb-base{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.first-screen .reservation-reward-orb .reservation-orb-base>img,.reservation-reward-orb .reservation-orb-base>img{position:absolute;left:-19.57%;top:-16.3%;width:140.58%;height:134.06%;max-width:none;object-fit:fill;filter:none;opacity:1}
+.reservation-reward-orb>.reservation-gift-icon{position:relative;z-index:1}
+@media(max-width:768px){.reservation-progress-light{width:30px;height:30px}.reservation-track-start{width:6px;height:6px}}
+@media(prefers-reduced-motion:reduce){.reservation-progress-light{transition:none}}
+.reservation-track{z-index:0}
+/* Match the visible circles, accounting for the blue export's transparent canvas. */
+.reservation-orb-base{inset:16.5%;width:67%;height:67%}
+.reservation-rewards::after{top:calc(var(--track-y) - 1px);height:2px;filter:drop-shadow(0 0 2px #69a7ff) drop-shadow(0 0 5px #72adff88)}
+.first-screen .reservation-reward.is-unlocked .reservation-reward-orb::after{display:none}
+/* Post-launch controls and shared title treatment. */
+@font-face{font-family:ReservationJHB;src:url('fonts/JHB.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+.first-screen .reservation-panel .reservation-panel-title{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;width:fit-content;max-width:100%;min-height:60px;margin:0 auto;padding:8px 20px;background:none;font-family:ReservationJHB,sans-serif;font-size:24px;font-weight:400;line-height:1.35;letter-spacing:.07em;color:var(--moon-080);text-shadow:0 0 28px #c6e5ff57}
+.reservation-login-bar #reservationLogin{position:relative;top:auto;right:auto;width:115px;height:37px;padding:0;margin:0;border:0;background:transparent;color:#5779b6;font:400 17px/1 ReservationJHT,sans-serif;box-shadow:none}
+.reservation-download{border:0;background:none;box-shadow:none;padding:20px 0 12px;max-width:100%}
+#reservationDownloadLinks{display:grid;grid-template-columns:repeat(2,minmax(0,156px));justify-content:center;gap:24px;margin-top:20px}
+.reservation-download-option{position:relative;display:flex;align-items:center;justify-content:center;margin:0;min-width:0}
+.reservation-download .reservation-download-button{box-sizing:border-box;width:100%;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin:0;padding:16px;border:1px solid #cce9ff88;border-radius:20px;background:linear-gradient(135deg,#a8c9ec38,#81b0de18);color:#fff;font:400 18px/1.4 ReservationJHB,sans-serif;text-decoration:none}
+.reservation-download-button>img{width:38px;height:38px;object-fit:contain}
+.reservation-download-button>small{font:400 12px/1.4 ReservationJHT,sans-serif;color:#b8cee6}
+.reservation-download-button[aria-disabled=true]{opacity:.6;cursor:default}
+.reservation-download-option .reservation-qr{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);visibility:hidden;opacity:0;pointer-events:none;z-index:5}
+.reservation-download-option:hover .reservation-qr,.reservation-download-option:focus-within .reservation-qr{visibility:visible;opacity:1}
+/* Each star belongs to its heading, so body wrapping cannot move it. */
+.first-screen .reservation-rule-list li{display:block;padding-left:18px}
+.first-screen .reservation-rule-list h3{display:inline-flex;align-items:center;gap:8px;margin-left:-18px;vertical-align:baseline}
+.first-screen .reservation-rule-list h3>img{display:block;flex:0 0 10px;width:10px;height:12px;object-fit:contain;opacity:.8;margin:0}
+@media(max-width:768px){.reservation-login-bar #reservationLogin{width:104px;height:34px;font-size:15px}.first-screen .reservation-panel .reservation-panel-title{font-size:21px;padding:8px 14px}.first-screen .reservation-rule-list h3{display:flex;margin-left:-18px}#reservationDownloadLinks{grid-template-columns:repeat(2,minmax(0,130px));gap:16px}.reservation-download .reservation-download-button{font-size:16px;border-radius:16px}.reservation-download-button>img{width:32px;height:32px}}
+
+/* Same outer width as the reservation panel; the PV no longer inherits the old 680px cap. */
+.reservation-pv{scroll-margin-top:90px;width:min(calc(100% - 40px),1200px);max-width:none;padding:30px 0 72px}
+.reservation-pv .hero-video{width:100%;max-width:none;margin:24px auto 0}
+@media(max-width:768px){.reservation-pv{width:calc(100% - 28px);padding:30px 0 64px}}

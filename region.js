@@ -2,7 +2,7 @@
   "use strict";
 
   var regions = [
-    { id: "jp", label: "日本", home: "jp/index.html", product: "jp/product/index.html" },
+    { id: "jp", label: "日本語", home: "jp/index.html", product: "jp/product/index.html" },
     { id: "us", label: "United States", home: "us/index.html", product: "us/product/index.html" },
     { id: "sg", label: "Singapore", home: "sg/index.html", product: "sg/product/index.html" }
   ];
