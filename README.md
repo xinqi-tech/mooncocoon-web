@@ -56,7 +56,9 @@ node tests/recharge-preview-server.mjs --port 8908
 
 支付宝支付地址按环境精确限制为对应的 HTTPS `gateway.do`，拒绝沙箱/正式串用、非标准端口、userinfo、fragment、重复或错误的 `method`；订单查询也必须返回当前环境的准确 channel。会话和待确认记录以环境及 API host 隔离，待确认记录再按 UID 隔离。
 
-正式手机网站支付审核等待期间，后端保持 `available=false`：页面不展示本地虚构档位，也不允许首次访问者发短信或登录；只有本次浏览器会话中已有待确认记录、且服务端明确 `loginAvailable=true` 时，才允许重新认证恢复同一 requestId/订单。审核通过、生产配置注入与真实小额验收前不得将 `available` 打开。未来测试站发布必须由受控构建同时固定 `recharge/recharge.js` 的 `DEPLOYED_TEST_API_BASE` 与 `DEPLOYED_TEST_SITE_HOST`，并保留 `environment=sandbox` 二次校验；不得改为 query、localStorage 或任意运行时输入。
+正式手机网站支付审核等待期间，后端保持 `available=false`：页面不展示本地虚构档位，也不允许首次访问者发短信或登录。浏览器中的 pending 只用于提供 requestId 和恢复线索，不能自行解锁入口：正常登录由服务端签发绑定 UID、环境和通道的 `resumeExchangeCredential`；建单响应丢失时，前端用它与 requestId 调用 `POST /api/web-recharge/resume`，服务端按真实非终态订单换发固定期限的 `resumeCredential`。该凭证还绑定订单号，并且 `/config`、短信和登录三个请求都必须携带 `X-Web-Recharge-Resume`；只有服务端再次验证后返回 `loginAvailable=true` 才开放恢复认证。伪造、过期、终态、跨 UID、跨环境及网络未知结果全部 fail-closed，不允许浏览器存储、URL 或配置响应选择环境、UID 或支付通道。
+
+审核通过、生产配置注入与真实小额验收前不得将 `available` 打开。服务端 CORS 白名单需允许官网 Origin 使用 `X-Web-Recharge-Resume`，但不得放宽 Origin；未来测试站发布必须由受控构建同时固定 `recharge/recharge.js` 的 `DEPLOYED_TEST_API_BASE` 与 `DEPLOYED_TEST_SITE_HOST`，并保留 `environment=sandbox` 二次校验；不得改为 query、localStorage 或任意运行时输入。
 
 当前充值页是中国大陆站，所有接口固定携带 `X-App-Market: CN`，并显式使用 `credentials: 'omit'`，防止浏览器残留 Cookie 参与鉴权。服务端跨域白名单需精确包含实际测试站域名；本地预览仅用于内存夹具验收，不会请求云端接口。
 ## 本地预约预览

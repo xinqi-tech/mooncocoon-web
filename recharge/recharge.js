@@ -9,8 +9,9 @@
  * - 测试: tests/recharge.test.mjs — API 契约、URL 边界、会话清理和异步账号隔离
  *
  * 核心概念:
- * - fail-closed — 页面来源绑定预期环境；loginAvailable 只开放账号恢复，available 才开放新付款
- * - pending record — 提交前保存 requestId；网络丢响应后仍用同一 requestId 恢复
+ * - fail-closed — 页面来源绑定预期环境；停用态还须由服务端验证恢复凭证才开放账号恢复
+ * - pending record — 提交前保存 requestId 与恢复交换凭证；网络丢响应后仍由服务端核对真实订单
+ * - resume credential — 服务端签名并绑定环境、通道、UID、requestId、订单及期限，不信任浏览器自报归属
  * - generation — 切换账号后使旧异步响应失效，避免串号渲染
  * - fulfilled — 唯一可展示到账成功的服务端订单状态，浏览器回跳不作为成功证据
  */
@@ -68,7 +69,12 @@
 
   function normalizeRequestId(value){
     const normalized=String(value||'').trim();
-    return /^[a-zA-Z0-9_-]{16,80}$/.test(normalized)?normalized:'';
+    return /^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/.test(normalized)?normalized:'';
+  }
+
+  function normalizeCredential(value){
+    const normalized=String(value||'');
+    return /^[\x21-\x7e]{32,4096}$/.test(normalized)?normalized:'';
   }
 
   function safeText(value,maxLength=80){return String(value==null?'':value).trim().slice(0,maxLength)}
@@ -132,34 +138,52 @@
         const userId=normalizeUserId(session&&session.userId);
         const accessToken=String(session&&session.accessToken||'');
         const nickname=safeText(session&&session.nickname,80);
+        const rawExchangeCredential=String(session&&session.resumeExchangeCredential||'');
+        const resumeExchangeCredential=normalizeCredential(rawExchangeCredential);
         if(!userId||!accessToken||accessToken.length>4096)return false;
-        return write(sessionKey,JSON.stringify({userId,accessToken,nickname}));
+        if(rawExchangeCredential&&!resumeExchangeCredential)return false;
+        return write(sessionKey,JSON.stringify({userId,accessToken,nickname,...(resumeExchangeCredential?{resumeExchangeCredential}:{})}));
       },
       readSession(){
         const session=parseJson(read(sessionKey),null);
         const userId=normalizeUserId(session&&session.userId);
         const accessToken=String(session&&session.accessToken||'');
         if(!userId||!accessToken||accessToken.length>4096)return null;
-        return {userId,accessToken,nickname:safeText(session&&session.nickname,80)};
+        const resumeExchangeCredential=normalizeCredential(session&&session.resumeExchangeCredential);
+        return {userId,accessToken,nickname:safeText(session&&session.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
       },
       clearAccountSession(){remove(sessionKey)},
       rememberPending(userId,pending){
         const owner=normalizeUserId(userId),requestId=normalizeRequestId(pending&&pending.requestId);
         const tierId=safeText(pending&&pending.tierId,80);
         if(!owner||!requestId||!tierId)return false;
+        const exchangeCredential=normalizeCredential(pending&&pending.exchangeCredential);
+        const resumeCredential=normalizeCredential(pending&&pending.resumeCredential);
         const current=readPendingMap();
-        current[owner]={requestId,tierId,orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||Date.now()};
+        current[owner]={requestId,tierId,orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||Date.now(),
+          ...(exchangeCredential?{exchangeCredential}:{}),...(resumeCredential?{resumeCredential}:{})};
         const entries=Object.entries(current).sort((a,b)=>Number(b[1].createdAt)-Number(a[1].createdAt)).slice(0,5);
         return write(pendingKey,JSON.stringify(Object.fromEntries(entries)));
       },
       pendingFor(userId){
         const owner=normalizeUserId(userId),pending=readPendingMap()[owner];
-        if(!owner||!pending||!normalizeRequestId(pending.requestId)||!safeText(pending.tierId,80))return null;
-        return {requestId:pending.requestId,tierId:safeText(pending.tierId,80),orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||0};
+        const requestId=normalizeRequestId(pending&&pending.requestId),tierId=safeText(pending&&pending.tierId,80);
+        if(!owner||!pending||!requestId||!tierId)return null;
+        const exchangeCredential=normalizeCredential(pending.exchangeCredential),resumeCredential=normalizeCredential(pending.resumeCredential);
+        return {requestId,tierId,orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||0,
+          ...(exchangeCredential?{exchangeCredential}:{}),...(resumeCredential?{resumeCredential}:{})};
       },
-      hasRecoverablePending(){
-        const current=readPendingMap();
-        return Object.entries(current).some(([owner,pending])=>normalizeUserId(owner)&&normalizeRequestId(pending&&pending.requestId)&&safeText(pending&&pending.tierId,80));
+      pendingEntries(){
+        return Object.keys(readPendingMap()).map(userId=>({userId:normalizeUserId(userId),pending:this.pendingFor(userId)}))
+          .filter(entry=>entry.userId&&entry.pending);
+      },
+      saveResumeCredential(userId,resumeCredential){
+        const pending=this.pendingFor(userId),credential=normalizeCredential(resumeCredential);
+        return !!pending&&!!credential&&this.rememberPending(userId,{...pending,resumeCredential:credential});
+      },
+      clearResumeCredential(userId){
+        const pending=this.pendingFor(userId);if(!pending)return;
+        this.rememberPending(userId,{...pending,resumeCredential:''});
       },
       forgetPending(userId){
         const owner=normalizeUserId(userId);if(!owner)return;
@@ -216,6 +240,11 @@
       if(options.form){headers['Content-Type']='application/x-www-form-urlencoded;charset=UTF-8';body=new URLSearchParams(options.form).toString()}
       else if(options.body!==undefined){headers['Content-Type']='application/json';body=JSON.stringify(options.body)}
       if(options.accessToken)headers.Authorization=`Bearer ${options.accessToken}`;
+      if(options.resumeCredential){
+        const resumeCredential=normalizeCredential(options.resumeCredential);
+        if(!resumeCredential)throw new ApiError(100003,'恢复凭证无效');
+        headers['X-Web-Recharge-Resume']=resumeCredential;
+      }
       let response;
       try{response=await fetchImpl(apiBase+path,{method,headers,body,credentials:'omit',cache:'no-store',redirect:'error'})}
       catch(_){throw new ApiError(0,'网络连接失败，请稍后重试')}
@@ -225,9 +254,14 @@
       return envelope.data;
     }
     return {
-      getConfig:()=>request('/api/web-recharge/config'),
-      sendSms:phone=>request('/api/users/send/sms/code',{method:'POST',form:{countryCode:'86',phoneNumber:phone}}),
-      loginExisting:(phone,code)=>request('/api/users/login-existing',{method:'POST',form:{countryCode:'86',phoneNumber:phone,smsCode:code}}),
+      getConfig:resumeCredential=>request('/api/web-recharge/config',{resumeCredential}),
+      sendSms:(phone,resumeCredential)=>request('/api/users/send/sms/code',{method:'POST',resumeCredential,form:{countryCode:'86',phoneNumber:phone}}),
+      loginExisting:(phone,code,resumeCredential)=>request('/api/users/login-existing',{method:'POST',resumeCredential,form:{countryCode:'86',phoneNumber:phone,smsCode:code}}),
+      exchangeResume:(clientRequestId,exchangeCredential)=>{
+        const requestId=normalizeRequestId(clientRequestId),credential=normalizeCredential(exchangeCredential);
+        if(!requestId||!credential)throw new ApiError(100003,'恢复请求无效');
+        return request('/api/web-recharge/resume',{method:'POST',body:{clientRequestId:requestId,exchangeCredential:credential}});
+      },
       getWallet:token=>request('/api/mall/wallet',{accessToken:token}),
       getRecharge:token=>request('/api/mall/recharge',{accessToken:token}),
       createOrder:(token,tierId,clientRequestId)=>request('/api/web-recharge/orders',{method:'POST',accessToken:token,body:{tierId,clientRequestId}}),
@@ -275,6 +309,7 @@
     const store=createSessionStore(root.sessionStorage,storageNamespace(apiBase,environment)),guard=createAccountGuard();
     const el=id=>doc.getElementById(id);
     const state={configured:false,loginAvailable:false,serviceLoginAvailable:false,environmentTrusted:false,environment,expectedChannel,reasonCode:'',session:null,tiers:[],selectedTier:null,
+      resumeCandidates:[],activeResumeCredential:'',activeResumeUserId:'',
       loginAttempt:0,smsAttempt:0,pollCount:0,pollTimer:null,smsTimer:null,smsSeconds:0,orderBusy:false,
       orderTracker:{orderId:'',rank:0,terminal:false,latestVersion:0}};
     const message=value=>{el('pageMessage').textContent=safeText(value,180)};
@@ -292,8 +327,17 @@
         :(state.environment==='production'?'手机网站支付正在审核，付款与账号验证暂未开放。':'沙箱充值暂不可用，登录、短信和付款均已锁定。');
     };
     const refreshLoginAvailability=()=>{
-      state.loginAvailable=state.environmentTrusted&&state.serviceLoginAvailable&&(state.configured||store.hasRecoverablePending());
+      state.loginAvailable=state.environmentTrusted&&(state.configured?state.serviceLoginAvailable:state.resumeCandidates.length>0);
       setLoginEnabled(state.loginAvailable);renderAvailabilityNotice();return state.loginAvailable;
+    };
+    const invalidateRecoveryCandidate=userId=>{
+      const owner=normalizeUserId(userId);if(!owner)return;
+      store.clearResumeCredential(owner);state.resumeCandidates=state.resumeCandidates.filter(candidate=>candidate.userId!==owner);
+      if(state.activeResumeUserId===owner){
+        state.activeResumeUserId='';state.activeResumeCredential='';state.smsSeconds=0;
+        if(state.smsTimer)root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').textContent='获取验证码';
+      }
+      refreshLoginAvailability();
     };
     const stopPolling=()=>{if(state.pollTimer)root.clearTimeout(state.pollTimer);state.pollTimer=null};
     const hideOrder=()=>{stopPolling();el('orderPanel').hidden=true;el('accountWorkspace').hidden=!state.session;el('checkoutBar').hidden=!state.session};
@@ -323,6 +367,7 @@
       state.loginAttempt+=1;state.smsAttempt+=1;stopPolling();if(state.smsTimer)root.clearInterval(state.smsTimer);state.smsTimer=null;state.smsSeconds=0;
       state.orderTracker={orderId:'',rank:0,terminal:false,latestVersion:0};
       el('sendSmsButton').textContent='获取验证码';
+      state.activeResumeUserId='';state.activeResumeCredential='';
       guard.clear();store.clearAccountSession();state.session=null;state.selectedTier=null;state.tiers=[];refreshLoginAvailability();showLogin();message('已退出当前账号，待确认订单仍保留在本次浏览器会话中。');
     }
 
@@ -413,13 +458,13 @@
           if(balance===null)throw new Error('到账信息仍在同步，请稍后查询。');
           if(!advanceOrderTracker(tracker,status))return;
           renderOrderBase(order);message('');
-          stopPolling();store.forgetPending(state.session.userId);refreshLoginAvailability();renderWallet(order.wallet);
+          stopPolling();invalidateRecoveryCandidate(state.session.userId);store.forgetPending(state.session.userId);refreshLoginAvailability();renderWallet(order.wallet);
           setOrderState('fulfilled','充值已到账',`当前月绸 ${formatNumber(balance)}。你可以回到游戏查看。`);return;
         }
         if(['cancelled','failed','closed'].includes(status)){
           if(!advanceOrderTracker(tracker,status))return;
           renderOrderBase(order);message('');
-          stopPolling();store.forgetPending(state.session.userId);refreshLoginAvailability();
+          stopPolling();invalidateRecoveryCandidate(state.session.userId);store.forgetPending(state.session.userId);refreshLoginAvailability();
           setOrderState('closed','本次订单未完成','没有确认到月绸到账。你可以返回档位重新发起充值。');return;
         }
         if(!advanceOrderTracker(tracker,status)){schedulePoll(pending);return}
@@ -441,11 +486,13 @@
         const result=await api.createOrder(state.session.accessToken,pending.tierId,pending.requestId);
         if(!guard.accepts(snapshot))return;
         const orderId=safeText(result&&result.orderId,80),paymentUrl=safePaymentUrl(result&&result.paymentUrl,state.environment);
+        const resumeCredential=normalizeCredential(result&&result.resumeCredential);
         if(!orderId)throw new Error('服务端未返回有效订单号。');
-        store.rememberPending(state.session.userId,{...pending,orderId});
+        if(!resumeCredential)throw new Error('服务端未返回安全恢复凭证，已停止打开收银台。');
+        if(!store.rememberPending(state.session.userId,{...pending,orderId,resumeCredential}))throw new Error('当前浏览器无法安全保存订单恢复凭证，已停止打开收银台。');
         if(!paymentUrl){
           if(result&&result.paymentUrl)message('支付地址未通过当前环境安全校验，未打开收银台。');
-          await queryOrder({...pending,orderId});return;
+          await queryOrder({...pending,orderId,resumeCredential});return;
         }
         root.location.assign(paymentUrl);
       }catch(error){if(guard.accepts(snapshot)){
@@ -477,9 +524,40 @@
       lockPage(doc,'正在核验充值配置。');
       try{
         const capabilities=environmentCapabilities(await api.getConfig(),state.environment);
-        state.environmentTrusted=capabilities.trusted;state.serviceLoginAvailable=capabilities.loginAvailable;state.configured=capabilities.orderAvailable;state.reasonCode=capabilities.reasonCode;
-        refreshLoginAvailability();
+        state.environmentTrusted=capabilities.trusted;state.configured=capabilities.orderAvailable;state.reasonCode=capabilities.reasonCode;
         if(!capabilities.trusted){lockPage(doc,'充值服务尚未完成可信配置，登录、短信和新付款均不可用。');return}
+        state.resumeCandidates=[];state.activeResumeUserId='';state.activeResumeCredential='';
+        if(state.configured){state.serviceLoginAvailable=capabilities.loginAvailable}
+        else{
+          state.serviceLoginAvailable=false;
+          for(const entry of store.pendingEntries()){
+            const {userId,pending}=entry;let resumeCredential=pending.resumeCredential;
+            if(resumeCredential){
+              try{
+                const resumeCapabilities=environmentCapabilities(await api.getConfig(resumeCredential),state.environment);
+                if(!resumeCapabilities.trusted){state.environmentTrusted=false;break}
+                if(!resumeCapabilities.orderAvailable&&resumeCapabilities.loginAvailable){state.resumeCandidates.push({userId,resumeCredential});continue}
+                store.clearResumeCredential(userId);resumeCredential='';
+              }catch(_){store.clearResumeCredential(userId);resumeCredential=''}
+            }
+            if(!resumeCredential&&pending.exchangeCredential){
+              try{
+                const exchanged=await api.exchangeResume(pending.requestId,pending.exchangeCredential);
+                resumeCredential=normalizeCredential(exchanged&&exchanged.resumeCredential);
+                if(!resumeCredential||!store.saveResumeCredential(userId,resumeCredential))throw new ApiError(100003,'恢复凭证无效');
+                const resumeCapabilities=environmentCapabilities(await api.getConfig(resumeCredential),state.environment);
+                if(!resumeCapabilities.trusted){state.environmentTrusted=false;break}
+                if(!resumeCapabilities.orderAvailable&&resumeCapabilities.loginAvailable){state.resumeCandidates.push({userId,resumeCredential});continue}
+                store.clearResumeCredential(userId);
+              }catch(error){
+                store.clearResumeCredential(userId);
+                if(error&&error.code===100003)store.forgetPending(userId);
+              }
+            }
+          }
+        }
+        refreshLoginAvailability();
+        if(!state.environmentTrusted){lockPage(doc,'充值服务尚未完成可信配置，登录、短信和新付款均不可用。');return}
         el('environmentBadge').textContent=state.environment==='sandbox'?'沙箱验证':'官网充值';
         el('environmentBadge').hidden=false;
       }catch(_){state.configured=false;state.loginAvailable=false;state.environmentTrusted=false;lockPage(doc,'未能连接可信配置服务，登录、短信和新付款均不可用。')}
@@ -496,7 +574,20 @@
     el('sendSmsButton').addEventListener('click',async()=>{
       const phone=el('phone').value.trim();if(!state.loginAvailable)return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
       const smsAttempt=++state.smsAttempt;el('sendSmsButton').disabled=true;
-      try{await api.sendSms(phone);if(smsAttempt!==state.smsAttempt)return;message('验证码已发送。');state.smsSeconds=60;
+      try{
+        if(state.configured){state.activeResumeUserId='';state.activeResumeCredential='';await api.sendSms(phone)}
+        else{
+          let matched=false;
+          for(const candidate of [...state.resumeCandidates]){
+            try{
+              await api.sendSms(phone,candidate.resumeCredential);
+              if(smsAttempt!==state.smsAttempt)return;
+              state.activeResumeUserId=candidate.userId;state.activeResumeCredential=candidate.resumeCredential;matched=true;break;
+            }catch(error){if(error&&error.code===100003){invalidateRecoveryCandidate(candidate.userId);continue}throw error}
+          }
+          if(!matched)throw new ApiError(100003,'当前手机号没有可恢复的待确认订单');
+        }
+        if(smsAttempt!==state.smsAttempt)return;message('验证码已发送。');state.smsSeconds=60;
         state.smsTimer=root.setInterval(()=>{if(smsAttempt!==state.smsAttempt){root.clearInterval(state.smsTimer);state.smsTimer=null;return}
           state.smsSeconds-=1;el('sendSmsButton').textContent=state.smsSeconds>0?`${state.smsSeconds} 秒后重试`:'获取验证码';
           if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable}},1000);
@@ -508,17 +599,22 @@
       const phone=el('phone').value.trim(),code=el('smsCode').value.trim();
       if(!validPhone(phone)||!validSmsCode(code)){message('请填写正确的手机号和六位验证码。');return}
       const attempt=++state.loginAttempt;el('loginButton').disabled=true;
+      const recoveryCredential=state.configured?'':state.activeResumeCredential,recoveryUserId=state.configured?'':state.activeResumeUserId;
+      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable;return}
       try{
-        const auth=await api.loginExisting(phone,code);if(attempt!==state.loginAttempt)return;
+        const auth=await api.loginExisting(phone,code,recoveryCredential);if(attempt!==state.loginAttempt)return;
         const user=auth&&auth.user,userId=normalizeUserId(user&&user.id),token=String(auth&&auth.accessToken||'');
         if(!userId||!token||auth.newUser===true)throw new Error('未找到可登录的游戏账号，请先在游戏内创建账号。');
+        if(recoveryUserId&&userId!==recoveryUserId)throw new ApiError(100003,'当前账号没有可恢复的待确认订单');
         const pending=store.pendingFor(userId);
         if(!state.configured&&!pending)throw new Error('当前账号没有可恢复的待确认订单。');
-        const session={userId,accessToken:token,nickname:safeText(user.nickname,80)};
+        const resumeExchangeCredential=normalizeCredential(auth&&auth.resumeExchangeCredential);
+        if(state.configured&&!resumeExchangeCredential)throw new Error('服务未返回安全恢复凭证，已停止登录充值。');
+        const session={userId,accessToken:token,nickname:safeText(user.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
         if(!store.saveSession(session))throw new Error('当前浏览器无法安全保存登录状态。');
         state.session=session;guard.switchTo(userId);el('phone').value='';el('smsCode').value='';message('');showAccount();
         if(pending)await resumePending(pending);else await loadAccountData();
-      }catch(error){if(attempt===state.loginAttempt)handleError(error)}
+      }catch(error){if(attempt===state.loginAttempt){if(recoveryUserId)invalidateRecoveryCandidate(recoveryUserId);handleError(error)}}
       finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable}
     });
 
@@ -530,8 +626,10 @@
       if(!state.session||!state.selectedTier)return;el('confirmationDialog').close();
       const existing=store.pendingFor(state.session.userId);
       if(existing){resumePending(existing);return}
+      const exchangeCredential=normalizeCredential(state.session.resumeExchangeCredential);
+      if(!exchangeCredential){message('当前登录缺少安全恢复凭证，请切换账号后重新验证手机号。');return}
       state.pollCount=0;state.orderTracker={orderId:'',rank:0,terminal:false,latestVersion:0};
-      const pending={requestId:newRequestId(),tierId:state.selectedTier.tierId,orderId:'',createdAt:Date.now()};
+      const pending={requestId:newRequestId(),tierId:state.selectedTier.tierId,orderId:'',createdAt:Date.now(),exchangeCredential};
       if(!store.rememberPending(state.session.userId,pending)){message('当前浏览器无法安全保存订单请求，请勿付款。');return}
       createOrderFromPending(pending,{fresh:true});
     });
@@ -545,7 +643,7 @@
   }
 
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,newRequestId,
+  return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
     createSessionStore,createAccountGuard,createApiClient,isTrustedSandboxConfig,sandboxCapabilities,environmentCapabilities,userFacingError,isDefinitiveFreshOrderRejection,formatFen,
     resolveApiBase,resolveDeploymentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
     DEPLOYED_TEST_SITE_HOST,PRODUCTION_SITE_HOST,SESSION_KEY_PREFIX,PENDING_KEY_PREFIX,SANDBOX_GATEWAY_HOST,PRODUCTION_GATEWAY_HOST,ENVIRONMENT_RULES,APP_MARKET};
