@@ -303,9 +303,8 @@ body.is-loading{overflow:hidden}
   <div class="loader-label">月 光 茧 · 载入中</div>
 </div>
 <script>
-// Pick PV source by viewport: mobile gets the lighter 720p file (faster on cellular).
-// PV source is selected only when the visitor asks to play it.
-window.__PV_SRC='videos/pv.mp4?v=20261024';
+// PV declares its source in markup so mobile native controls can start it.
+// preload="none" keeps video bytes out of the initial page load.
 (function(){
   var loader=document.getElementById('loader');
   var ringFill=document.getElementById('loaderRingFill');
@@ -489,7 +488,7 @@ window.__PV_SRC='videos/pv.mp4?v=20261024';
 <section class="reservation-pv" id="pv" aria-labelledby="pvHeading">
   <h2 id="pvHeading" class="pv-title"><span class="pv-title-intro">走进</span><span class="pv-title-name">月光茧</span></h2>
   <div class="hero-video" id="pvVideo">
-    <video playsinline controls preload="none" poster="images/pv_poster.jpg?v=20261024" data-src-desktop="videos/pv.mp4?v=20261024" data-src-mobile="videos/pv.mp4?v=20261024"></video>
+    <video playsinline webkit-playsinline controls preload="none" poster="images/pv_poster.jpg?v=20261024" src="videos/pv.mp4?v=20261024"></video>
     <span class="frame-corner"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"><img class="light-particle" src="images/light.png"></span>
   </div>
 </section>
@@ -781,24 +780,11 @@ document.getElementById('bgmAudio').addEventListener('play',()=>{
 document.querySelector('#pvVideo video').addEventListener('volumechange',event=>{
   if(!event.target.muted){silenceVideos(event.target);pauseBackgroundMusic();}
 });
-// PV Video fullscreen
-const pvWrap=document.getElementById('pvVideo');
-const pvVideo=pvWrap.querySelector('video');
-// The new PV is 720p for both viewports. Its matching poster shows
-// immediately so the hero is never an empty box while the video buffers.
-pvWrap.addEventListener('click',()=>{
-if(!pvVideo.src){
-  pvVideo.src=window.__PV_SRC||pvVideo.getAttribute('data-src-desktop')||'videos/pv.mp4?v=20261024';
-}
-  // iOS Safari only allows fullscreen on the <video> element itself (webkitEnterFullscreen),
-  // and requires playback; ensure it's playing then request fullscreen with fallbacks.
-  silenceVideos(pvVideo);pauseBackgroundMusic();pvVideo.muted=false;
-  const p=pvVideo.play();
-  if(p&&p.catch)p.catch(()=>{});
-  if(pvVideo.requestFullscreen)pvVideo.requestFullscreen().catch(()=>{});
-  else if(pvVideo.webkitRequestFullscreen)pvVideo.webkitRequestFullscreen();
-  else if(pvVideo.webkitEnterFullscreen)pvVideo.webkitEnterFullscreen();
-  else if(pvWrap.requestFullscreen)pvWrap.requestFullscreen().catch(()=>{});
+// PV Video fullscreen and playback belong to the native controls. In particular,
+// iOS native play clicks need not bubble to the wrapper; never wait for one to set src.
+const pvVideo=document.querySelector('#pvVideo video');
+pvVideo.addEventListener('play',()=>{
+  silenceVideos(pvVideo);pauseBackgroundMusic();
 });
 // Module tabs
 document.querySelectorAll('.module').forEach((mod,mi)=>{
