@@ -46,9 +46,9 @@ test('首页预约在 PV 前，视频不自动预加载',async()=>{
   assert.match(html,/preload="none" poster="images\/pv_poster.jpg\?v=20261026-new2"/);
   assert.doesNotMatch(html,/\{src:window\.__PV_SRC,w:34,type:'video'\}/);
 });
-test('接口请求带 Cookie 且个人资料不用 HTML 字符串插值',async()=>{
+test('公开活动不带 Cookie，受保护请求保留 Cookie 且资料安全渲染',async()=>{
   const js=await readFile(new URL('../reservation.js',import.meta.url),'utf8');
-  assert.match(js,/credentials:'include'/);
+  assert.match(js,/credentials:path==='\/activity'\?'omit':'include'/);
   assert.match(js,/textContent=data\.phoneMasked/);
   assert.doesNotMatch(js,/innerHTML/);
 });
