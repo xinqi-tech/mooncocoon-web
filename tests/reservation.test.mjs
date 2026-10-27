@@ -22,6 +22,17 @@ test('用户显式选择的平台优先于系统推荐',()=>{
   assert.equal(reservation.selectedPlatform(form,'iPhone'), 'ANDROID');
   assert.equal(reservation.selectedPlatform({querySelector:()=>null},'iPhone'), 'IOS');
 });
+test('预约埋点只携带匿名会话和漏斗元数据',()=>{
+  const event=reservation.buildAnalyticsEvent('submit_result',{
+    deviceId:'device-1',sessionId:'session-1',source:'xiaohongshu',campaignTag:'october',deviceKind:'mobile'
+  },{result:'success',platform:'ANDROID'});
+  assert.match(event.event_id,/^web-|^[0-9a-f-]{36}$/);
+  assert.equal(event.event_type,'reservation_submit_result');
+  assert.equal(event.platform,'web');
+  assert.deepEqual(event.properties,{campaign_id:'domestic_reservation_gift',source:'xiaohongshu',campaign_tag:'october',device_kind:'mobile',result:'success',platform:'ANDROID'});
+  assert.equal('phone' in event.properties,false);
+  assert.equal('code' in event.properties,false);
+});
 test('首页预约在 PV 前，视频不自动预加载',async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
   assert.ok(html.indexOf('id="reservation"')<html.indexOf('id="pv"'));
