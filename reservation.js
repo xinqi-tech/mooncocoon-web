@@ -10,7 +10,8 @@
   root.LunaKoruReservation=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
-  const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
+  const DEFAULT_API_BASE='https://api.lunakoru.com';
+  const LEGACY_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
   const DEFAULT_REQUEST_TIMEOUT_MS=12000;
   const RESERVATION_START='2026-10-24T00:00:00+08:00';
@@ -72,6 +73,8 @@
     const timeoutMs=Number.isFinite(requestTimeoutMs)&&requestTimeoutMs>0?requestTimeoutMs:DEFAULT_REQUEST_TIMEOUT_MS;
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
+    const apiBases=!localPreview&&base===DEFAULT_API_BASE?[base,LEGACY_API_BASE]:[base];
+    const apiRoute=address=>address===DEFAULT_API_BASE?'custom':address===LEGACY_API_BASE?'legacy':'configured';
     const el=id=>doc.getElementById(id);
     const message=value=>{if(value!==null)el('reservationMessage').textContent=value};
     const errorHint=error=>error?.stale?null:error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
@@ -137,17 +140,27 @@
     const emitAnalytics=(eventType,properties={})=>{
       if(localPreview||!analyticsContext.deviceId||!analyticsContext.sessionId)return;
       const event=buildAnalyticsEvent(eventType,analyticsContext,properties);
-      try{void fetcher(base+'/api/analytics/events',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({events:[event]}),keepalive:true}).catch(()=>{})}catch(_){/* analytics must never block reservation */}
+      // Reuse the same event_id on the alternate origin; backend deduplication prevents double counting.
+      void (async()=>{
+        for(const address of apiBases){
+          const controller=new AbortController(),timer=root.setTimeout(()=>controller.abort(),6000);
+          try{
+            const response=await fetcher(address+'/api/analytics/events',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({events:[event]}),keepalive:true,signal:controller.signal});
+            if(response.ok||response.status<500)return;
+          }catch(_){/* try the other verified production origin */}
+          finally{root.clearTimeout(timer)}
+        }
+      })().catch(()=>{});
     };
-    const request=async(path,method='GET',body=null)=>{
+    const request=async(path,method='GET',body=null,address=base)=>{
       const flow=state.flow;
       const stale=()=>path!=='/activity'&&path!=='/logout'&&flow!==state.flow;
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
       const controller=['/activity','/reserve-with-code'].includes(path)?new AbortController():null;
-      const timeout=controller?root.setTimeout(()=>controller.abort(),timeoutMs):null;
+      const timeout=controller?root.setTimeout(()=>controller.abort(),path==='/activity'?Math.min(timeoutMs,6000):timeoutMs):null;
       try{
-        const response=await fetcher(base+endpoint+path,{method,credentials:path==='/activity'?'omit':'include',headers,signal:controller?.signal,
+        const response=await fetcher(address+endpoint+path,{method,credentials:path==='/activity'?'omit':'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         if(response.status===401){state.session=null;state.mine=null;state.verified=false;state.csrf=null;form.elements.code.value='';if(state.activity)renderActivity(state.activity);else renderLogin()}
@@ -161,7 +174,7 @@
         }
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         return envelope.data;
-      }catch(error){if(stale())error.stale=true;throw error}
+      }catch(error){error.apiRoute=apiRoute(address);if(stale())error.stale=true;throw error}
       finally{if(timeout!==null)root.clearTimeout(timeout)}
     };
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
@@ -370,10 +383,10 @@
       activityRequest=(async()=>{
         let data;
         for(;;){
-          try{data=await request('/activity');break}
+          try{data=await request('/activity','GET',null,apiBases[attempt%apiBases.length]);break}
           catch(error){
             const transient=error?.name==='AbortError'||error instanceof TypeError||error.status>=500;
-            emitAnalytics('activity_load_failed',{stage:'request',error_kind:analyticsErrorKind(error),http_status:error.status||0,attempt:attempt+1});
+            emitAnalytics('activity_load_failed',{stage:'request',error_kind:analyticsErrorKind(error),http_status:error.status||0,attempt:attempt+1,api_route:error.apiRoute});
             if(!transient||attempt>=2)throw error;
             attempt++;
             await new Promise(resolve=>root.setTimeout(resolve,attempt*1000));
@@ -381,7 +394,7 @@
         }
         stage='render';
         renderActivity(data);root.clearTimeout(refreshTimer);
-        if(!previous)emitAnalytics('activity_loaded',{available:!!data?.available,phase:data?.phase||'BEFORE',rewards_configured:data?.rewardsConfigured===true,retry_count:attempt});
+        if(!previous)emitAnalytics('activity_loaded',{available:!!data?.available,phase:data?.phase||'BEFORE',rewards_configured:data?.rewardsConfigured===true,retry_count:attempt,api_route:apiRoute(apiBases[attempt%apiBases.length])});
         stage='session';
         if(['CLAIMING','ENDED'].includes(data.phase)&&!state.restored){state.restored=true;try{const mine=await request('/mine');state.session=mine;renderActivity(data)}catch(_){}}
         const now=Date.parse(data.serverTime),release=Date.parse(data.releaseAt),start=Date.parse(data.startAt);
@@ -518,5 +531,5 @@
     return state;
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,validPhone,safeUrl,channel,attribution,selectedPlatform,buildAnalyticsEvent,analyticsErrorKind,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
+  return {init,validPhone,safeUrl,channel,attribution,selectedPlatform,buildAnalyticsEvent,analyticsErrorKind,DEFAULT_API_BASE,LEGACY_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
 });
