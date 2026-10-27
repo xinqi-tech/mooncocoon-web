@@ -17,6 +17,7 @@
   const ANALYTICS_EVENT_PREFIX='reservation_';
   const ANALYTICS_DEVICE_KEY='lunakoru_reservation_device_id';
   const ANALYTICS_SESSION_KEY='lunakoru_reservation_session_id';
+  const ATTRIBUTION_KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
   function formatCountdown(start,now){
     const seconds=Math.max(0,Math.ceil((start-now)/1000));
     return `${String(Math.floor(seconds/3600)).padStart(2,'0')} 小时 ${String(Math.floor(seconds/60)%60).padStart(2,'0')} 分钟 ${String(seconds%60).padStart(2,'0')} 秒`;
@@ -27,6 +28,7 @@
   const validPhone=phone=>/^1[3-9]\d{9}$/.test(String(phone||''));
   const safeUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:''}catch(_){return ''}};
   const channel=value=>/^[a-zA-Z0-9_-]{1,80}$/.test(value||'')?value:'unknown';
+  const attribution=value=>/^[a-zA-Z0-9._~-]{1,80}$/.test(String(value||'').trim())?String(value).trim():'unknown';
   const selectedPlatform=(form,ua)=>{
     const checked=form.querySelector('input[name="platform"]:checked');
     if(checked)return checked.value;
@@ -56,7 +58,8 @@
     event_id:randomId(),event_type:ANALYTICS_EVENT_PREFIX+eventType,
     device_id:context.deviceId,session_id:context.sessionId,platform:'web',timestamp,
     properties:{campaign_id:'domestic_reservation_gift',source:context.source,campaign_tag:context.campaignTag,
-      device_kind:context.deviceKind,...properties}
+      utm_source:context.utmSource,utm_medium:context.utmMedium,utm_campaign:context.utmCampaign,
+      utm_content:context.utmContent,utm_term:context.utmTerm,device_kind:context.deviceKind,...properties}
   });
   function init(doc,fetchImpl,requestTimeoutMs=DEFAULT_REQUEST_TIMEOUT_MS){
     const form=doc.getElementById('reservationForm');if(!form)return;
@@ -110,15 +113,21 @@
     let refreshTimer,countdownTimer;
     let boundaryRefreshRequested=false;
     const params=new URLSearchParams(root.location.search);
-    for(const key of ['utm_source','utm_campaign']){
-      const value=channel(params.get(key));
+    for(const key of ATTRIBUTION_KEYS){
+      const value=attribution(params.get(key));
       if(value!=='unknown')root.sessionStorage.setItem('reservation_'+key,value);
     }
+    const storedAttribution=key=>attribution(root.sessionStorage.getItem('reservation_'+key));
     const analyticsContext={
       deviceId:storageValue(root.localStorage,ANALYTICS_DEVICE_KEY,true),
       sessionId:storageValue(root.sessionStorage,ANALYTICS_SESSION_KEY,true),
-      source:channel(root.sessionStorage.getItem('reservation_utm_source')),
-      campaignTag:channel(root.sessionStorage.getItem('reservation_utm_campaign')),
+      source:storedAttribution('utm_source'),
+      campaignTag:storedAttribution('utm_campaign'),
+      utmSource:storedAttribution('utm_source'),
+      utmMedium:storedAttribution('utm_medium'),
+      utmCampaign:storedAttribution('utm_campaign'),
+      utmContent:storedAttribution('utm_content'),
+      utmTerm:storedAttribution('utm_term'),
       deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'
     };
     const emitAnalytics=(eventType,properties={})=>{
@@ -484,5 +493,5 @@
     return state;
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,validPhone,safeUrl,channel,selectedPlatform,buildAnalyticsEvent,analyticsErrorKind,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
+  return {init,validPhone,safeUrl,channel,attribution,selectedPlatform,buildAnalyticsEvent,analyticsErrorKind,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
 });
