@@ -47,6 +47,10 @@
   };
   const analyticsErrorKind=error=>{
     if(error?.name==='AbortError')return 'timeout';
+    if(error?.status===429)return 'rate_limited';
+    if(error?.status>=500)return 'server';
+    if(error?.name==='SyntaxError')return 'invalid_response';
+    if(error?.name==='TypeError')return 'network';
     const message=String(error?.message||'');
     if(/验证码/.test(message))return 'verification';
     if(/频繁|冷却/.test(message))return 'rate_limited';
@@ -143,13 +147,13 @@
       const controller=['/activity','/reserve-with-code'].includes(path)?new AbortController():null;
       const timeout=controller?root.setTimeout(()=>controller.abort(),timeoutMs):null;
       try{
-        const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
+        const response=await fetcher(base+endpoint+path,{method,credentials:path==='/activity'?'omit':'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         if(response.status===401){state.session=null;state.mine=null;state.verified=false;state.csrf=null;form.elements.code.value='';if(state.activity)renderActivity(state.activity);else renderLogin()}
-        if(!response.ok)throw new Error(response.status===401?'未能识别登录状态，请重新验证':
+        if(!response.ok){const error=new Error(response.status===401?'未能识别登录状态，请重新验证':
           response.status===422&&path==='/reserve-with-code'?'验证码错误或已过期，请重新获取验证码':
-          response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');
+          response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');error.status=response.status;throw error}
         const envelope=await response.json();
         if(envelope.result!==0){
           const reason=String(envelope.errorMsg||'');
@@ -162,9 +166,7 @@
     };
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
     function renderActivity(data){
-      const firstActivity=state.activity===null;
       state.activity=data;
-      if(firstActivity)emitAnalytics('activity_loaded',{available:!!data?.available,phase:data?.phase||'BEFORE',rewards_configured:data?.rewardsConfigured===true});
       const available=!!data?.available;
       data=data||{};
       const phase=available?data.phase:'BEFORE',upcoming=!available||phase==='BEFORE';
@@ -228,8 +230,8 @@
       rewards.dataset.progressActive=String(!upcoming&&Number.isFinite(data.count)&&count>0);
       const track=doc.createElement('span');track.className='reservation-track';track.setAttribute('role','progressbar');
       track.setAttribute('aria-label','预约人数奖励进度');track.setAttribute('aria-valuemin','0');
-      track.setAttribute('aria-valuemax',String(milestones.at(-1)?.threshold||100000));
-      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones.at(-1)?.threshold||100000)));
+      track.setAttribute('aria-valuemax',String(milestones[milestones.length-1]?.threshold||100000));
+      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones[milestones.length-1]?.threshold||100000)));
       else track.setAttribute('aria-valuetext',upcoming?'预约尚未开启':'预约人数暂不可用');
       const start=doc.createElement('span');start.className='reservation-track-start';start.setAttribute('aria-hidden','true');track.append(start);
       const light=doc.createElement('img');light.className='reservation-progress-light';light.src='images/app-ui/reservation-progress-light.png';light.alt='';light.setAttribute('aria-hidden','true');track.append(light);rewards.append(track);
@@ -359,16 +361,38 @@
       else if(data&&state.verified&&state.queryOnly){message('该手机号暂未查询到预约信息')}
       if(state.activity)renderActivity(state.activity);
     }
+    let activityRequest=null;
     function refreshActivity(){
-      clearTimeout(refreshTimer);
-      request('/activity').then(async data=>{
-        renderActivity(data);clearTimeout(refreshTimer);
+      if(activityRequest)return activityRequest;
+      root.clearTimeout(refreshTimer);
+      let stage='request',attempt=0;
+      const previous=state.activity;
+      activityRequest=(async()=>{
+        let data;
+        for(;;){
+          try{data=await request('/activity');break}
+          catch(error){
+            const transient=error?.name==='AbortError'||error instanceof TypeError||error.status>=500;
+            emitAnalytics('activity_load_failed',{stage:'request',error_kind:analyticsErrorKind(error),http_status:error.status||0,attempt:attempt+1});
+            if(!transient||attempt>=2)throw error;
+            attempt++;
+            await new Promise(resolve=>root.setTimeout(resolve,attempt*1000));
+          }
+        }
+        stage='render';
+        renderActivity(data);root.clearTimeout(refreshTimer);
+        if(!previous)emitAnalytics('activity_loaded',{available:!!data?.available,phase:data?.phase||'BEFORE',rewards_configured:data?.rewardsConfigured===true,retry_count:attempt});
+        stage='session';
         if(['CLAIMING','ENDED'].includes(data.phase)&&!state.restored){state.restored=true;try{const mine=await request('/mine');state.session=mine;renderActivity(data)}catch(_){}}
         const now=Date.parse(data.serverTime),release=Date.parse(data.releaseAt),start=Date.parse(data.startAt);
         const next=[start,release,release+30*24*3600*1000].filter(time=>Number.isFinite(time)&&time>now)[0];
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
         refreshTimer=root.setTimeout(refreshActivity,delay);
-      }).catch(()=>{
+      })().catch(error=>{
+        if(stage==='render'){
+          state.activity=previous;
+          emitAnalytics('activity_load_failed',{stage:'render',error_kind:'render_failed',error_name:['TypeError','RangeError','ReferenceError'].includes(error?.name)?error.name:'Error'});
+        }
         root.clearInterval(countdownTimer);
         el('reservationRetry').hidden=false;
         if(!state.activity){
@@ -380,8 +404,9 @@
               el('reservationNotice').textContent='';
           form.hidden=true;el('reservationOpen').hidden=true;el('reservationOpen').disabled=true;
         }else el('reservationNotice').textContent='活动信息暂未更新，请稍后重试。';
-        clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
-      });
+        root.clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
+      }).finally(()=>{activityRequest=null});
+      return activityRequest;
     }
     el('reservationRetry').addEventListener('click',()=>{el('reservationRetry').hidden=true;refreshActivity()});
     function verificationInput(){
