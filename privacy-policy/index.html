@@ -300,7 +300,7 @@
             <h1>隐私政策</h1>
             <div class="header-meta">
                 <span class="effective-date">生效日期：2026年1月27日</span>
-                <span class="effective-date">更新日期：2026年6月11日</span>
+                <span class="effective-date">更新日期：2026年11月2日</span>
             </div>
         </header>
         <main class="content">
@@ -365,7 +365,7 @@
                 <p>包括但不限于：</p>
                 <ul>
                     <li>设备型号、操作系统版本</li>
-                    <li>设备唯一标识符（如 OAID / Android ID / IDFV）</li>
+                    <li>设备唯一标识符（Android 端如 OAID、Android ID、GAID（Google 广告标识符）；iOS 端如 IDFV）</li>
                     <li>网络信息（IP 地址、网络类型、网络质量数据）</li>
                     <li>应用版本、语言设置、设备配置信息</li>
                 </ul>
@@ -398,6 +398,14 @@
                     <li>性能指标、运行状态数据</li>
                 </ul>
                 <p>用于排查技术问题、修复漏洞、保证服务稳定性。</p>
+
+                <h4>（4）剪贴板信息（Android 版）</h4>
+                <ul>
+                    <li><strong>使用目的：</strong>识别您复制的剧情分享口令和捏脸分享口令，帮助您打开、预览或导入对应的分享内容。</li>
+                    <li><strong>读取场景与方式：</strong>在您同意本隐私政策后，App 每次进入前台时，会延迟通过系统剪贴板接口尝试读取一次当前第一项文本，并在本地识别剧情或捏脸分享口令。</li>
+                    <li><strong>读取范围：</strong>剪贴板当前第一项文本及其中匹配的剧情 ID、捏脸分享短码；不匹配上述口令的文本在当次识别后即丢弃，不作保存或上传。</li>
+                    <li><strong>处理与存储：</strong>剪贴板原文仅在本地用于识别，不会作为业务数据保存或上传。为避免重复提示，本地最多保留 50 个已识别口令的文本哈希值。识别出的剧情 ID、捏脸分享短码用于打开分享内容或向服务器请求对应内容，其中捏脸口令识别后会自动请求分享预览；这些分享标识也可能记录在本地诊断日志中，并在您提交包含日志的反馈时随日志上传，用于排查问题。</li>
+                </ul>
 
                 <h3>3. 智能互动设备数据</h3>
                 <p>如您连接月光茧官方智能设备，我们可能收集以下数据：</p>
@@ -550,8 +558,8 @@
                 <h4>（1）友盟消息推送/统计 SDK</h4>
                 <ul>
                     <li><strong>第三方主体：</strong>友盟同欣（北京）科技有限公司</li>
-                    <li><strong>使用目的：</strong>实现消息推送、推送送达统计与基础运营统计</li>
-                    <li><strong>收集信息类型：</strong>设备标识符（OAID、UMID、Android ID）、设备型号、操作系统版本、网络信息（IP 地址、网络类型）、应用版本信息</li>
+                    <li><strong>使用目的：</strong>实现消息推送、推送送达统计与基础运营统计，其中 GAID 用于生成脱敏设备标识以支持消息推送</li>
+                    <li><strong>收集信息类型：</strong>设备标识符（OAID、UMID、Android ID、GAID）、设备型号、操作系统版本、网络信息（IP 地址、网络类型）、应用版本信息</li>
                     <li><strong>初始化时机：</strong>仅在您同意本隐私政策后才会初始化并开始收集</li>
                     <li><strong>厂商推送通道：</strong>为在对应品牌设备上实现离线消息推送，集成华为、小米、OPPO、vivo 推送服务（由设备厂商提供），将收集设备标识符、推送 token 等必要信息</li>
                     <li><strong>隐私政策链接：</strong><a href="https://www.umeng.com/page/policy" target="_blank" rel="noopener noreferrer">https://www.umeng.com/page/policy</a></li>
@@ -560,10 +568,11 @@
                 <h4>（2）TapTap 开发者服务 SDK（TapSDK）</h4>
                 <ul>
                     <li><strong>第三方主体：</strong>易玩（上海）网络科技有限公司</li>
-                    <li><strong>使用目的：</strong>按照国家新闻出版署相关规定完成网络游戏实名认证与未成年人防沉迷管理</li>
-                    <li><strong>收集信息类型：</strong>实名认证信息（姓名、身份证号，加密后提交国家新闻出版署实名认证系统核验，我们不存储您的身份证号原文）、设备信息、应用信息</li>
+                    <li><strong>使用目的：</strong>按照国家新闻出版署相关规定完成网络游戏实名认证与未成年人防沉迷管理；Android ID 等设备信息用于确保设备系统兼容、定位和解决问题</li>
+                    <li><strong>收集信息类型：</strong>实名认证信息（姓名、身份证号，加密后提交国家新闻出版署实名认证系统核验，我们不存储您的身份证号原文）、设备信息（包括 Android ID）、应用信息</li>
                     <li><strong>初始化时机：</strong>仅在您同意本隐私政策后才会初始化</li>
-                    <li><strong>隐私政策链接：</strong><a href="https://www.taptap.cn/privacy-policy" target="_blank" rel="noopener noreferrer">https://www.taptap.cn/privacy-policy</a></li>
+                    <li><strong>收集时机与频率：</strong>Android ID 在 SDK 初始化及您授权使用相关服务时收集，每次触发时读取一次</li>
+                    <li><strong>隐私政策链接：</strong><a href="https://developer.taptap.cn/docs/sdk/start/agreement/" target="_blank" rel="noopener noreferrer">TapSDK 隐私政策</a></li>
                 </ul>
             </section>
 
