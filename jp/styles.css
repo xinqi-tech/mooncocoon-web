@@ -783,3 +783,7 @@ body.modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Three regional navigation links must not push the region or audio controls offscreen. */
+@media(max-width:760px){.product-page .nav-links a{width:auto;min-width:44px;padding:8px 6px;font-size:11px}}
+@media(max-width:380px){.product-page .nav{flex-wrap:wrap;height:auto;row-gap:4px}.product-page .nav-links{order:4;flex-basis:100%;justify-content:center;margin-left:0}.product-page .brand{margin-right:auto}.product-page .region-switcher{margin-left:auto}}

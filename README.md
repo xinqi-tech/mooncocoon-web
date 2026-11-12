@@ -64,3 +64,12 @@ node tests/recharge-preview-server.mjs --port 8908
 运行 `python preview_server.py --test` 后打开 http://127.0.0.1:8769/，预约面板直接显示。此模式仅连接固定测试 API；短信实际发送，预约写入测试库。未配置上线提醒模板时隐藏订阅选项。
 
 代理只允许预约所需的指定接口，写请求须来自本机同源页面；不代理 App 发奖和管理接口。为支持本机 HTTP，测试会话 Cookie 的本地副本移除 Secure/Domain 并设为 SameSite=Lax，保留 HttpOnly；上游配置不变。默认启动方式仍只读生产活动状态。
+
+## 独立兑换页（未部署）
+
+- `/redeem/` 可直达，支持 `?code=` 预填并规范化，读取后从地址栏移除码。日本、新加坡、美国站导航带受限的 `region` 值，设定默认国家码和语言；亦可在页面切换五种语言。中文首页入口随预约有礼接线后续开发。
+- 页面不登录、不发送短信、不查询账号资料、不保存手机号。两次输入必须相同，提交前由用户输入本地生成打码确认。所有账号结果统一为“已提交”，奖励内容由 `data.rewardItems` 提供。
+- `POST /api/redeem-code/web-redeem` 请求 `{countryCode,phoneNumber,code}`；生产只使用固定 `https://api.lunakoru.com`，不支持通过 query 或存储覆盖。不会自动重试兑换写入。
+- 定向验证：`node --test tests/redeem.test.cjs tests/redeem-preview.test.mjs`；真实浏览器合成回归需 Playwright 与对应 Chromium/WebKit runtime：`node --test tests/redeem.browser.cjs`。五语词典平价由定向测试覆盖；工作区通用 parity gate 不解析本站字典。
+- 只读静态/本地合成预览：`node tests/redeem-preview-server.mjs`，访问打印的 loopback 地址。合成成功响应与账号状态归并只是 mock 验证，不代表真实测试库发奖验收。
+- 经授权的真实测试环境联调：`node tests/redeem-preview-server.mjs --test`；仅将兑换与匿名埋点 POST 转发至现有官网预览工具同一固定测试后端，页面显示测试横幅。服务只绑定 loopback、校验 Host/Origin、限制请求大小、不记录请求体/URL查询/上游错误内容，不提供任意代理。生产部署不得包含 `tests/` 和预览服务器；后端必须先于官网上线。
