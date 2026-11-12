@@ -24,8 +24,8 @@
     return `${String(Math.floor(seconds/3600)).padStart(2,'0')} 小时 ${String(Math.floor(seconds/60)%60).padStart(2,'0')} 分钟 ${String(seconds%60).padStart(2,'0')} 秒`;
   }
   // Approved reward categories are a preview only; counts and unlocks always come from the API.
-  const previewRewards=[{tier:3,threshold:20000,name:'专属称号'},
-    {tier:1,threshold:50000,name:'永久配饰'},{tier:2,threshold:100000,name:'永久服装'}];
+  const previewRewards=[{tier:3,threshold:10000,name:'专属称号'},
+    {tier:1,threshold:20000,name:'永久配饰'},{tier:2,threshold:50000,name:'永久服装'}];
   const validPhone=phone=>/^1[3-9]\d{9}$/.test(String(phone||''));
   const safeUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:''}catch(_){return ''}};
   const channel=value=>/^[a-zA-Z0-9_-]{1,80}$/.test(value||'')?value:'unknown';
@@ -243,8 +243,8 @@
       rewards.dataset.progressActive=String(!upcoming&&Number.isFinite(data.count)&&count>0);
       const track=doc.createElement('span');track.className='reservation-track';track.setAttribute('role','progressbar');
       track.setAttribute('aria-label','预约人数奖励进度');track.setAttribute('aria-valuemin','0');
-      track.setAttribute('aria-valuemax',String(milestones[milestones.length-1]?.threshold||100000));
-      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones[milestones.length-1]?.threshold||100000)));
+      track.setAttribute('aria-valuemax',String(milestones[milestones.length-1]?.threshold||50000));
+      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones[milestones.length-1]?.threshold||50000)));
       else track.setAttribute('aria-valuetext',upcoming?'预约尚未开启':'预约人数暂不可用');
       const start=doc.createElement('span');start.className='reservation-track-start';start.setAttribute('aria-hidden','true');track.append(start);
       const light=doc.createElement('img');light.className='reservation-progress-light';light.src='images/app-ui/reservation-progress-light.png';light.alt='';light.setAttribute('aria-hidden','true');track.append(light);rewards.append(track);
@@ -368,7 +368,7 @@
         const rewardList=el('reservationMineRewards');rewardList.replaceChildren();
         const stateLabels={PENDING:'发放中',GRANTED:'已到账',ALREADY_OWNED:'已拥有同款'};
         for(const reward of reservation.rewards||[]){const item=doc.createElement('li');
-          const tierLabel={3:'2 万人档',1:'5 万人档',2:'10 万人档'};
+          const tierLabel={3:'1 万人档',1:'2 万人档',2:'5 万人档'};
           item.textContent=`${tierLabel[reward.tier]||'奖励'}：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         message('');}
       else if(data&&state.verified&&state.queryOnly){message('该手机号暂未查询到预约信息')}
