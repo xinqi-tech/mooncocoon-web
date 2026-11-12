@@ -86,3 +86,11 @@ test('scope excludes the Chinese homepage and adds only the regional links',()=>
  check(!/reservation\.js|reservation\.css/.test(html),'independent page');
  check(html.includes('name="referrer" content="no-referrer"'),'referrer privacy');
 });
+
+
+test('submitted copy tells unregistered users to register and submit again in every language',()=>{
+ check(api.DICT.zh.submittedBody==='已提交。若该手机号已注册 LunaKoru 且符合活动条件，奖励已发放到账号，请打开 App 在背包中查看；若尚未注册，请先用该手机号注册，再回到本页重新提交。','exact current PRD submitted copy');
+ const required={en:/register with this phone number, then return to this page and submit again/,ja:/この電話番号で登録してから、このページに戻って再送信/,ko:/이 전화번호로 가입한 후 이 페이지로 돌아와 다시 제출/,['zh-TW']:/先用該手機號碼註冊，再回到本頁重新提交/};
+ for(const [lang,pattern] of Object.entries(required))check(pattern.test(api.DICT[lang].submittedBody),'registration and resubmission instruction translated');
+ const html=readFileSync(join(__dirname,'../redeem/index.html'),'utf8');check(html.includes(api.DICT.zh.submittedBody),'independent page static fallback matches PRD');
+});
