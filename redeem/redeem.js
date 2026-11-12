@@ -65,24 +65,36 @@
     if(type==='redeem_web_result')properties.result=result==='submitted'?'submitted':CODE_RESULTS.has(result)?result:'SERVICE_BUSY';
     return {event_id:randomId(),event_type:type,device_id:context.deviceId,session_id:context.sessionId,platform:'web',timestamp:Date.now(),properties};
   }
-  async function fetchJson(fetcher,url,body,headers,timeoutMs){
-    const controller=new AbortController();let timer;
+  async function fetchJson(fetcher,url,body,headers,timeoutMs,lifecycleSignal){
+    const controller=new AbortController();let timer,rejectCancelled;
+    const cancel=()=>controller.abort();
+    const aborted=()=>rejectCancelled(new Error('request cancelled'));
+    const cancelled=new Promise((_,reject)=>{rejectCancelled=reject});
+    controller.signal.addEventListener('abort',aborted,{once:true});
+    lifecycleSignal?.addEventListener('abort',cancel,{once:true});
+    if(lifecycleSignal?.aborted)cancel();
     const deadline=new Promise((_,reject)=>{timer=root.setTimeout(()=>{controller.abort();reject(new Error('request timeout'))},timeoutMs)});
     try{
-      return await Promise.race([deadline,(async()=>{
+      return await Promise.race([cancelled,deadline,(async()=>{
+        if(controller.signal.aborted)throw new Error('request cancelled');
         const response=await fetcher(url,{method:'POST',credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(body),signal:controller.signal});
         if(response.status===429)return {result:260011};
         if(!response.ok)throw new Error('request failed');
         return response.json();
       })()]);
-    }finally{root.clearTimeout(timer)}
+    }finally{
+      root.clearTimeout(timer);lifecycleSignal?.removeEventListener('abort',cancel);controller.signal.removeEventListener('abort',aborted);
+    }
   }
   function init(doc,fetchImpl,options={}){
     const form=doc.getElementById('redeemForm');if(!form)return;
     const view=doc.defaultView||root,el=id=>doc.getElementById(id),location=view.location;
     const config=defaults(location,view.navigator.languages||[view.navigator.language]);
     const base=apiBaseFor(location.hostname),fetcher=fetchImpl||view.fetch.bind(view);
-    let language=config.language,errorKey='',pending=null,busy=false,submitted=false,disposed=false;
+    let language=config.language,errorKey='',pending=null,busy=false,submitted=false;
+    let lifecycleActive=true,generation=0,lifecycleController=new AbortController(),activeRequest=null;
+    const current=token=>lifecycleActive&&token===activeRequest&&token.generation===generation;
+    const invalidateLifecycle=()=>{lifecycleActive=false;generation++;activeRequest=null;lifecycleController.abort()};
     const fields=['countryCode','phoneNumber','repeatPhone','code'];
     const context={deviceId:randomId(),sessionId:randomId(),language};
     const timeoutMs=options.requestTimeoutMs||DEFAULT_REQUEST_TIMEOUT_MS;
@@ -98,10 +110,11 @@
       if(busy)el('submit').textContent=t('submitting');
       if(pending)el('confirmBody').textContent=t('confirmBody').replace('{phone}',pending.countryCode+' '+maskPhone(pending.phoneNumber));
     }
-    function analytics(type,result){
+    function analytics(type,result,token){
+      if(!current(token))return;
       const event=buildAnalyticsEvent(type,context,result);
       if(base===null)return;
-      void fetchJson(fetcher,base+'/api/analytics/events',{events:[event]}, {},5000).catch(()=>{});
+      void fetchJson(fetcher,base+'/api/analytics/events',{events:[event]}, {},5000,token.signal).catch(()=>{});
     }
     function showSubmitted(data){
       submitted=true;el('rewardItems').replaceChildren();
@@ -114,9 +127,13 @@
       }
       resetInputs();el('formPanel').hidden=true;el('resultPanel').hidden=false;el('resultPanel').focus();
     }
-    // Consume prefill in memory, then remove it before any request or navigation can use it as a referrer.
-    const params=new URLSearchParams(location.search);el('code').value=normalizeCode(params.get('code')).slice(0,32);
-    if(params.has('code')){params.delete('code');const query=params.toString();view.history.replaceState(null,'',location.pathname+(query?'?'+query:'')+location.hash)}
+    // Fragments never enter the document GET. Query-based codes are ignored and discarded; clearing cannot undo their initial transmission.
+    const params=new URLSearchParams(location.search),fragment=new URLSearchParams(location.hash.slice(1));
+    el('code').value=normalizeCode(fragment.get('code')).slice(0,32);
+    if(fragment.has('code')||params.has('code')){
+      fragment.delete('code');params.delete('code');const query=params.toString(),hash=fragment.toString();
+      view.history.replaceState(null,'',location.pathname+(query?'?'+query:'')+(hash?'#'+hash:''));
+    }
     el('countryCode').value=config.country;el('phoneNumber').value='';el('repeatPhone').value='';el('homeLink').href=config.home;
     translate();el('submit').disabled=false;
     el('language').addEventListener('change',()=>{language=languageFor(el('language').value)||'zh';translate()});
@@ -131,20 +148,21 @@
     el('cancel').addEventListener('click',cancel);
     dialog.addEventListener('cancel',event=>{event.preventDefault();cancel()});
     el('confirm').addEventListener('click',async()=>{
-      if(busy||!pending||disposed)return;busy=true;setLocked(true);dialog.close();el('submit').textContent=t('submitting');
-      const payload=pending;pending=null;analytics('redeem_web_submitted');
+      if(busy||!pending||!lifecycleActive)return;
+      const token={generation,signal:lifecycleController.signal};activeRequest=token;busy=true;setLocked(true);dialog.close();el('submit').textContent=t('submitting');
+      const payload=pending;pending=null;analytics('redeem_web_submitted',undefined,token);
       try{
         if(base===null)throw new Error('unsupported host');
-        const envelope=await fetchJson(fetcher,base+'/api/redeem-code/web-redeem',payload,{'Accept-Language':language,'X-App-Market':config.region==='cn'?'CN':'OVERSEAS'},timeoutMs);
-        if(disposed)return;
-        const result=resultKind(envelope?.result);analytics('redeem_web_result',result);
+        const envelope=await fetchJson(fetcher,base+'/api/redeem-code/web-redeem',payload,{'Accept-Language':language,'X-App-Market':config.region==='cn'?'CN':'OVERSEAS'},timeoutMs,token.signal);
+        if(!current(token))return;
+        const result=resultKind(envelope?.result);analytics('redeem_web_result',result,token);
         if(result==='submitted')showSubmitted(envelope?.data);else message(result);
-      }catch(_){if(!disposed){message('SERVICE_BUSY');analytics('redeem_web_result','SERVICE_BUSY')}}
-      finally{busy=false;if(!disposed){setLocked(false);el('submit').textContent=t('redeem')}}
+      }catch(_){if(current(token)){message('SERVICE_BUSY');analytics('redeem_web_result','SERVICE_BUSY',token)}}
+      finally{if(current(token)){busy=false;activeRequest=null;setLocked(false);el('submit').textContent=t('redeem')}}
     });
     el('again').addEventListener('click',()=>{submitted=false;resetInputs();message('');el('resultPanel').hidden=true;el('rewardItems').replaceChildren();el('formPanel').hidden=false;el('phoneNumber').focus()});
-    view.addEventListener('pagehide',()=>{disposed=true;resetInputs();dialog.close()});
-    view.addEventListener('pageshow',event=>{if(event.persisted){disposed=false;busy=false;submitted=false;resetInputs();setLocked(false);dialog.close();el('formPanel').hidden=false;el('resultPanel').hidden=true;el('rewardItems').replaceChildren();message('');translate()}});
+    view.addEventListener('pagehide',()=>{invalidateLifecycle();resetInputs();dialog.close()});
+    view.addEventListener('pageshow',event=>{if(event.persisted){invalidateLifecycle();lifecycleController=new AbortController();lifecycleActive=true;busy=false;submitted=false;resetInputs();setLocked(false);dialog.close();el('formPanel').hidden=false;el('resultPanel').hidden=true;el('rewardItems').replaceChildren();message('');translate()}});
     return {get language(){return language}};
   }
   return {init,DICT,ERROR_NAMES,normalizeCode,normalizePhone,normalizeCountry,languageFor,defaults,apiBaseFor,validate,maskPhone,resultKind,rewardItems,buildAnalyticsEvent,DEFAULT_REQUEST_TIMEOUT_MS};

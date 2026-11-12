@@ -12,12 +12,20 @@ let browsers=[];
 before(async()=>{browsers=[await chromium.launch({headless:true}),await webkit.launch({headless:true})]});
 after(async()=>{await Promise.all(browsers.map(browser=>browser.close()))});
 async function safely(action){try{await action()}catch(_){assert.fail('Browser scenario failed; sensitive browser call details suppressed')}}
-async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region}={}){
+async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region,controlledRequests=false}={}){
  const context=await browser.newContext(mobile?{...devices['iPhone 13']}:{viewport:{width:1280,height:900},locale:'zh-CN'});t.after(()=>context.close());context.setDefaultTimeout(5000);
+ if(controlledRequests)await context.addInitScript(timeout=>{
+  const nativeFetch=window.fetch.bind(window),nativeTimeout=window.setTimeout.bind(window),nativeClear=window.clearTimeout.bind(window);let timer=-1;
+  window.__redeemRequests=[];window.__redeemTimers=new Map();
+  window.setTimeout=(callback,delay,...args)=>{if(delay!==timeout)return nativeTimeout(callback,delay,...args);const id=timer--;window.__redeemTimers.set(id,()=>callback(...args));return id};
+  window.clearTimeout=id=>{if(id<0)window.__redeemTimers.delete(id);else nativeClear(id)};
+  window.fetch=(url,options)=>String(url).endsWith('/api/redeem-code/web-redeem')?new Promise((resolve,reject)=>window.__redeemRequests.push({resolve,reject,signal:options.signal,timers:[...window.__redeemTimers.keys()]})):nativeFetch(url,options);
+ },timeoutMs);
  const page=await context.newPage(),input=sample();
- const state={calls:0,events:[],delay:0,result:0,network:false,reward:{rewardType:'ITEM',skuId:'test_reward',name:'Gift',count:2,iconUrl:''},responseBodies:[]};
+ const state={calls:0,events:[],delay:0,result:0,network:false,reward:{rewardType:'ITEM',skuId:'test_reward',name:'Gift',count:2,iconUrl:''},responseBodies:[],documentUrls:[]};
  await page.route('**/*',async route=>{
   const request=route.request(),url=new URL(request.url());
+  if(request.isNavigationRequest()&&request.resourceType()==='document')state.documentUrls.push(request.url());
   if(request.method()==='OPTIONS')return route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'https://www.lunakoru.com','Access-Control-Allow-Headers':'content-type,accept-language,x-app-market','Access-Control-Allow-Methods':'POST,OPTIONS'}});
   const respond=envelope=>route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'https://www.lunakoru.com'},body:JSON.stringify(envelope)});
   if(url.pathname==='/api/analytics/events'){state.events.push(...request.postDataJSON().events);return respond({result:0,errorMsg:'',data:null})}
@@ -37,7 +45,7 @@ async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,reg
   const contentType=file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'image/jpeg';
   return route.fulfill({contentType,body:data});
  });
- let query=region?'?region='+region+'&lang=zh':'?lang=zh';if(prefill)query+='&code='+encodeURIComponent(' '+input.code.slice(0,4).toLowerCase()+' - '+input.code.slice(4)+' ');
+ let query=region?'?region='+region+'&lang=zh':'?lang=zh';if(prefill)query+='#code='+encodeURIComponent(' '+input.code.slice(0,4).toLowerCase()+' - '+input.code.slice(4)+' ');
  await page.goto('https://www.lunakoru.com/redeem/'+query);await page.locator('#submit').waitFor({state:'visible'});
  await page.waitForFunction(()=>!document.getElementById('submit').disabled);
  const fill=async({mismatch=false}={})=>{
@@ -52,7 +60,8 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
   const t={after:fn=>cleanups.push(fn)},cleanups=[];try{
    const f=await fixture(t,browsers[engineIndex],{prefill:true});const {page,input,state}=f;
    check(await page.locator('#code').inputValue()===input.code,'normalized prefill');
-   check(!page.url().includes(input.code)&&!new URL(page.url()).searchParams.has('code'),'prefill removed from URL');
+   check(state.documentUrls.length===1&&!new URL(state.documentUrls[0]).searchParams.has('code')&&!state.documentUrls[0].includes(input.code)&&new URL(state.documentUrls[0]).hash==='','first document request never contains the code');
+   check(!page.url().includes(input.code)&&!new URLSearchParams(new URL(page.url()).hash.slice(1)).has('code'),'fragment prefill removed from URL');
    await f.fill({mismatch:true});await page.locator('#submit').click();check(await page.locator('#message').textContent()===api.DICT.zh.phoneMismatch&&state.calls===0,'mismatch makes no request');
    await f.fill();await page.locator('#submit').click();
    const confirmation=await page.locator('#confirmBody').textContent();
@@ -93,6 +102,30 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
    f.state.network=false;f.state.delay=160;await f.submit();await f.page.waitForFunction(()=>!document.getElementById('submit').disabled);check(await f.page.locator('#message').textContent()===api.DICT.zh.SERVICE_BUSY,'timeout recovery');
    f.state.delay=0;f.state.result=260006;await f.submit();await f.page.locator('#resultPanel').waitFor({state:'visible'});check((await f.page.locator('#resultPanel').textContent()).includes(api.DICT.zh.submittedBody),'unexpected account error merged');
   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+ }));
+ test(engine+': restored page rejects stale success, error, timeout and finally callbacks',()=>safely(async()=>{
+  for(const outcome of ['success','public-error','network-failure','timeout']){
+   const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+    const f=await fixture(t,browsers[engineIndex],{controlledRequests:true,timeoutMs:2000});
+    await f.fill();await f.submit();await f.page.waitForFunction(()=>window.__redeemRequests.length===1);
+    await f.page.evaluate(()=>{window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}))});
+    Object.assign(f.input,sample());await f.fill();await f.submit();await f.page.waitForFunction(()=>window.__redeemRequests.length===2);
+    await f.page.evaluate(outcome=>{
+     const old=window.__redeemRequests[0];
+     if(outcome==='success'||outcome==='public-error')old.resolve({ok:true,status:200,json:async()=>({result:outcome==='success'?0:260001,data:{rewardItems:[]}})});
+     if(outcome==='network-failure')old.reject(new Error('synthetic failure'));
+     if(outcome==='timeout')for(const id of old.timers){const callback=window.__redeemTimers.get(id);if(callback){window.__redeemTimers.delete(id);callback()}}
+    },outcome);
+    await f.page.waitForTimeout(30);
+    check(await f.page.locator('#submit').isDisabled()&&await f.page.locator('#formPanel').isVisible()&&await f.page.locator('#resultPanel').isHidden(),'old callbacks cannot render or unlock current form');
+    check(await f.page.locator('#phoneNumber').inputValue()===f.input.phoneNumber&&await f.page.locator('#code').inputValue()===f.input.code,'new input remains intact');
+    check(await f.page.locator('#message').textContent()===''&&!f.state.events.some(event=>event.event_type==='redeem_web_result'),'old errors and result telemetry suppressed');
+    check(await f.page.evaluate(()=>window.__redeemRequests[0].signal.aborted),'old request cancelled');
+    await f.page.evaluate(()=>window.__redeemRequests[1].resolve({ok:true,status:200,json:async()=>({result:0,data:{rewardItems:[]}})}));
+    await f.page.locator('#resultPanel').waitFor({state:'visible'});await f.page.waitForTimeout(30);
+    check(f.state.events.filter(event=>event.event_type==='redeem_web_result').length===1,'only current request emits result');
+   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+  }
  }));
  test(engine+': mobile five-language layout and privacy-safe empty screenshot',()=>safely(async()=>{
   const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
