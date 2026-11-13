@@ -37,7 +37,7 @@
 - 公开审核路径：`https://www.lunakoru.com/recharge/review/`。仅在正式发布并回读验证后作为可访问链接交付。
 - 审核页沿用充值页样式，纯静态、无 JavaScript、无表单，不登录、不收集手机号、不访问 API，不展示虚假付款或到账成功。CSP 禁止脚本、接口请求和表单提交。
 - 示例档位来自本地演示数据，全部明确标注不可购买；不代表实际价格、优惠或已获支付许可。交易入口 `/recharge/` 继续 fail-closed，并链接审核页。
-- 定向检查：`node --test tests/recharge.test.mjs tests/recharge-review.test.mjs`。发布只包含网页资源，不上传 `tests/`、预览服务器、文档、压缩源素材或本地凭据。
+- 定向检查：`node --test tests/recharge.test.mjs tests/recharge-review.test.mjs`。官网 staging 由后端维护的 `tools/deploy_lunakoru_tcb.py` 的 `prepare_staging()` 生成；当前按名称排除 `tests/`、`preview_server.py`、`README.md`、`CHANGELOG.md`、`designe-html.md`、`.env` 和 Git/编辑器缓存目录。该过滤不按文档或压缩包后缀排除文件，合法下载资源会保留；发布前以该脚本实际过滤项和 staging 清单为准。
 
 ### 本地验证
 
@@ -67,12 +67,12 @@ node tests/recharge-preview-server.mjs --port 8908
 
 ## 独立兑换页（未部署）
 
-- `/redeem/` 可直达，仅支持 fragment 参数 `#code=` 预填并规范化，读取后从地址栏移除码；片段不会进入首个文档 GET。`region/lang` 可继续放非敏感 query，例如 `/redeem/?region=jp&lang=ja#code=<code>`。query 中的 `code` 不再作为预填来源，不能靠脚本清理撤销已发送的初始 URL。日本、新加坡、美国站导航带受限的 `region` 值，设定默认国家码和语言；亦可在页面切换五种语言。中文首页入口随预约有礼接线后续开发。
-- 页面不登录、不发送短信、不查询账号资料、不保存手机号。两次输入必须相同，提交前由用户输入本地生成打码确认。所有账号结果统一为“已提交”，奖励内容由 `data.rewardItems` 提供。
+- `/redeem/` 可直达，仅支持 fragment 参数 `#code=` 预填并规范化，读取后从地址栏移除码；片段不会进入首个文档 GET。`region/lang` 可继续放非敏感 query，例如 `/redeem/?region=jp&lang=ja#code=<code>`。query 中的 `code` 不再作为预填来源，不能靠脚本清理撤销已发送的初始 URL。日本、新加坡、美国站导航带受限的 `region` 值，设定默认国家码和语言。显式 `region` 优先于地区域名和浏览器；没有显式地区时，仅使用浏览器首选 locale，已识别的 CN/JP/SG/US 地区子标签对应 +86/+81/+65/+1，仅语言 zh/ja/en 分别对应 +86/+81/+1。ko、zh-TW 和不支持的首选语言回退 +86，不扫描次选语言推断国家码。`lang` 与页面五语选择器仅改变显示语言，不覆盖上述国家码默认值；用户仍可手动修改国家码。中文首页入口随预约有礼接线后续开发。
+- 页面不登录、不发送短信、不查询账号资料、不保存手机号。两次手机号均在本地去除空格、括号和连字符后校验并要求相同；+86 号码必须为 1 开头、第二位 3–9 的 11 位数字，无效或不一致不打开确认且不发送兑换请求。提交前由用户输入本地生成打码确认。所有账号结果统一为“已提交”，奖励内容由 `data.rewardItems` 提供。
 - `POST /api/redeem-code/web-redeem` 请求 `{countryCode,phoneNumber,code}`；生产只使用固定 `https://api.lunakoru.com`，不支持通过 query 或存储覆盖。不会自动重试兑换写入。离页会取消请求并使当前请求代际失效；BFCache 恢复新建代际，旧成功/失败/超时/埋点/清理回调都不能覆盖或解锁新提交。
 - 定向验证：`node --test tests/redeem.test.cjs tests/redeem-lifecycle.test.cjs tests/redeem-preview.test.mjs`；真实浏览器合成回归需 Playwright 与对应 Chromium/WebKit runtime：`node --test tests/redeem.browser.cjs`。五语词典平价由定向测试覆盖；工作区通用 parity gate 不解析本站字典。
 - 只读静态/本地合成预览：`node tests/redeem-preview-server.mjs`，访问打印的 loopback 地址。合成成功响应与账号状态归并只是 mock 验证，不代表真实测试库发奖验收。
-- 经授权的真实测试环境联调：`node tests/redeem-preview-server.mjs --test`；仅将兑换与匿名埋点 POST 转发至现有官网预览工具同一固定测试后端，页面显示测试横幅。服务只绑定 loopback、校验 Host/Origin、限制请求大小、不记录请求体/URL查询/上游错误内容，不提供任意代理。生产部署不得包含 `tests/` 和预览服务器；后端必须先于官网上线。
+- 经授权的真实测试环境联调：`node tests/redeem-preview-server.mjs --test`；仅将兑换与匿名埋点 POST 转发至现有官网预览工具同一固定测试后端，页面显示测试横幅。服务只绑定 loopback、校验 Host/Origin、限制请求大小、不记录请求体/URL查询/上游错误内容，不提供任意代理。当前维护的官网 staging 按名称排除 `tests/` 与 `preview_server.py`，保留 `/redeem/` 运行资源；此过滤修复随 [后端 PR #2887](https://github.com/xinqi-tech/Aildo-JAVA/pull/2887) 交付，发布须使用包含该修复的维护脚本。没有按 `.zip` 等后缀一概排除下载资源。后端必须先于官网上线。
 
 
 ### 2026-11-12 实际 TEST 联调记录
@@ -91,3 +91,10 @@ node tests/recharge-preview-server.mjs --port 8908
 本次真实网页验收将 analytics 在本地拦截，并阻断所有外部资源请求：不代表埋点实际落库或奖励图标 CDN 加载已验收。网页结果与后端资产聚合已核；App 背包页面展示由 Android 独立确认。没有短信、注册动作、填表截图、HAR、trace 或生产请求；只保留不含输入的 HTTP/结果文本和只读聚合证据，截图仅为空输入态。
 
 操作员接受多次提交可通过 USED/SOLD_OUT 推断状态的限制，保留消费规则（PRD §14/17）；本页仅承诺单次账号相关结果统一。此前五语、窄屏、超时/重复锁和生命周期回归证据继续有效，本次只补真实 TEST 验收与文档，没有重复未变套件。
+
+
+### 2026-11-12 Review 修复验证
+
+- 三个地区商品页刷新共享样式缓存版本；日本首页及商品导航文字保持单行。实际 Chromium/WebKit 覆盖三个地区首页/商品页的 320/390/768/1280px 视口、控制项边界与兑换链接点击。
+- +86 本地号码前缀/长度、格式规范化、两次输入与浏览器 locale/显式地区优先级均有定向测试；所有浏览器请求使用本地合成响应，无真实短信、兑换或生产访问。
+- 官网部署排除契约以维护脚本的名称过滤及其合成 staging 回归为准，不把文档陈述当成已执行发布；本站仍未部署。

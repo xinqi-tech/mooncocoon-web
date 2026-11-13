@@ -11,9 +11,9 @@ const sample=()=>({countryCode:'+'+(80+6),phoneNumber:String(13)+String(randomIn
 let browsers=[];
 before(async()=>{browsers=[await chromium.launch({headless:true}),await webkit.launch({headless:true})]});
 after(async()=>{await Promise.all(browsers.map(browser=>browser.close()))});
-async function safely(action){try{await action()}catch(_){assert.fail('Browser scenario failed; sensitive browser call details suppressed')}}
-async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region,controlledRequests=false}={}){
- const context=await browser.newContext(mobile?{...devices['iPhone 13']}:{viewport:{width:1280,height:900},locale:'zh-CN'});t.after(()=>context.close());context.setDefaultTimeout(5000);
+async function safely(action){try{await action()}catch(error){if(error instanceof assert.AssertionError&&error.operator==='==')throw error;assert.fail('Browser scenario failed; sensitive browser call details suppressed')}}
+async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region,locale='zh-CN',search,controlledRequests=false}={}){
+ const context=await browser.newContext(mobile?{...devices['iPhone 13']}:{viewport:{width:1280,height:900},locale});t.after(()=>context.close());context.setDefaultTimeout(5000);
  if(controlledRequests)await context.addInitScript(timeout=>{
   const nativeFetch=window.fetch.bind(window),nativeTimeout=window.setTimeout.bind(window),nativeClear=window.clearTimeout.bind(window);let timer=-1;
   window.__redeemRequests=[];window.__redeemTimers=new Map();
@@ -45,7 +45,7 @@ async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,reg
   const contentType=file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'image/jpeg';
   return route.fulfill({contentType,body:data});
  });
- let query=region?'?region='+region+'&lang=zh':'?lang=zh';if(prefill)query+='#code='+encodeURIComponent(' '+input.code.slice(0,4).toLowerCase()+' - '+input.code.slice(4)+' ');
+ let query=search===undefined?(region?'?region='+region+'&lang=zh':'?lang=zh'):search;if(prefill)query+='#code='+encodeURIComponent(' '+input.code.slice(0,4).toLowerCase()+' - '+input.code.slice(4)+' ');
  await page.goto('https://www.lunakoru.com/redeem/'+query);await page.locator('#submit').waitFor({state:'visible'});
  await page.waitForFunction(()=>!document.getElementById('submit').disabled);
  const fill=async({mismatch=false}={})=>{
@@ -80,6 +80,26 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
    check((await contextStorage(f.context)).empty,'no storage persistence');
    await page.locator('#again').click();await f.fill();await page.reload();check(await page.locator('#phoneNumber').inputValue()===''&&await page.locator('#repeatPhone').inputValue()==='','refresh clears phones');
   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+ }));
+ test(engine+': invalid mainland phones cannot open confirmation or request redemption',()=>safely(async()=>{
+  const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+   const f=await fixture(t,browsers[engineIndex]);await f.fill();
+   const invalid=String(12)+f.input.phoneNumber.slice(2);
+   for(const [first,second] of [[invalid,invalid],[f.input.phoneNumber,invalid],[invalid,f.input.phoneNumber]]){
+    await f.page.locator('#phoneNumber').fill(first);await f.page.locator('#repeatPhone').fill(second);await f.page.locator('#submit').click();
+    check(!(await f.page.locator('#confirmDialog').isVisible())&&f.state.calls===0,'invalid or mismatched input blocks confirmation and API');
+   }
+   await f.fill();await f.page.locator('#submit').click();check(await f.page.locator('#confirmDialog').isVisible()&&f.state.calls===0,'valid corrected input allows local confirmation');
+  }finally{await Promise.all(cleanups.map(fn=>fn()))}
+ }));
+ test(engine+': browser locale defaults and explicit region precedence render in the real form',()=>safely(async()=>{
+  for(const [locale,search,country,language] of [['en-SG','', '+65','en'],['en-US','', '+1','en'],['ja-JP','', '+81','ja'],['zh-CN','', '+86','zh'],['ko-KR','', '+86','ko'],['zh-TW','', '+86','zh-TW'],['fr-FR','', '+86','zh'],['en-SG','?lang=ja','+65','ja'],['en-SG','?region=jp&lang=ko','+81','ko'],['ja-JP','?region=cn','+86','zh']]){
+   const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+    const f=await fixture(t,browsers[engineIndex],{locale,search});
+    check(await f.page.locator('#countryCode').inputValue()===country&&await f.page.locator('#language').inputValue()===language,'locale and explicit region set expected form defaults');
+    check(f.state.calls===0&&await f.page.locator('#phoneNumber').inputValue()===''&&await f.page.locator('#repeatPhone').inputValue()==='','default selection has no redemption request or phone input');
+   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+  }
  }));
  test(engine+': four account states have identical response and page content',()=>safely(async()=>{
   let previousPage,previousBody;
@@ -143,21 +163,25 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
 }
 async function contextStorage(context){const page=context.pages()[0];const data=await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length}));const cookies=await context.cookies();return {empty:data.local===0&&data.session===0&&cookies.length===0}}
 
-test('Regional home and product links remain reachable at narrow mobile widths',()=>safely(async()=>{
- const browser=browsers[0];
- for(const width of [320,390])for(const region of ['jp','sg','us'])for(const product of [false,true]){
+test('Regional home and product links remain reachable with single-line labels across viewport sizes',()=>safely(async()=>{
+ for(const browser of browsers)for(const width of [320,390,768,1280])for(const region of ['jp','sg','us'])for(const product of [false,true]){
   const context=await browser.newContext({viewport:{width,height:844}});try{
    await context.addInitScript(()=>{window.__LUNAKORU_SKIP_LOADER=true});const page=await context.newPage();
    await page.route('**/*',route=>{
     const path=new URL(route.request().url()).pathname;
     const relative=path.endsWith('/')?path+'index.html':path;
-    if(!/^\/(?:jp|sg|us|redeem)\/[a-z0-9_./-]+\.(?:html|css|js)$/.test(relative)&&!['/region.js','/title-plates.js'].includes(relative))return route.abort();
+    if(!/^\/(?:jp|sg|us|redeem)\/[a-z0-9_./-]+\.(?:html|css|js)$/.test(relative)&&!['/region.js','/title-plates.js','/app-ui.css'].includes(relative))return route.abort();
     try{const body=readFileSync(join(root,relative));return route.fulfill({contentType:relative.endsWith('.html')?'text/html':relative.endsWith('.css')?'text/css':'text/javascript',body})}catch(_){return route.abort()}
    });
    await page.goto('https://www.lunakoru.com/'+region+'/'+(product?'product/':''));
    await page.waitForTimeout(60);
    const bounds=await page.locator('.nav').evaluate(nav=>[...nav.querySelectorAll('.nav-links a,.region-switcher button,.bgm-toggle')].every(node=>{const r=node.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.width>0}));
-   check(bounds,'all regional navigation controls in mobile viewport');
+   check(bounds,'all regional navigation controls in viewport '+width+' '+region+' '+product);
+   const singleLine=await page.locator('.nav-links a').evaluateAll(links=>links.every(link=>{
+    const range=document.createRange();range.selectNodeContents(link.querySelector('span')||link);
+    return new Set([...range.getClientRects()].map(rect=>Math.round(rect.top))).size===1;
+   }));
+   check(singleLine,'regional navigation labels remain on one line '+width+' '+region+' '+product);
    await page.locator('.nav-links a[href*="redeem"]').click();await page.waitForURL('**/redeem/?region='+region);
    await page.waitForFunction(()=>!document.getElementById('submit').disabled);
    check(await page.locator('#countryCode').inputValue()===({jp:'+81',sg:'+65',us:'+1'})[region],'regional link sets calling code');

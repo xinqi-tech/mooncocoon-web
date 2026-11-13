@@ -94,3 +94,33 @@ test('submitted copy tells unregistered users to register and submit again in ev
  for(const [lang,pattern] of Object.entries(required))check(pattern.test(api.DICT[lang].submittedBody),'registration and resubmission instruction translated');
  const html=readFileSync(join(__dirname,'../redeem/index.html'),'utf8');check(html.includes(api.DICT.zh.submittedBody),'independent page static fallback matches PRD');
 });
+
+
+test('mainland local phones require a mobile prefix and eleven digits after normalization',()=>{
+ const input=sample(),validate=phone=>api.validate({...input,phoneNumber:phone,repeatPhone:phone});
+ for(const prefix of ['13','14','15','16','17','18','19']){
+  const phone=prefix+String(randomInt(100000000,999999999));
+  check(!validate(phone).error,'supported mainland mobile prefix');
+  check(!validate(' '+phone.slice(0,3)+' ('+phone.slice(3,7)+')-'+phone.slice(7)+' ').error,'formatting normalized before validation');
+ }
+ for(const phone of [String(12)+String(randomInt(100000000,999999999)),String(23)+String(randomInt(100000000,999999999)),input.phoneNumber.slice(1),input.phoneNumber+'0',input.phoneNumber.slice(0,-1)+'x'])check(validate(phone).error==='phoneInvalid','malformed mainland phone rejected');
+ check(!api.validate({...input,countryCode:'+81',phoneNumber:'9'.repeat(10),repeatPhone:'9'.repeat(10)}).error,'international length contract retained');
+});
+
+
+test('browser locale selects existing dialing regions while explicit region takes precedence',()=>{
+ const loc=(search='',hostname='www.lunakoru.com')=>({hostname,search});
+ for(const [locale,country,region,language] of [['zh-CN','+86','cn','zh'],['zh-Hans-SG','+65','sg','zh'],['en-JP','+81','jp','en'],['en-CN','+86','cn','en'],['en-SG','+65','sg','en'],['en-US','+1','us','en'],['en','+1','us','en'],['ja-JP','+81','jp','ja'],['ko-KR','+86','cn','ko'],['zh-TW','+86','cn','zh-TW'],['zh-Hant-TW','+86','cn','zh-TW']]){
+  const result=api.defaults(loc(),[locale]);check(result.country===country&&result.region===region&&result.language===language,'browser locale dialing and display defaults');
+ }
+ check(api.defaults(loc(),['fr-FR','en-SG']).country==='+86','unsupported preferred browser language does not select a secondary dialing region');
+ check(api.defaults(loc(),['ko-KR','en-US']).country==='+86','preferred fallback language does not select a secondary dialing region');
+ check(api.defaults(loc('?region=invalid'),['ja']).country==='+81','unrecognized region uses browser fallback');
+ check(api.defaults(loc('?lang=ja'),['en-SG']).country==='+65','display language does not replace browser dialing region');
+ for(const [region,country] of [['cn','+86'],['jp','+81'],['sg','+65'],['us','+1']]){
+  check(api.defaults(loc('?region='+region+'&lang=ko'),['en-SG']).country===country,'explicit query region wins over browser and display language');
+  check(api.defaults(loc('',region+'.lunakoru.com'),['ja']).country===country,'regional hostname wins over browser');
+ }
+ check(api.defaults(loc('?region=us','jp.lunakoru.com'),['en-SG']).country==='+1','query region wins over regional hostname');
+ check(api.defaults(loc(),['fr-FR']).country==='+86','unsupported languages retain safe fallback');
+});

@@ -27,9 +27,14 @@
   function defaults(location,languages=[]){
     const params=new URLSearchParams(location.search||'');
     const hostRegion=String(location.hostname||'').split('.')[0];
-    const region=Object.hasOwn(REGIONS,params.get('region'))?params.get('region'):Object.hasOwn(REGIONS,hostRegion)?hostRegion:'cn';
-    const explicitRegion=region!=='cn'||params.get('region')==='cn';
-    const language=languageFor(params.get('lang'))||(explicitRegion?REGIONS[region].language:languages.map(languageFor).find(Boolean))||'zh';
+    const browserTag=String(languages[0]||'').toLowerCase();
+    const browserLanguage=languageFor(browserTag)||'zh';
+    const browserRegion=['zh','en','ja'].includes(languageFor(browserTag))
+      ?browserTag.split('-').slice(1).find(part=>Object.hasOwn(REGIONS,part))||({zh:'cn',en:'us',ja:'jp'})[browserLanguage]
+      :'cn';
+    const explicitRegion=Object.hasOwn(REGIONS,params.get('region'))?params.get('region'):Object.hasOwn(REGIONS,hostRegion)?hostRegion:null;
+    const region=explicitRegion||browserRegion;
+    const language=languageFor(params.get('lang'))||(explicitRegion?REGIONS[region].language:browserLanguage);
     return {...REGIONS[region],region,language};
   }
   function apiBaseFor(hostname){
@@ -39,6 +44,7 @@
   function validate(input){
     const countryCode=normalizeCountry(input.countryCode),phoneNumber=normalizePhone(input.phoneNumber),repeatPhone=normalizePhone(input.repeatPhone),code=normalizeCode(input.code);
     if(!/^\+[1-9]\d{0,2}$/.test(countryCode)||!/^\d{6,14}$/.test(phoneNumber)||countryCode.length-1+phoneNumber.length>15)return {error:'phoneInvalid'};
+    if(countryCode==='+86'&&!/^1[3-9]\d{9}$/.test(phoneNumber))return {error:'phoneInvalid'};
     if(phoneNumber!==repeatPhone)return {error:'phoneMismatch'};
     if(!code)return {error:'codeRequired'};
     if(!/^[A-Z0-9]{4,16}$/.test(code))return {error:'INVALID'};
