@@ -283,6 +283,8 @@ body.is-loading{overflow:hidden}
 @keyframes loaderBreath{0%,100%{opacity:0.55}50%{opacity:0.95}}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
+/* Keep all three navigation entries reachable on narrow phones. */
+@media(max-width:380px){.nav{flex-wrap:wrap;height:auto;row-gap:4px}.nav-links{order:4;flex-basis:100%;justify-content:center;margin-left:0}.nav-brand{margin-right:auto}.region-switcher{margin-left:auto}}
 </style>
 <link rel="stylesheet" href="../app-ui.css?v=20261020n">
 <script src="../title-plates.js?v=20261020n" defer></script>
@@ -414,6 +416,7 @@ window.__PV_SRC=(window.matchMedia&&window.matchMedia('(max-width:768px)').match
   <div class="nav-links">
     <a href="#hero" class="active"><span>Home</span></a>
     <a href="product/index.html"><span>Product</span></a>
+    <a href="../redeem/?region=sg"><span>Redeem</span></a>
   </div>
   <div class="region-switcher" data-region-switcher>
     <button type="button" data-region-button aria-haspopup="true" aria-expanded="false">Sales region</button>

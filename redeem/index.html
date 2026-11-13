@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- AI Context: 独立官网兑换页；上游地区导航/直达链接，下游 redeem.js 与公开 web-redeem API。账号结果统一为已提交，不查询账号。 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https:; connect-src 'self' https://api.lunakoru.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>兑换码 · LunaKoru</title>
+<link rel="icon" href="../images/app-logo.jpg">
+<link rel="stylesheet" href="redeem.css">
+<script src="i18n.js" defer></script>
+<script src="redeem.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+<a class="brand" id="homeLink" href="../"><img src="../images/app-logo.jpg" alt=""><span>LunaKoru</span></a>
+<label class="language"><span data-i18n="language">语言</span><select id="language" aria-label="Language"><option value="zh">简体中文</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="zh-TW">繁體中文</option></select></label>
+</header>
+<main>
+<section class="intro"><p class="eyebrow">LUNAKORU · GIFT</p><div class="gift" aria-hidden="true">✦</div><h1 data-i18n="title">兑换码</h1><p data-i18n="subtitle">输入兑换码，领取你的专属心意</p></section>
+<section class="card" id="formPanel" aria-labelledby="formTitle">
+<h2 id="formTitle" data-i18n="formTitle">兑换到 LunaKoru 账号</h2>
+<p class="note" data-i18n="accountHint">请填写注册 LunaKoru 时使用的手机号。</p>
+<form id="redeemForm" autocomplete="off" novalidate>
+<div class="phone-row"><label class="country"><span data-i18n="country">国家/地区码</span><input id="countryCode" name="countryCode" type="tel" inputmode="tel" maxlength="4" autocomplete="off" value="+86" required></label>
+<label><span data-i18n="phone">手机号</span><input id="phoneNumber" name="phoneNumber" type="tel" inputmode="tel" maxlength="24" autocomplete="off" required></label></div>
+<label><span data-i18n="repeatPhone">再次输入手机号</span><input id="repeatPhone" name="repeatPhone" type="tel" inputmode="tel" maxlength="24" autocomplete="off" required></label>
+<label><span data-i18n="code">兑换码</span><input id="code" name="code" type="text" maxlength="32" autocapitalize="characters" autocorrect="off" spellcheck="false" autocomplete="off" aria-describedby="codeHint" required></label>
+<p class="field-hint" id="codeHint" data-i18n="codeHint">字母不区分大小写，可包含空格或连字符。</p>
+<p class="error" id="message" role="alert" aria-live="polite"></p>
+<button class="primary" id="submit" type="submit" disabled data-i18n="redeem">立即兑换</button>
+</form>
+<p class="privacy" data-i18n="privacy">无需登录或短信验证。页面不会保存你的手机号，刷新后将清空。</p>
+</section>
+<section class="card result" id="resultPanel" hidden tabindex="-1" aria-labelledby="resultTitle">
+<div class="result-icon" aria-hidden="true">✓</div><h2 id="resultTitle" data-i18n="submitted">已提交</h2>
+<p data-i18n="submittedBody">已提交。若该手机号已注册 LunaKoru 且符合活动条件，奖励已发放到账号，请打开 App 在背包中查看；若尚未注册，请先用该手机号注册，再回到本页重新提交。</p>
+<h3 data-i18n="rewardTitle">该兑换码的奖励内容</h3><ul id="rewardItems" class="rewards"></ul>
+<button class="secondary" type="button" id="again" data-i18n="again">兑换其他兑换码</button>
+</section>
+<p class="help" data-i18n="help">兑换后不可撤销，请在提交前仔细核对手机号。</p>
+<noscript><p class="error">Please enable JavaScript to redeem a code. / 请启用 JavaScript 后使用兑换功能。</p></noscript>
+</main>
+<dialog id="confirmDialog" aria-labelledby="confirmTitle" aria-describedby="confirmBody"><h2 id="confirmTitle" data-i18n="confirmTitle">确认兑换</h2><p id="confirmBody"></p><div class="dialog-actions"><button class="secondary" id="cancel" type="button" data-i18n="cancel">返回修改</button><button class="primary" id="confirm" type="button" data-i18n="confirm">确认兑换</button></div></dialog>
+<footer>© LunaKoru</footer>
+</body></html>
