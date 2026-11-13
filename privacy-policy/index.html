@@ -556,35 +556,108 @@
                 <h3>5. 接入的第三方 SDK 清单</h3>
                 <p>为保障 App 功能实现与安全稳定运行，我们的产品（Android 版）接入了以下第三方 SDK。我们会对第三方获取信息的行为进行严格约束，要求其按照本政策及相关法律法规处理您的个人信息：</p>
 
-                <h4>（1）友盟消息推送/统计 SDK</h4>
+                <h4 id="sdk-alipay">（1）APP支付客户端SDK</h4>
                 <ul>
-                    <li><strong>第三方主体：</strong>友盟同欣（北京）科技有限公司</li>
-                    <li><strong>使用目的：</strong>实现消息推送、推送送达统计与基础运营统计，其中 GAID 用于生成脱敏设备标识以支持消息推送</li>
-                    <li><strong>收集信息类型：</strong>设备标识符（OAID、UMID、Android ID、GAID）、设备型号、操作系统版本、网络信息（IP 地址、网络类型）、应用版本信息</li>
-                    <li><strong>初始化时机：</strong>仅在您同意本隐私政策后才会初始化并开始收集</li>
-                    <li><strong>厂商推送通道：</strong>为在对应品牌设备上实现离线消息推送，集成华为、小米、OPPO、vivo 推送服务（由设备厂商提供），将收集设备标识符、推送 token 等必要信息</li>
-                    <li><strong>隐私政策链接：</strong><a href="https://www.umeng.com/page/policy" target="_blank" rel="noopener noreferrer">https://www.umeng.com/page/policy</a></li>
+                    <li><strong>SDK 名称：</strong>APP支付客户端SDK</li>
+                    <li><strong>开发者：</strong>支付宝(杭州)信息技术有限公司</li>
+                    <li><strong>包名标识：</strong>com.alipay.sdk</li>
+                    <li><strong>支付服务运营主体：</strong>支付宝支付科技有限公司</li>
+                    <li><strong>使用目的：</strong>在您选择支付宝付款时提供支付服务、处理支付结果，保障账户、资金与支付服务安全，并进行必要的网络链路优化</li>
+                    <li><strong>收集信息范围：</strong>支付订单信息及支付结果，设备标识符（Android ID、OAID）、基本设备信息（设备品牌、型号、系统信息）、传感器列表、屏幕密度、运营商信息、Wi-Fi 参数、网络类型</li>
+                    <li><strong>业务调用场景：</strong>您主动选择支付宝支付并取得订单后，调用支付宝支付功能；具体信息处理规则见该 SDK 隐私政策</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://opendocs.alipay.com/open/54/01g6qm#%E6%94%AF%E4%BB%98%E5%AE%9D%20App%20%E6%94%AF%E4%BB%98%E5%AE%A2%E6%88%B7%E7%AB%AF%20SDK%20%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96" target="_blank" rel="noopener noreferrer">APP支付客户端SDK隐私政策</a></li>
                 </ul>
 
-                <h4>（2）TapTap 开发者服务 SDK（TapSDK）</h4>
+                <h4 id="sdk-httpdns">（2）HTTPDNS-android</h4>
                 <ul>
-                    <li><strong>第三方主体：</strong>易玩（上海）网络科技有限公司</li>
-                    <li><strong>使用目的：</strong>按照国家新闻出版署相关规定完成网络游戏实名认证与未成年人防沉迷管理；Android ID 等设备信息用于确保设备系统兼容、定位和解决问题</li>
-                    <li><strong>收集信息类型：</strong>实名认证信息（姓名、身份证号，加密后提交国家新闻出版署实名认证系统核验，我们不存储您的身份证号原文）、设备信息（包括 Android ID）、应用信息</li>
-                    <li><strong>初始化时机：</strong>仅在您同意本隐私政策后才会初始化</li>
-                    <li><strong>收集时机与频率：</strong>Android ID 在 SDK 初始化及您授权使用相关服务时收集，每次触发时读取一次</li>
-                    <li><strong>隐私政策链接：</strong><a href="https://developer.taptap.cn/docs/sdk/start/agreement/" target="_blank" rel="noopener noreferrer">TapSDK 隐私政策</a></li>
+                    <li><strong>SDK 名称：</strong>HTTPDNS-android</li>
+                    <li><strong>开发者：</strong>杭州阿里云智能科技有限公司</li>
+                    <li><strong>包名标识：</strong>com.alibaba.sdk.android.httpdns</li>
+                    <li><strong>使用目的：</strong>提供域名解析服务，在网络切换时缓存解析结果，统计解析服务使用情况</li>
+                    <li><strong>收集信息范围：</strong>设备品牌、设备型号、系统版本、网络类型</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://terms.aliyun.com/legal-agreement/terms/suit_bu1_ali_cloud/suit_bu1_ali_cloud202112071754_83380.html?spm=a2c4g.11186623.0.0.598730e5wsglWa" target="_blank" rel="noopener noreferrer">HTTPDNS-android隐私政策</a></li>
                 </ul>
 
-                <h4>（3）微信 Open SDK（Android）</h4>
+                <h4 id="sdk-oppo-push">（3）OPPO PUSH 客户端SDK</h4>
                 <ul>
-                    <li><strong>第三方主体：</strong>深圳市腾讯计算机系统有限公司；微信支付服务由财付通支付科技有限公司提供</li>
+                    <li><strong>SDK 名称：</strong>OPPO PUSH 客户端SDK</li>
+                    <li><strong>开发者：</strong>广东欢太科技有限公司</li>
+                    <li><strong>包名标识：</strong>com.heytap.msp</li>
+                    <li><strong>使用目的：</strong>通过 OPPO 厂商推送通道向对应设备发送应用通知，验证应用身份并获取推送注册标识</li>
+                    <li><strong>收集信息范围：</strong>推送注册标识（RegisterId）、应用接入标识及密钥（appKey、appSecret）、MCS 应用包名、应用包名、应用版本号、推送 SDK 版本号</li>
+                    <li><strong>初始化时机：</strong>在您同意本隐私政策后初始化，用于注册推送通道及提供消息通知</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://open.oppomobile.com/new/developmentDoc/info?id=11228" target="_blank" rel="noopener noreferrer">OPPO PUSH 客户端SDK隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-vivo-push">（4）vivo推送SDK</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>vivo推送SDK</li>
+                    <li><strong>开发者：</strong>维沃移动通信有限公司</li>
+                    <li><strong>包名标识：</strong>com.vivo.push</li>
+                    <li><strong>使用目的：</strong>通过 vivo 厂商推送通道发送应用通知，并统计推送接口调用成功率</li>
+                    <li><strong>收集信息范围：</strong>应用基本信息（appid、appkey、应用包名、应用版本号、pushSDK 版本）、应用内设备标识符（vpush regid）、设备类型、系统类型及系统版本</li>
+                    <li><strong>初始化时机：</strong>在您同意本隐私政策后初始化，用于注册推送通道及提供消息通知</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://dev.vivo.com.cn/documentCenter/doc/878" target="_blank" rel="noopener noreferrer">vivo推送SDK隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-umeng-push">（5）友盟+消息推送SDK</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>友盟+消息推送SDK</li>
+                    <li><strong>开发者：</strong>友盟同欣（北京）科技有限公司</li>
+                    <li><strong>包名标识：</strong>com.umeng.message</li>
+                    <li><strong>使用目的：</strong>实现消息推送、推送送达及点击统计，其中 GAID 用于生成脱敏设备标识以支持消息推送</li>
+                    <li><strong>收集信息范围：</strong>设备标识符（OAID、UMID、Android ID、GAID）、推送注册标识、设备型号、操作系统版本、网络信息（IP 地址、网络类型）、应用版本信息及推送消息相关信息</li>
+                    <li><strong>初始化时机：</strong>仅在您同意本隐私政策后初始化并开始收集</li>
+                    <li><strong>厂商推送通道：</strong>为在对应品牌设备上实现离线消息推送，集成华为、小米、OPPO、vivo 推送服务，将处理设备标识符、推送 token 等必要信息；小米、OPPO、vivo 的具体信息另列于本清单</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://www.umeng.com/page/policy" target="_blank" rel="noopener noreferrer">友盟+消息推送SDK隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-umeng-analytics">（6）友盟+移动统计SDK</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>友盟+移动统计SDK</li>
+                    <li><strong>开发者：</strong>友盟同欣（北京）科技有限公司</li>
+                    <li><strong>包名标识：</strong>com.umeng.analytics</li>
+                    <li><strong>使用目的：</strong>进行应用使用情况、基础运营及稳定性统计，帮助改进产品体验</li>
+                    <li><strong>收集信息范围：</strong>设备标识符（OAID、UMID、Android ID、GAID）、设备型号、操作系统版本、网络信息（IP 地址、网络类型）、应用版本信息及应用使用统计信息</li>
+                    <li><strong>初始化时机：</strong>仅在您同意本隐私政策后初始化并开始收集</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://www.umeng.com/page/policy" target="_blank" rel="noopener noreferrer">友盟+移动统计SDK隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-xiaomi-push">（7）小米推送</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>小米推送</li>
+                    <li><strong>开发者：</strong>北京小米移动软件有限公司</li>
+                    <li><strong>包名标识：</strong>com.xiaomi.push</li>
+                    <li><strong>使用目的：</strong>通过小米厂商推送通道发送应用通知、展示消息并统计消息送达及点击情况</li>
+                    <li><strong>收集信息范围：</strong>推送注册标识、应用包名、应用版本号及运行状态、消息创建/送达/点击时间、推送消息内容、设备厂商及型号、设备内存、操作系统与 SDK 版本、国家或地区、Wi-Fi 状态、通知栏设置信息；当前网络类型和 SIM 卡运营商名称按小米政策在本地读取</li>
+                    <li><strong>初始化时机：</strong>在您同意本隐私政策后初始化，用于注册推送通道及提供消息通知</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://dev.mi.com/console/doc/detail?pId=1822" target="_blank" rel="noopener noreferrer">小米推送隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-wechat">（8）微信OpenSDK Android</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>微信OpenSDK Android</li>
+                    <li><strong>开发者：</strong>深圳市腾讯计算机系统有限公司</li>
+                    <li><strong>包名标识：</strong>com.tencent.mm.opensdk</li>
+                    <li><strong>支付服务运营主体：</strong>财付通支付科技有限公司</li>
                     <li><strong>SDK 版本：</strong>6.8.0</li>
                     <li><strong>使用目的：</strong>在您选择微信支付购买付费内容时，唤起微信完成付款，并接收支付结果以核验订单状态</li>
-                    <li><strong>处理信息类型：</strong>本次交易的微信支付订单标识及必要支付参数、支付结果，以及设备上是否已安装微信的状态</li>
+                    <li><strong>收集信息范围：</strong>本次交易的微信支付订单标识及必要支付参数、支付结果，以及设备上是否已安装微信的状态</li>
                     <li><strong>处理方式：</strong>通过集成在 App 内的 SDK 与微信客户端交互</li>
                     <li><strong>处理时机与频率：</strong>在您主动发起微信支付及接收相应支付回调时处理；未选择微信支付时，不触发该 SDK 的支付调用</li>
-                    <li><strong>隐私政策链接：</strong><a href="https://weixin.qq.com/cgi-bin/readtemplate?t=opensdk_agreement&amp;lang=zh_CN" target="_blank" rel="noopener noreferrer">微信 Open SDK 个人信息处理规则</a>、<a href="https://www.tenpay.com/v3/helpcenter/low/privacy.shtml" target="_blank" rel="noopener noreferrer">财付通隐私政策</a></li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://support.weixin.qq.com/cgi-bin/mmsupportacctnodeweb-bin/pages/RYiYJkLOrQwu0nb8" target="_blank" rel="noopener noreferrer">微信OpenSDK Android隐私政策</a></li>
+                    <li><strong>支付服务隐私政策：</strong><a href="https://www.tenpay.com/v3/helpcenter/low/privacy.shtml" target="_blank" rel="noopener noreferrer">财付通隐私政策</a></li>
+                </ul>
+
+                <h4 id="sdk-taptap">（9）TapTap 开发者服务 SDK（TapSDK）</h4>
+                <ul>
+                    <li><strong>SDK 名称：</strong>TapTap 开发者服务 SDK（TapSDK）</li>
+                    <li><strong>开发者：</strong>易玩（上海）网络科技有限公司</li>
+                    <li><strong>使用目的：</strong>按照国家新闻出版署相关规定完成网络游戏实名认证与未成年人防沉迷管理；Android ID 等设备信息用于确保设备系统兼容、定位和解决问题</li>
+                    <li><strong>收集信息范围：</strong>实名认证信息（姓名、身份证号，加密后提交国家新闻出版署实名认证系统核验，我们不存储您的身份证号原文）、设备信息（包括 Android ID）、应用信息</li>
+                    <li><strong>初始化时机：</strong>仅在您同意本隐私政策后才会初始化</li>
+                    <li><strong>收集时机与频率：</strong>Android ID 在 SDK 初始化及您授权使用相关服务时收集，每次触发时读取一次</li>
+                    <li><strong>SDK 隐私政策链接：</strong><a href="https://developer.taptap.cn/docs/sdk/start/agreement/" target="_blank" rel="noopener noreferrer">TapTap 开发者服务 SDK（TapSDK）隐私政策</a></li>
                 </ul>
             </section>
 
