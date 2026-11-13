@@ -104,7 +104,6 @@ test('mainland local phones require a mobile prefix and eleven digits after norm
   check(!validate(' '+phone.slice(0,3)+' ('+phone.slice(3,7)+')-'+phone.slice(7)+' ').error,'formatting normalized before validation');
  }
  for(const phone of [String(12)+String(randomInt(100000000,999999999)),String(23)+String(randomInt(100000000,999999999)),input.phoneNumber.slice(1),input.phoneNumber+'0',input.phoneNumber.slice(0,-1)+'x'])check(validate(phone).error==='phoneInvalid','malformed mainland phone rejected');
- check(!api.validate({...input,countryCode:'+81',phoneNumber:'9'.repeat(10),repeatPhone:'9'.repeat(10)}).error,'international length contract retained');
 });
 
 
@@ -123,4 +122,62 @@ test('browser locale selects existing dialing regions while explicit region take
  }
  check(api.defaults(loc('?region=us','jp.lunakoru.com'),['en-SG']).country==='+1','query region wins over regional hostname');
  check(api.defaults(loc(),['fr-FR']).country==='+86','unsupported languages retain safe fallback');
+});
+
+
+test('supported international mobile formats reject malformed national numbers before confirmation',()=>{
+ const input=sample(),digits=count=>Array.from({length:count},()=>randomInt(0,10)).join('');
+ const groups=[
+  ['+81',['70','80','90'].map(prefix=>prefix+digits(8)),[digits(6),'60'+digits(8),'20'+digits(8),'90'+digits(7),'90'+digits(9)]],
+  ['+65',['8','9'].map(prefix=>prefix+digits(7)),[digits(6),'2'+digits(7),'8'+digits(6),'9'+digits(8)]],
+  ['+1',[String(randomInt(2,10))+digits(2)+String(randomInt(2,10))+digits(6)],
+   [digits(6),'1'+digits(2)+'2'+digits(6),'2'+digits(2)+'1'+digits(6),'2'+digits(2)+'2'+digits(7)]]
+ ];
+ for(const [countryCode,valid,invalid] of groups){
+  for(const phone of valid){
+   const checked=api.validate({...input,countryCode,phoneNumber:phone,repeatPhone:phone});
+   check(!checked.error,'valid national mobile format');
+   for(const [first,second] of [[countryCode+' '+phone,phone],[phone,countryCode+' ('+phone.slice(0,3)+') '+phone.slice(3)],[countryCode+' '+phone,countryCode+' '+phone]]){
+    const prefixed=api.validate({...input,countryCode,phoneNumber:first,repeatPhone:second});
+    check(!prefixed.error&&prefixed.value.phoneNumber===phone,'matching selected calling code stripped independently from both inputs');
+   }
+   check(api.validate({...input,countryCode,phoneNumber:'+44'+phone,repeatPhone:'+44'+phone}).error==='phoneInvalid','different calling prefix rejected');
+  }
+  for(const phone of invalid)check(api.validate({...input,countryCode,phoneNumber:phone,repeatPhone:phone}).error==='phoneInvalid','malformed national mobile format blocked');
+ }
+ const mainland=api.validate({...input,phoneNumber:input.countryCode+' '+input.phoneNumber,repeatPhone:input.phoneNumber});
+ check(!mainland.error&&mainland.value.phoneNumber===input.phoneNumber,'mainland matching prefix also stripped');
+ const japan=groups[0][1][0];
+ check(!api.validate({...input,countryCode:'+81',phoneNumber:'0'+japan,repeatPhone:'+81'+japan}).error,'Japanese domestic trunk prefix normalized');
+});
+
+test('display language scans browser preferences independently from first-locale dialing defaults',()=>{
+ const loc={hostname:'www.lunakoru.com',search:''};
+ for(const [languages,language,country] of [
+  [['fr-FR','ja-JP'],'ja','+86'],[['fr-FR','en-SG'],'en','+86'],[['de-DE','zh-Hant-TW'],'zh-TW','+86'],
+  [['fr-FR','ko-KR'],'ko','+86'],[['fr-FR','de-DE'],'zh','+86'],[['en-GB','ja-JP'],'en','+1'],[['en-AU'],'en','+1']
+ ]){
+  const value=api.defaults(loc,languages);check(value.language===language&&value.country===country,'display fallback preserves independent dialing contract');
+ }
+ check(api.defaults({...loc,search:'?region=jp'},['fr-FR','en-SG']).language==='ja','regional site display wins over browser fallback');
+ check(api.defaults({...loc,search:'?region=jp&lang=ko'},['fr-FR','en-SG']).language==='ko','explicit supported display language still wins');
+});
+
+test('NFKC code input and prefill normalize compatibility characters before lookup',()=>{
+ const input=sample(),wide=value=>[...value].map(char=>String.fromCharCode(char.charCodeAt(0)+0xfee0)).join('');
+ const formatted='　'+wide(input.code.slice(0,4).toLowerCase())+'－'+wide(input.code.slice(4))+'　';
+ check(api.normalizeCode(formatted)===input.code,'fullwidth code and separator normalized before ASCII checks');
+ const result=api.validate({...input,repeatPhone:input.phoneNumber,code:formatted});
+ check(!result.error&&result.value.code===input.code,'normalized compatibility input reaches contract payload');
+});
+
+test('submitted English copy uses the app Bag label',()=>{
+ check(api.DICT.en.submittedBody.includes('check your Bag.')&&!api.DICT.en.submittedBody.includes('backpack'),'app destination label matches');
+});
+
+test('redemption assets use one version token and alert keeps its implicit live behavior',()=>{
+ const html=readFileSync(join(__dirname,'../redeem/index.html'),'utf8');
+ const versions=[...html.matchAll(/(?:src|href)="(?:redeem\.(?:css|js)|i18n\.js)\?v=([^"&]+)"/g)].map(match=>match[1]);
+ check(versions.length===3&&new Set(versions).size===1,'all redemption runtime assets share a release cache version');
+ check(/id="message"[^>]*role="alert"/.test(html)&&!/<[^>]*role="alert"[^>]*aria-live=/.test(html),'alert has one live announcement policy');
 });

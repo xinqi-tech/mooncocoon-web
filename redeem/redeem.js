@@ -15,8 +15,15 @@
   const ACCOUNT_RESULTS=new Set(['ACCOUNT_NOT_FOUND','NOT_ELIGIBLE','ALREADY_REDEEMED']);
   const CODE_RESULTS=new Set(ERROR_NAMES.filter(key=>!ACCOUNT_RESULTS.has(key)));
   const REGIONS={cn:{country:'+86',language:'zh',home:'/'},jp:{country:'+81',language:'ja',home:'/jp/'},sg:{country:'+65',language:'en',home:'/sg/'},us:{country:'+1',language:'en',home:'/us/'}};
-  const normalizeCode=value=>String(value||'').trim().replace(/[\s-]/g,'').toUpperCase();
-  const normalizePhone=value=>String(value||'').trim().replace(/[\s()-]/g,'');
+  const normalizeCode=value=>String(value||'').normalize('NFKC').trim().replace(/[\s-]/g,'').toUpperCase();
+  function normalizePhone(value,countryCode=''){
+    let phone=String(value||'').trim().replace(/[\s()-]/g,'');
+    if(countryCode&&phone.startsWith(countryCode))phone=phone.slice(countryCode.length);
+    if(countryCode==='+81')phone=phone.replace(/^0/,'');
+    return phone;
+  }
+  // Mobile national formats for the four default calling codes; other manually selected codes retain E.164 length checks.
+  const PHONE_PATTERNS={'+86':/^1[3-9]\d{9}$/,'+81':/^[7-9]0\d{8}$/,'+65':/^[89]\d{7}$/,'+1':/^[2-9]\d{2}[2-9]\d{6}$/};
   const normalizeCountry=value=>'+'+String(value||'').trim().replace(/^\+/,'');
   function languageFor(value){
     const tag=String(value||'').toLowerCase();
@@ -28,9 +35,10 @@
     const params=new URLSearchParams(location.search||'');
     const hostRegion=String(location.hostname||'').split('.')[0];
     const browserTag=String(languages[0]||'').toLowerCase();
-    const browserLanguage=languageFor(browserTag)||'zh';
-    const browserRegion=['zh','en','ja'].includes(languageFor(browserTag))
-      ?browserTag.split('-').slice(1).find(part=>Object.hasOwn(REGIONS,part))||({zh:'cn',en:'us',ja:'jp'})[browserLanguage]
+    const primaryLanguage=languageFor(browserTag);
+    const browserLanguage=languages.map(languageFor).find(Boolean)||'zh';
+    const browserRegion=['zh','en','ja'].includes(primaryLanguage)
+      ?browserTag.split('-').slice(1).find(part=>Object.hasOwn(REGIONS,part))||({zh:'cn',en:'us',ja:'jp'})[primaryLanguage]
       :'cn';
     const explicitRegion=Object.hasOwn(REGIONS,params.get('region'))?params.get('region'):Object.hasOwn(REGIONS,hostRegion)?hostRegion:null;
     const region=explicitRegion||browserRegion;
@@ -42,9 +50,9 @@
     return ['www.lunakoru.com','lunakoru.com','jp.lunakoru.com','sg.lunakoru.com','us.lunakoru.com'].includes(hostname)?DEFAULT_API_BASE:null;
   }
   function validate(input){
-    const countryCode=normalizeCountry(input.countryCode),phoneNumber=normalizePhone(input.phoneNumber),repeatPhone=normalizePhone(input.repeatPhone),code=normalizeCode(input.code);
+    const countryCode=normalizeCountry(input.countryCode),phoneNumber=normalizePhone(input.phoneNumber,countryCode),repeatPhone=normalizePhone(input.repeatPhone,countryCode),code=normalizeCode(input.code);
     if(!/^\+[1-9]\d{0,2}$/.test(countryCode)||!/^\d{6,14}$/.test(phoneNumber)||countryCode.length-1+phoneNumber.length>15)return {error:'phoneInvalid'};
-    if(countryCode==='+86'&&!/^1[3-9]\d{9}$/.test(phoneNumber))return {error:'phoneInvalid'};
+    if(PHONE_PATTERNS[countryCode]&&!PHONE_PATTERNS[countryCode].test(phoneNumber))return {error:'phoneInvalid'};
     if(phoneNumber!==repeatPhone)return {error:'phoneMismatch'};
     if(!code)return {error:'codeRequired'};
     if(!/^[A-Z0-9]{4,16}$/.test(code))return {error:'INVALID'};

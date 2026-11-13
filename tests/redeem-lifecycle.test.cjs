@@ -35,7 +35,7 @@ function fixture({search='?region=cn',hash=''}={}){
 }
 
 test('fragment prefill is normalized and cleared while safe query context remains',()=>{
- const input=sample(),formatted=' '+input.code.slice(0,4).toLowerCase()+' - '+input.code.slice(4)+' ';
+ const input=sample(),wide=[...input.code.toLowerCase()].map(char=>String.fromCharCode(char.charCodeAt(0)+0xfee0)).join(''),formatted='　'+wide.slice(0,4)+'－'+wide.slice(4)+'　';
  const f=fixture({search:'?region=jp&lang=ja',hash:'#code='+encodeURIComponent(formatted)});
  check(f.elements.code.value===input.code,'fragment normalized');
  check(!new URLSearchParams(f.view.location.hash.slice(1)).has('code'),'fragment consumed');

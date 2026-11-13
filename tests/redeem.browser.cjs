@@ -12,8 +12,9 @@ let browsers=[];
 before(async()=>{browsers=[await chromium.launch({headless:true}),await webkit.launch({headless:true})]});
 after(async()=>{await Promise.all(browsers.map(browser=>browser.close()))});
 async function safely(action){try{await action()}catch(error){if(error instanceof assert.AssertionError&&error.operator==='==')throw error;assert.fail('Browser scenario failed; sensitive browser call details suppressed')}}
-async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region,locale='zh-CN',search,controlledRequests=false}={}){
+async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,region,locale='zh-CN',languages,search,controlledRequests=false}={}){
  const context=await browser.newContext(mobile?{...devices['iPhone 13']}:{viewport:{width:1280,height:900},locale});t.after(()=>context.close());context.setDefaultTimeout(5000);
+ if(languages)await context.addInitScript(values=>Object.defineProperty(navigator,'languages',{get:()=>values}),languages);
  if(controlledRequests)await context.addInitScript(timeout=>{
   const nativeFetch=window.fetch.bind(window),nativeTimeout=window.setTimeout.bind(window),nativeClear=window.clearTimeout.bind(window);let timer=-1;
   window.__redeemRequests=[];window.__redeemTimers=new Map();
@@ -101,6 +102,37 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
    }finally{await Promise.all(cleanups.map(fn=>fn()))}
   }
  }));
+ test(engine+': international validation, prefixed numbers and fullwidth code reach only the local mock',()=>safely(async()=>{
+  const digits=count=>Array.from({length:count},()=>randomInt(0,10)).join('');
+  for(const [countryCode,phone] of [['+81','90'+digits(8)],['+65','8'+digits(7)],['+1','2'+digits(2)+'2'+digits(6)]]){
+   const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+    const f=await fixture(t,browsers[engineIndex]);Object.assign(f.input,{countryCode,phoneNumber:phone});await f.fill();
+    await f.page.locator('#phoneNumber').fill(phone.slice(0,6));await f.page.locator('#repeatPhone').fill(phone.slice(0,6));
+    await f.page.locator('#submit').click();
+    check(await f.page.locator('#message').textContent()===api.DICT.zh.phoneInvalid&&!(await f.page.locator('#confirmDialog').isVisible())&&f.state.calls===0,'invalid international number blocked locally');
+    await f.page.locator('#phoneNumber').fill(countryCode+' ('+phone.slice(0,3)+') '+phone.slice(3));
+    await f.page.locator('#repeatPhone').fill(phone);
+    const wide=[...f.input.code.toLowerCase()].map(char=>String.fromCharCode(char.charCodeAt(0)+0xfee0)).join('');
+    await f.page.locator('#code').fill(wide.slice(0,4)+'－'+wide.slice(4));
+    check(await f.page.locator('#code').inputValue()===f.input.code,'input event normalizes fullwidth code');
+    await f.page.locator('#submit').click();
+    const confirmation=await f.page.locator('#confirmBody').textContent();
+    check(confirmation.includes(countryCode+' '+api.maskPhone(phone))&&!confirmation.includes(phone)&&f.state.calls===0,'normalized national number masked before request');
+    await f.page.locator('#confirm').click();await f.page.locator('#resultPanel').waitFor({state:'visible'});
+    check(f.state.calls===1&&f.state.requestMatches,'canonical local mock payload only after confirmation');
+    check(await f.page.locator('#message').getAttribute('role')==='alert'&&await f.page.locator('#message').getAttribute('aria-live')===null,'single implicit alert announcement');
+   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+  }
+ }));
+ test(engine+': secondary display language fallback leaves the first-locale dialing choice intact',()=>safely(async()=>{
+  for(const [languages,search,country,language] of [[['fr-FR','en-SG'],'','+86','en'],[['de-DE','ja-JP'],'','+86','ja'],[['fr-FR','zh-Hant-TW'],'','+86','zh-TW'],[['en-GB','ko-KR'],'','+1','en'],[['fr-FR','ko-KR'],'?region=jp','+81','ja']]){
+   const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+    const f=await fixture(t,browsers[engineIndex],{languages,search});
+    check(await f.page.locator('#countryCode').inputValue()===country&&await f.page.locator('#language').inputValue()===language,'browser preference fallback reflected in the form');
+    check(f.state.calls===0,'default selection makes no API write');
+   }finally{await Promise.all(cleanups.map(fn=>fn()))}
+  }
+ }));
  test(engine+': four account states have identical response and page content',()=>safely(async()=>{
   let previousPage,previousBody;
   for(const _accountState of ['registered','unregistered','already','ineligible']){
@@ -157,7 +189,7 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
    }
    await f.page.locator('#language').selectOption('zh');
    check(await f.page.locator('#phoneNumber').inputValue()===''&&await f.page.locator('#code').inputValue()==='','screenshot inputs empty');
-   await f.page.screenshot({path:'/private/tmp/redeem-empty-'+engine.toLowerCase()+'.png',fullPage:true});
+   await f.page.screenshot({path:'/private/tmp/redeem-review2/web/redeem-empty-'+engine.toLowerCase()+'.png',fullPage:true});
   }finally{await Promise.all(cleanups.map(fn=>fn()))}
  }));
 }
