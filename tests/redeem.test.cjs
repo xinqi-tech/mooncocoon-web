@@ -128,7 +128,7 @@ test('browser locale selects existing dialing regions while explicit region take
 test('supported international mobile formats reject malformed national numbers before confirmation',()=>{
  const input=sample(),digits=count=>Array.from({length:count},()=>randomInt(0,10)).join('');
  const groups=[
-  ['+81',['60','70','80','90'].map(prefix=>prefix+digits(8)),[digits(6),'20'+digits(8),'50'+digits(8),'90'+digits(7),'90'+digits(9)]],
+  ['+81',['60','70','80','90'].map(prefix=>prefix+String(randomInt(10000000,99999999))),[digits(6),'20'+digits(8),'50'+digits(8),'90'+digits(7),'90'+digits(9),...['60','70','80','90'].map(prefix=>prefix+'0'+digits(7))]],
   ['+65',['812','912'].map(prefix=>prefix+digits(5)),[digits(6),'2'+digits(7),'8'+digits(6),'9'+digits(8)]],
   ['+1',['20255501'+digits(2)],
    [digits(6),'1'+digits(2)+'2'+digits(6),'2'+digits(2)+'1'+digits(6),'2'+digits(2)+'2'+digits(7)]]
