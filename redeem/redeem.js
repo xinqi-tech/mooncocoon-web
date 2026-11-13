@@ -3,11 +3,11 @@
  * 核心概念: 无登录/短信/账号查询；手机号只在内存，所有账号相关结果合并为已提交；API 地址不能由 URL 或存储控制。
  */
 (function(root,factory){
-  const api=factory(root,typeof module==='object'&&module.exports?require('./i18n.js'):root.LunaKoruRedeemI18n);
+  const api=factory(root,typeof module==='object'&&module.exports?require('./i18n.js'):root.LunaKoruRedeemI18n,typeof module==='object'&&module.exports?require('./phone-libphonenumber-9.0.39.js'):root.LunaKoruPhoneLib);
   if(typeof module==='object'&&module.exports)module.exports=api;
   root.LunaKoruRedeem=api;
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>api.init(root.document));
-})(typeof globalThis!=='undefined'?globalThis:this,function(root,DICT){
+})(typeof globalThis!=='undefined'?globalThis:this,function(root,DICT,PHONE_LIB){
   'use strict';
   const DEFAULT_API_BASE='https://api.lunakoru.com';
   const DEFAULT_REQUEST_TIMEOUT_MS=12000;
@@ -15,8 +15,25 @@
   const ACCOUNT_RESULTS=new Set(['ACCOUNT_NOT_FOUND','NOT_ELIGIBLE','ALREADY_REDEEMED']);
   const CODE_RESULTS=new Set(ERROR_NAMES.filter(key=>!ACCOUNT_RESULTS.has(key)));
   const REGIONS={cn:{country:'+86',language:'zh',home:'/'},jp:{country:'+81',language:'ja',home:'/jp/'},sg:{country:'+65',language:'en',home:'/sg/'},us:{country:'+1',language:'en',home:'/us/'}};
-  const normalizeCode=value=>String(value||'').trim().replace(/[\s-]/g,'').toUpperCase();
-  const normalizePhone=value=>String(value||'').trim().replace(/[\s()-]/g,'');
+  const normalizeCode=value=>String(value||'').normalize('NFKC').trim().replace(/[\s-]/g,'').toUpperCase();
+  const PHONE_UTIL=PHONE_LIB?.PhoneNumberUtil.getInstance();
+  function normalizePhone(value,countryCode=''){
+    // Mirror backend PhoneNumbers.normalize with the same Google 9.0.39 metadata; never infer ownership.
+    const code=String(countryCode).replace(/^\+/,''),callingCode=Number(code);
+    if(!PHONE_UTIL||!/^[1-9]\d{0,2}$/.test(code))return '';
+    const region=PHONE_UTIL.getRegionCodeForCountryCode(callingCode);
+    if(region==='ZZ')return '';
+    let raw=String(value||'').replace(/^[\x00-\x20]+|[\x00-\x20]+$/g,'');
+    if(!/^\+?[0-9() \t\n\v\f\r-]+$/.test(raw))return '';
+    const compact=raw.replace(/[() \t\n\v\f\r-]/g,'');
+    if(!compact.startsWith('+')&&compact.startsWith(code)&&((code==='86'&&compact.length===13)||(code==='81'&&compact.length===12)))raw='+'+compact;
+    try{
+      const parsed=PHONE_UTIL.parse(raw,region),type=PHONE_UTIL.getNumberType(parsed);
+      if(parsed.getCountryCode()!==callingCode||!PHONE_UTIL.isValidNumber(parsed)||(type!==PHONE_LIB.MOBILE&&type!==PHONE_LIB.FIXED_LINE_OR_MOBILE))return '';
+      const national=PHONE_UTIL.format(parsed,PHONE_LIB.E164).slice(code.length+1);
+      return code==='86'&&!/^1[3-9]\d{9}$/.test(national)?'':national;
+    }catch(_){return ''}
+  }
   const normalizeCountry=value=>'+'+String(value||'').trim().replace(/^\+/,'');
   function languageFor(value){
     const tag=String(value||'').toLowerCase();
@@ -28,9 +45,10 @@
     const params=new URLSearchParams(location.search||'');
     const hostRegion=String(location.hostname||'').split('.')[0];
     const browserTag=String(languages[0]||'').toLowerCase();
-    const browserLanguage=languageFor(browserTag)||'zh';
-    const browserRegion=['zh','en','ja'].includes(languageFor(browserTag))
-      ?browserTag.split('-').slice(1).find(part=>Object.hasOwn(REGIONS,part))||({zh:'cn',en:'us',ja:'jp'})[browserLanguage]
+    const primaryLanguage=languageFor(browserTag);
+    const browserLanguage=languages.map(languageFor).find(Boolean)||'zh';
+    const browserRegion=['zh','en','ja'].includes(primaryLanguage)
+      ?browserTag.split('-').slice(1).find(part=>Object.hasOwn(REGIONS,part))||({zh:'cn',en:'us',ja:'jp'})[primaryLanguage]
       :'cn';
     const explicitRegion=Object.hasOwn(REGIONS,params.get('region'))?params.get('region'):Object.hasOwn(REGIONS,hostRegion)?hostRegion:null;
     const region=explicitRegion||browserRegion;
@@ -42,9 +60,8 @@
     return ['www.lunakoru.com','lunakoru.com','jp.lunakoru.com','sg.lunakoru.com','us.lunakoru.com'].includes(hostname)?DEFAULT_API_BASE:null;
   }
   function validate(input){
-    const countryCode=normalizeCountry(input.countryCode),phoneNumber=normalizePhone(input.phoneNumber),repeatPhone=normalizePhone(input.repeatPhone),code=normalizeCode(input.code);
-    if(!/^\+[1-9]\d{0,2}$/.test(countryCode)||!/^\d{6,14}$/.test(phoneNumber)||countryCode.length-1+phoneNumber.length>15)return {error:'phoneInvalid'};
-    if(countryCode==='+86'&&!/^1[3-9]\d{9}$/.test(phoneNumber))return {error:'phoneInvalid'};
+    const countryCode=normalizeCountry(input.countryCode),phoneNumber=normalizePhone(input.phoneNumber,countryCode),repeatPhone=normalizePhone(input.repeatPhone,countryCode),code=normalizeCode(input.code);
+    if(!phoneNumber)return {error:'phoneInvalid'};
     if(phoneNumber!==repeatPhone)return {error:'phoneMismatch'};
     if(!code)return {error:'codeRequired'};
     if(!/^[A-Z0-9]{4,16}$/.test(code))return {error:'INVALID'};

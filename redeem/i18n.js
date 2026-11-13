@@ -60,7 +60,7 @@
     "redeem": "Redeem now",
     "privacy": "No login or SMS verification needed. This page does not save your phone number; refreshing clears it.",
     "submitted": "Submitted",
-    "submittedBody": "Submitted. If this phone number is registered with LunaKoru and meets the campaign requirements, the rewards have been sent to the account. Open the app and check your backpack. If you have not registered yet, register with this phone number, then return to this page and submit again.",
+    "submittedBody": "Submitted. If this phone number is registered with LunaKoru and meets the campaign requirements, the rewards have been sent to the account. Open the app and check your Bag. If you have not registered yet, register with this phone number, then return to this page and submit again.",
     "rewardTitle": "Rewards for this code",
     "again": "Redeem another code",
     "help": "Redemption cannot be undone. Check the phone number carefully before submitting.",

@@ -9,6 +9,8 @@ const sample=()=>({countryCode:'+'+(80+6),phoneNumber:String(13)+String(randomIn
 test('preview is visibly synthetic and only serves a static allowlist',async t=>{
  const origin=await fixture(t,{});const html=await (await fetch(origin+'/redeem/')).text();
  check(html.includes('mockBanner'),'visible mock environment');
+ const vendor=await fetch(origin+'/redeem/phone-libphonenumber-9.0.39.js');
+ check(vendor.status===200&&vendor.headers.get('content-type').startsWith('text/javascript'),'offline phone validator is served from the static allowlist');
  for(const path of ['/README.md','/tests/redeem-preview-server.mjs','/.git/config','/reservation.js','/index.html'])check((await fetch(origin+path)).status===404,'private files unavailable');
  const status=await new Promise((resolve,reject)=>{const req=request(origin+'/redeem/',{headers:{Host:'untrusted.example'}},res=>{res.resume();resolve(res.statusCode)});req.on('error',reject);req.end()});
  check(status===403,'host boundary');
