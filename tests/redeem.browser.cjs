@@ -39,7 +39,7 @@ async function fixture(t,browser,{prefill=false,timeoutMs=12000,mobile=false,reg
    const envelope={result:state.result,errorMsg:'',data:{rewardItems:[state.reward]},nickname:'PRIVATE_ACCOUNT_SIGNAL',uid:987654321};
    state.responseBodies.push(JSON.stringify(envelope));return respond(envelope).catch(()=>{});
   }
-  const files={'/redeem/':'redeem/index.html','/redeem/index.html':'redeem/index.html','/redeem/redeem.js':'redeem/redeem.js','/redeem/i18n.js':'redeem/i18n.js','/redeem/redeem.css':'redeem/redeem.css','/images/app-logo.jpg':'images/app-logo.jpg'};
+  const files={'/redeem/':'redeem/index.html','/redeem/index.html':'redeem/index.html','/redeem/redeem.js':'redeem/redeem.js','/redeem/i18n.js':'redeem/i18n.js','/redeem/phone-libphonenumber-9.0.39.js':'redeem/phone-libphonenumber-9.0.39.js','/redeem/redeem.css':'redeem/redeem.css','/images/app-logo.jpg':'images/app-logo.jpg'};
   const file=files[url.pathname];if(!file)return route.abort();
   let data=readFileSync(join(root,file));
   if(file.endsWith('redeem.js'))data=data.toString().replace('const DEFAULT_REQUEST_TIMEOUT_MS=12000;','const DEFAULT_REQUEST_TIMEOUT_MS='+timeoutMs+';');
@@ -104,7 +104,7 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
  }));
  test(engine+': international validation, prefixed numbers and fullwidth code reach only the local mock',()=>safely(async()=>{
   const digits=count=>Array.from({length:count},()=>randomInt(0,10)).join('');
-  for(const [countryCode,phone] of [['+81','90'+digits(8)],['+65','8'+digits(7)],['+1','2'+digits(2)+'2'+digits(6)]]){
+  for(const [countryCode,phone] of [['+81','90'+digits(8)],['+65','812'+digits(5)],['+1','20255501'+digits(2)]]){
    const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
     const f=await fixture(t,browsers[engineIndex]);Object.assign(f.input,{countryCode,phoneNumber:phone});await f.fill();
     await f.page.locator('#phoneNumber').fill(phone.slice(0,6));await f.page.locator('#repeatPhone').fill(phone.slice(0,6));
@@ -123,6 +123,22 @@ for(let engineIndex=0;engineIndex<2;engineIndex++){
     check(await f.page.locator('#message').getAttribute('role')==='alert'&&await f.page.locator('#message').getAttribute('aria-live')===null,'single implicit alert announcement');
    }finally{await Promise.all(cleanups.map(fn=>fn()))}
   }
+ }));
+ test(engine+': backend phone contract blocks invalid inputs and canonicalizes both fields before confirmation',()=>safely(async()=>{
+  const cleanups=[],t={after:fn=>cleanups.push(fn)};try{
+   const f=await fixture(t,browsers[engineIndex]);await f.fill();
+   for(const {id,country,phone,want} of require('./redeem-phone-fixtures.cjs')()){
+    await f.page.locator('#countryCode').fill(country);await f.page.locator('#phoneNumber').fill(phone);await f.page.locator('#repeatPhone').fill(want===null?phone:want);
+    await f.page.locator('#submit').click();
+    const visible=await f.page.locator('#confirmDialog').isVisible();
+    check(visible===(want!==null)&&f.state.calls===0,id+' local confirmation matches backend acceptance');
+    if(visible){
+     const body=await f.page.locator('#confirmBody').textContent();
+     check(body.includes(country+' '+api.maskPhone(want))&&!body.includes(want),id+' confirmation uses canonical masked phone');
+     await f.page.locator('#cancel').click();
+    }
+   }
+  }finally{await Promise.all(cleanups.map(fn=>fn()))}
  }));
  test(engine+': secondary display language fallback leaves the first-locale dialing choice intact',()=>safely(async()=>{
   for(const [languages,search,country,language] of [[['fr-FR','en-SG'],'','+86','en'],[['de-DE','ja-JP'],'','+86','ja'],[['fr-FR','zh-Hant-TW'],'','+86','zh-TW'],[['en-GB','ko-KR'],'','+1','en'],[['fr-FR','ko-KR'],'?region=jp','+81','ja']]){

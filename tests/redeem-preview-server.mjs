@@ -13,6 +13,7 @@ const ROUTES=new Map([
  ['/redeem/index.html',['redeem/index.html','text/html; charset=utf-8']],
  ['/redeem/redeem.css',['redeem/redeem.css','text/css; charset=utf-8']],
  ['/redeem/redeem.js',['redeem/redeem.js','text/javascript; charset=utf-8']],
+ ['/redeem/phone-libphonenumber-9.0.39.js',['redeem/phone-libphonenumber-9.0.39.js','text/javascript; charset=utf-8']],
  ['/redeem/i18n.js',['redeem/i18n.js','text/javascript; charset=utf-8']],
  ['/images/app-logo.jpg',['images/app-logo.jpg','image/jpeg']]
 ]);

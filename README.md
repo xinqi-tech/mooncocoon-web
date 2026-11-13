@@ -68,11 +68,11 @@ node tests/recharge-preview-server.mjs --port 8908
 ## 独立兑换页（未部署）
 
 - `/redeem/` 可直达，仅支持 fragment 参数 `#code=` 预填并先做 NFKC、再去空格/连字符和转大写，读取后从地址栏移除码；片段不会进入首个文档 GET。`region/lang` 可继续放非敏感 query，例如 `/redeem/?region=jp&lang=ja#code=<code>`。query 中的 `code` 不再作为预填来源，不能靠脚本清理撤销已发送的初始 URL。日本、新加坡、美国站导航带受限的 `region` 值，设定默认国家码和语言。显式 `region` 优先于地区域名和浏览器。国家码只依据首选 locale：支持的 zh/ja/en 中，CN/JP/SG/US 地区子标签对应 +86/+81/+65/+1；没有受支持的地区子标签时按 zh/ja/en 分别回退 +86/+81/+1，因此 `en-GB`、`en-AU` 和 `en` 默认 +1。ko、zh-TW 和不支持的首选语言回退 +86，国家码不扫描次选语言。显示语言独立按显式 `lang` → 地区站点语言 → 浏览器语言列表中第一个受支持的语言 → 中文选择，例如 `fr-FR, ja-JP` 显示日文但国家码仍 +86。`lang` 与页面五语选择器只改变显示语言；用户仍可手动修改国家码。中文首页入口随预约有礼接线后续开发。
-- 页面不登录、不发送短信、不查询账号资料、不保存手机号。两次手机号均在本地去除空格、括号和连字符，分别剥离与所选国家码相同的 `+` 前缀（其他国家码前缀拒绝），日本国内号码额外去掉一个前导 `0`，再校验并要求相同。+86 为 `1[3-9]` 开头的 11 位；+81 为 70/80/90 开头的 10 位；+65 为 8/9 开头的 8 位；+1 为 10 位 NANP 格式，区号和局号首位均为 2–9。其他手填国家码仍按 E.164 长度边界校验。无效或不一致不打开确认且不发送兑换请求。提交前由用户输入本地生成打码确认。所有账号结果统一为“已提交”，奖励内容由 `data.rewardItems` 提供。
+- 页面不登录、不发送短信、不查询账号资料、不保存手机号。两次手机号各自在本地使用与后端 `PhoneNumbers.normalize` 相同版本的 Google libphonenumber **9.0.39** 校验国家码、有效号段和号码类型，只接受 `MOBILE` / `FIXED_LINE_OR_MOBILE`；+86 继续使用 11 位存量号码约束。支持本地写法、匹配所选国家码的 `+` 国际写法、无 `+` 的 86/81 国际写法及号码库规定的国内干线前缀；其他手填国家码也走同一元数据，拒绝未知国家码、仅能识别为固话的号码、免费电话、未分配号段、错误或重复 `+` 前缀。日本 60/70/80/90 按后端 9.0.39 规则处理。两栏分别转为规范本地号码再比较，接口仍提交 `{countryCode,phoneNumber,code}`。无效或不一致不打开确认且不发送兑换请求。格式和类型校验不证明号码存在、归属或实际短信可达。提交前由用户输入本地生成打码确认。所有账号结果统一为“已提交”，奖励内容由 `data.rewardItems` 提供。
 - `POST /api/redeem-code/web-redeem` 请求 `{countryCode,phoneNumber,code}`；生产只使用固定 `https://api.lunakoru.com`，不支持通过 query 或存储覆盖。不会自动重试兑换写入。离页会取消请求并使当前请求代际失效；BFCache 恢复新建代际，旧成功/失败/超时/埋点/清理回调都不能覆盖或解锁新提交。
 - 定向验证：`node --test tests/redeem.test.cjs tests/redeem-lifecycle.test.cjs tests/redeem-preview.test.mjs`；真实浏览器合成回归需 Playwright 与对应 Chromium/WebKit runtime：`node --test tests/redeem.browser.cjs`。五语词典平价由定向测试覆盖；工作区通用 parity gate 不解析本站字典。
 - 只读静态/本地合成预览：`node tests/redeem-preview-server.mjs`，访问打印的 loopback 地址。合成成功响应与账号状态归并只是 mock 验证，不代表真实测试库发奖验收。
-- 经授权的真实测试环境联调：`node tests/redeem-preview-server.mjs --test`；仅将兑换与匿名埋点 POST 转发至现有官网预览工具同一固定测试后端，页面显示测试横幅。服务只绑定 loopback、校验 Host/Origin、限制请求大小、不记录请求体/URL查询/上游错误内容，不提供任意代理。当前维护的官网 staging 按名称排除 `tests/` 与 `preview_server.py`，保留 `/redeem/` 运行资源；此过滤修复随 [后端 PR #2887](https://github.com/xinqi-tech/Aildo-JAVA/pull/2887) 交付，发布须使用包含该修复的维护脚本。没有按 `.zip` 等后缀一概排除下载资源。后端必须先于官网上线。
+- 经授权的真实测试环境联调：`node tests/redeem-preview-server.mjs --test`；仅将兑换与匿名埋点 POST 转发至现有官网预览工具同一固定测试后端，页面显示测试横幅。服务只绑定 loopback、校验 Host/Origin、限制请求大小、不记录请求体/URL查询/上游错误内容，不提供任意代理。当前维护的官网 staging 按名称排除 `tests/` 与 `preview_server.py`，保留 `/redeem/` 运行资源；Workspace 发布 skill 另排除根及嵌套 `node_modules/`，离线校验库及许可直接存放 `redeem/`，不会受此过滤影响；此过滤修复随 [后端 PR #2887](https://github.com/xinqi-tech/Aildo-JAVA/pull/2887) 交付，发布须使用包含该修复的维护脚本。没有按 `.zip` 等后缀一概排除下载资源。后端必须先于官网上线。
 
 
 ### 2026-11-12 实际 TEST 联调记录
@@ -105,3 +105,9 @@ node tests/recharge-preview-server.mjs --port 8908
 - 国家码与显示语言的回退规则分开测试；保留 `en-GB` → +1 的既有代码约定。国际号码验证、两栏各自带匹配国家码的输入、日本国内前导 0、全角码输入/fragment 预填均有回归。
 - 英文到账指引用 App 的 **Bag**；错误提示保留 `role=alert` 的隐式播报，移除冲突的 `aria-live=polite`。兑换页 CSS、逻辑及五语字典使用同一个 `?v=` 版本，后续修改运行资源时同步更新。
 - 本轮验证命令、RED/GREEN、号码规则来源及限制见 [兑换页实现记录](docs/impl/redeem-code.md)。本轮仅本地合成回归，没有重放历史真实 TEST 请求、发奖或部署。
+
+
+### 2026-11-13 手机号与后端规范对齐
+
+- 兑换页直接同源加载由 Google 官方 `v9.0.39` 源码编译的离线校验库，替代手写四地区正则和其他国家码仅校验长度的逻辑。无 CDN、额外接口或 `node_modules` 运行依赖；资源缓存版本统一为 `20261113-phone3`。精确来源、构建和校验摘要见 [实现记录](docs/impl/redeem-code.md#2026-11-13-手机号与后端规范对齐)。
+- 已先观察 Node / Chromium / WebKit 的未分配号段回归失败，再修复；53 类合成向量及 245 地区、2019 项官方示例 corpus 与实际后端 `PhoneNumbers.java` + JDK 11 + Maven `9.0.39` jar 对照一致。仅输出 case ID/统计，无号码日志。本轮没有短信、真实兑换或部署。

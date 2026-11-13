@@ -98,8 +98,8 @@ test('submitted copy tells unregistered users to register and submit again in ev
 
 test('mainland local phones require a mobile prefix and eleven digits after normalization',()=>{
  const input=sample(),validate=phone=>api.validate({...input,phoneNumber:phone,repeatPhone:phone});
- for(const prefix of ['13','14','15','16','17','18','19']){
-  const phone=prefix+String(randomInt(100000000,999999999));
+ for(const prefix of ['138','147','159','166','172','188','199']){
+  const phone=prefix+String(randomInt(10000000,99999999));
   check(!validate(phone).error,'supported mainland mobile prefix');
   check(!validate(' '+phone.slice(0,3)+' ('+phone.slice(3,7)+')-'+phone.slice(7)+' ').error,'formatting normalized before validation');
  }
@@ -128,9 +128,9 @@ test('browser locale selects existing dialing regions while explicit region take
 test('supported international mobile formats reject malformed national numbers before confirmation',()=>{
  const input=sample(),digits=count=>Array.from({length:count},()=>randomInt(0,10)).join('');
  const groups=[
-  ['+81',['70','80','90'].map(prefix=>prefix+digits(8)),[digits(6),'60'+digits(8),'20'+digits(8),'90'+digits(7),'90'+digits(9)]],
-  ['+65',['8','9'].map(prefix=>prefix+digits(7)),[digits(6),'2'+digits(7),'8'+digits(6),'9'+digits(8)]],
-  ['+1',[String(randomInt(2,10))+digits(2)+String(randomInt(2,10))+digits(6)],
+  ['+81',['60','70','80','90'].map(prefix=>prefix+digits(8)),[digits(6),'20'+digits(8),'50'+digits(8),'90'+digits(7),'90'+digits(9)]],
+  ['+65',['812','912'].map(prefix=>prefix+digits(5)),[digits(6),'2'+digits(7),'8'+digits(6),'9'+digits(8)]],
+  ['+1',['20255501'+digits(2)],
    [digits(6),'1'+digits(2)+'2'+digits(6),'2'+digits(2)+'1'+digits(6),'2'+digits(2)+'2'+digits(7)]]
  ];
  for(const [countryCode,valid,invalid] of groups){
@@ -177,7 +177,17 @@ test('submitted English copy uses the app Bag label',()=>{
 
 test('redemption assets use one version token and alert keeps its implicit live behavior',()=>{
  const html=readFileSync(join(__dirname,'../redeem/index.html'),'utf8');
- const versions=[...html.matchAll(/(?:src|href)="(?:redeem\.(?:css|js)|i18n\.js)\?v=([^"&]+)"/g)].map(match=>match[1]);
- check(versions.length===3&&new Set(versions).size===1,'all redemption runtime assets share a release cache version');
+ const versions=[...html.matchAll(/(?:src|href)="(?:redeem\.(?:css|js)|i18n\.js|phone-libphonenumber-9\.0\.39\.js)\?v=([^"&]+)"/g)].map(match=>match[1]);
+ check(versions.length===4&&new Set(versions).size===1,'all redemption runtime assets share a release cache version');
  check(/id="message"[^>]*role="alert"/.test(html)&&!/<[^>]*role="alert"[^>]*aria-live=/.test(html),'alert has one live announcement policy');
+});
+
+
+test('phone acceptance and canonical national payload match backend mobile metadata',()=>{
+ const input=sample();
+ for(const {id,country,phone,want} of require('./redeem-phone-fixtures.cjs')()){
+  const result=api.validate({...input,countryCode:country,phoneNumber:phone,repeatPhone:phone});
+  if(want===null)check(result.error==='phoneInvalid',id+' rejected locally');
+  else check(!result.error&&result.value.countryCode===country&&result.value.phoneNumber===want,id+' accepted with backend canonical national payload');
+ }
 });

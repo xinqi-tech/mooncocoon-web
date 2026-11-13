@@ -26,7 +26,7 @@ function fixture({search='?region=cn',hash=''}={}){
   if(url.endsWith('/api/analytics/events')){events.push(...JSON.parse(options.body).events);return Promise.resolve(response())}
   let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no});requests.push({resolve,reject,signal:options.signal});return promise;
  };
- const sandbox={module:{exports:{}},require:()=>DICT,URL,URLSearchParams,AbortController,console,crypto:{randomUUID:()=>randomBytes(8).toString('hex')},setTimeout(callback){const id=++timerId;timers.set(id,callback);return id},clearTimeout:id=>timers.delete(id)};
+ const sandbox={module:{exports:{}},require:path=>path==='./i18n.js'?DICT:require('../redeem/phone-libphonenumber-9.0.39.js'),URL,URLSearchParams,AbortController,console,crypto:{randomUUID:()=>randomBytes(8).toString('hex')},setTimeout(callback){const id=++timerId;timers.set(id,callback);return id},clearTimeout:id=>timers.delete(id)};
  vm.runInNewContext(source,sandbox,{filename:'redeem.js'});sandbox.module.exports.init(doc,fetcher);
  const fill=input=>{elements.countryCode.value=input.countryCode;elements.phoneNumber.value=input.phoneNumber;elements.repeatPhone.value=input.phoneNumber;elements.code.value=input.code};
  const submit=()=>{elements.redeemForm.dispatchEvent(new Event('submit',{cancelable:true}));elements.confirm.click()};
