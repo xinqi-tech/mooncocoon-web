@@ -154,12 +154,13 @@ canvas#particles{position:fixed;inset:0;z-index:1;pointer-events:none;contain:st
 @keyframes butterflyGlow{0%{opacity:1;transform:translateX(0) scale(1) rotate(-35deg);filter:drop-shadow(0 0 6px rgba(150,205,255,0.7)) drop-shadow(0 0 14px rgba(255,255,255,0.5))}100%{opacity:1;transform:translateX(0) scale(1.2) rotate(-35deg);filter:drop-shadow(0 0 16px rgba(255,255,255,1)) drop-shadow(0 0 28px rgba(150,205,255,0.9))}}
 /* FOOTER */
 .footer{border-top:1px solid var(--divider-soft);background:rgba(3,10,28,0.72);width:100%}.footer>.footer-grid{max-width:1440px;margin-left:auto;margin-right:auto;padding-left:var(--page-x);padding-right:var(--page-x);padding-top:60px;padding-bottom:60px;margin-bottom:0}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr;gap:60px;margin-bottom:40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:40px}
 .footer-brand h3{font-family:var(--font-serif);font-size:20px;margin-bottom:12px}
 .footer-brand p{font-size:13px;color:var(--text-muted);line-height:1.8}
 .footer-col h4{font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text-primary)}
 .footer-col ul{list-style:none}
 .footer-col li{font-size:13px;color:var(--text-muted);margin-bottom:10px}
+.footer-col a{color:var(--ice-340);text-underline-offset:4px}
 .footer-icp{text-align:center;padding:0 var(--page-x) 24px;color:var(--text-muted);font-size:12px;line-height:1.6}
 .footer-icp a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .footer-icp a:hover{color:var(--text-primary)}
@@ -387,7 +388,8 @@ body.is-loading{overflow:hidden}
   <div class="nav-links">
     <a href="#hero">首页</a>
     <a href="#reservation" data-reservation-entry>预约有礼</a>
-    <a href="#modules">产品介绍</a>
+    <a href="product/">产品介绍</a>
+    <a href="about/">关于我们</a>
   </div>
   <div class="region-switcher" data-region-switcher hidden>
     <button type="button" data-region-button aria-haspopup="true" aria-expanded="false">销售区域</button>
@@ -582,6 +584,10 @@ body.is-loading{overflow:hidden}
   <div class="footer-col">
     <h4>联系我们</h4>
     <ul><li>邮箱：hello@heabo.cn</li><li>地址：上海市徐汇区</li></ul>
+  </div>
+  <div class="footer-col">
+    <h4>了解月光茧</h4>
+    <ul><li><a href="product/">产品介绍</a></li><li><a href="about/">关于我们</a></li></ul>
   </div>
 </div>
 <p class="footer-icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备2025150534号-1</a></p>
@@ -1143,7 +1149,7 @@ function addPressAnim(selector,extraClass){
 addPressAnim('.nav-links a','is-pressing');
 
 // Nav smooth scroll
-document.querySelectorAll('.nav-links a').forEach(a=>{
+document.querySelectorAll('.nav-links a[href^="#"]').forEach(a=>{
   a.addEventListener('click',e=>{
     e.preventDefault();
     const id=a.getAttribute('href').slice(1);
