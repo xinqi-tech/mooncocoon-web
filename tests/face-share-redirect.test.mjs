@@ -41,7 +41,7 @@ test("URL 注入输入无法改变固定跳转目标", () => {
 
 test("静态页保留 App 按钮并尝试自动唤起", async () => {
   const html = await readFile(new URL("../f/index.html", import.meta.url), "utf8");
-  assert.match(html, /<script src="redirect\.js"><\/script>/);
+  assert.match(html, /<script src="redirect\.js\?v=20261116"><\/script>/);
   assert.match(html, /id="open-app"/);
   assert.match(html, /id="download-app"/);
   assert.match(html, /window\.location\.href = target/);
