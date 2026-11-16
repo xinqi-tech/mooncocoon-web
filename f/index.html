@@ -2,15 +2,14 @@
 <!--
   AI Context
   -----------
-  本文件是什么: 捏脸分享二维码的官网短入口，校验分享码后跳转已有 H5。
+  本文件是什么: 捏脸分享二维码的官网入口，校验分享码后唤起 App。
 
   关联文件:
   - 上游: Android CustomizationShareLink — 生成 /f/?c=<code> 二维码链接
-  - 下游: redirect.js — 执行纯函数校验并构造固定 H5 目标
-  - 下游: Aildo-JAVA live2d-share 静态页 — 展示分享详情并提供 App 唤起入口
+  - 下游: redirect.js — 执行纯函数校验并构造固定 App 深链
 
   核心概念:
-  - 短入口: 只负责安全跳转，不复制分享详情 UI，也不请求业务接口
+  - 短入口: 尝试唤起 App，并保留可点击的重试和下载入口
 -->
 <html lang="zh-CN">
 <head>
@@ -53,21 +52,33 @@
       color: #c7e5ff;
       text-underline-offset: 4px;
     }
+    [hidden] { display: none !important; }
+    .open-app {
+      display: block;
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: #c7e5ff;
+      color: #06142f;
+      font-weight: 600;
+      text-decoration: none;
+    }
   </style>
 <link rel="stylesheet" href="../app-ui.css?v=20261020n">
 <script src="../title-plates.js?v=20261020n" defer></script>
 </head>
 <body>
   <main>
-    <h1>正在打开捏脸分享</h1>
-    <p id="status" role="status" aria-live="polite">请稍候…</p>
+    <h1>打开月光茧捏脸分享</h1>
+    <p id="status" role="status" aria-live="polite">正在尝试打开 App…</p>
+    <a id="open-app" class="open-app" hidden>在 App 中打开</a>
+    <a id="download-app" href="https://releases.lunakoru.com/" hidden>还没有 App？下载月光茧</a>
     <a href="../">返回月光茧官网</a>
     <noscript><p>请启用 JavaScript 后重新打开此链接。</p></noscript>
   </main>
 
-  <script src="redirect.js"></script>
+  <script src="redirect.js?v=20261116"></script>
   <script>
-    (function redirectToSharePage() {
+    (function openShareInApp() {
       const status = document.getElementById("status");
       const helper = window.FaceShareRedirect;
       const target = helper && helper.resolveRedirectTarget(window.location.search);
@@ -78,7 +89,11 @@
         return;
       }
 
-      window.location.replace(target);
+      document.getElementById("open-app").href = target;
+      document.getElementById("open-app").hidden = false;
+      document.getElementById("download-app").hidden = false;
+      status.textContent = "若没有自动进入 App，请点击下方按钮。";
+      window.location.href = target;
     })();
   </script>
 </body>
