@@ -5,12 +5,12 @@
  * -----------
  * 关联文件:
  * - 上游: f/index.html — 读取二维码短链接参数并调用本文件
- * - 下游: Aildo-JAVA live2d-share 静态页 — 唯一允许的跳转目标
+ * - 下游: Android 捏脸导入深链 — 从浏览器唤起 App
  * - 测试: tests/face-share-redirect.test.mjs — 校验短码契约与开放重定向防护
  *
  * 核心概念:
  * - share code — 6–14 位字母数字短码；后端当前生成 8 位，区间用于兼容既有客户端契约
- * - fixed target — 写死的捏脸分享 H5 地址，不接受调用方传入 origin
+ * - fixed target — 固定的捏脸导入协议，只将校验过的分享码拼入路径
  */
 (function exposeFaceShareRedirect(root, factory) {
   const api = factory();
@@ -24,8 +24,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createFaceShareRedirect() {
   "use strict";
 
-  const TARGET_PREFIX =
-    "https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com/live2d-share/?code=";
+  const TARGET_PREFIX = "lunakoru://customization/";
   const SHARE_CODE_PATTERN = /^[A-Za-z0-9]{6,14}$/;
 
   function buildRedirectTarget(code) {
