@@ -20,6 +20,8 @@
   const STORAGE_NAMESPACE='sandbox:127.0.0.1_9000';
   const SESSION_KEY=`lunakoru.recharge.session.v1:${STORAGE_NAMESPACE}`;
   const PENDING_KEY=`lunakoru.recharge.pending.v1:${STORAGE_NAMESPACE}`;
+  const EXCHANGE_CREDENTIAL=`wrx1.${'e'.repeat(60)}`;
+  const RESUME_CREDENTIAL=`wr1.${'r'.repeat(60)}`;
 
   function response(data,result=0,errorMsg=''){
     return Promise.resolve({ok:true,status:200,json:async()=>({result,errorMsg,data})});
@@ -35,14 +37,15 @@
       const parsed=new URL(url),path=parsed.pathname;calls.push({path,request});
       if(path==='/api/web-recharge/config')return response({environment:'sandbox',available:true,loginAvailable:true});
       if(path==='/api/users/send/sms/code')return response({success:true});
-      if(path==='/api/users/login-existing')return response({user,newUser:false,accessToken:'fixture-access-token',refreshToken:'fixture-must-be-ignored'});
+      if(path==='/api/users/login-existing')return response({user,newUser:false,accessToken:'fixture-access-token',resumeExchangeCredential:EXCHANGE_CREDENTIAL,refreshToken:'fixture-must-be-ignored'});
+      if(path==='/api/web-recharge/resume')return response({resumeCredential:RESUME_CREDENTIAL});
       if(path==='/api/mall/wallet')return response({moonCocoon:120,moonSilk:88,energy:9,energyExact:'9'});
       if(path==='/api/mall/recharge')return response({tiers:[
         {tierId:'recharge_6',name:'轻盈一束',silkAmount:60,rmbPrice:600,firstRechargeBonus:60,firstRechargeTotal:120,firstRechargeAvailable:true,isBigTier:false},
         {tierId:'recharge_30',name:'月下相逢',silkAmount:300,rmbPrice:3000,firstRechargeBonus:300,firstRechargeTotal:600,firstRechargeAvailable:true,isBigTier:false},
         {tierId:'recharge_68',name:'长夜相伴',silkAmount:680,rmbPrice:6800,firstRechargeBonus:680,firstRechargeTotal:1360,firstRechargeAvailable:true,isBigTier:true}
       ]});
-      if(path==='/api/web-recharge/orders'&&request.method==='POST')return response({orderId,paymentUrl:'https://openapi-sandbox.dl.alipaydev.com/not-a-gateway'});
+      if(path==='/api/web-recharge/orders'&&request.method==='POST')return response({orderId,paymentUrl:'https://openapi-sandbox.dl.alipaydev.com/not-a-gateway',resumeCredential:RESUME_CREDENTIAL});
       if(path===`/api/web-recharge/orders/${orderId}`){
         const status=statusSequence[Math.min(orderReads++,statusSequence.length-1)];
         return response({orderId,status,productType:'recharge',productId:'recharge_6',channel:'alipay_wap_test',rmbPrice:600,
@@ -57,7 +60,7 @@
 
   function seedPending(storage){
     storage.setItem(SESSION_KEY,JSON.stringify({userId:'900004',accessToken:'fixture-access-token',nickname:'本地合成账号'}));
-    storage.setItem(PENDING_KEY,JSON.stringify({'900004':{requestId:'fixture_request_0001',tierId:'recharge_6',orderId:'WEB-SANDBOX-0001',createdAt:Date.now()}}));
+    storage.setItem(PENDING_KEY,JSON.stringify({'900004':{requestId:'123e4567-e89b-42d3-a456-426614174000',tierId:'recharge_6',orderId:'WEB-SANDBOX-0001',createdAt:Date.now()}}));
   }
 
   function installRechargeBrowserFixture(target,options={}){
