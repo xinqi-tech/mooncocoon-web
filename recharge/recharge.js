@@ -323,8 +323,8 @@
       if(state.configured&&state.loginAvailable){notice.hidden=true;return}
       notice.hidden=false;const detail=notice.querySelector('span');
       if(detail)detail.textContent=state.loginAvailable
-        ?(state.environment==='production'?'手机网站支付正在审核，暂不开放新付款；如有待确认订单，仍可登录查询。':'沙箱新充值暂时停止，仍可登录查询本浏览器会话中的待确认订单。')
-        :(state.environment==='production'?'手机网站支付正在审核，付款与账号验证暂未开放。':'沙箱充值暂不可用，登录、短信和付款均已锁定。');
+        ?(state.environment==='production'?'官网充值暂不开放新付款；如有待确认订单，仍可登录查询。':'沙箱新充值暂时停止，仍可登录查询本浏览器会话中的待确认订单。')
+        :(state.environment==='production'?'官网充值暂不可用，付款与账号验证暂未开放。':'沙箱充值暂不可用，登录、短信和付款均已锁定。');
     };
     const refreshLoginAvailability=()=>{
       state.loginAvailable=state.environmentTrusted&&(state.configured?state.serviceLoginAvailable:state.resumeCandidates.length>0);

@@ -6,10 +6,9 @@ import test from "node:test";
 const require = createRequire(import.meta.url);
 const { buildRedirectTarget, resolveRedirectTarget } = require("../f/redirect.js");
 
-const TARGET_PREFIX =
-  "https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com/live2d-share/?code=";
+const TARGET_PREFIX = "lunakoru://customization/";
 
-test("合法分享码跳转到固定 H5 origin", () => {
+test("合法分享码唤起固定 App 深链", () => {
   assert.equal(buildRedirectTarget("ABCDEFG2"), `${TARGET_PREFIX}ABCDEFG2`);
   assert.equal(resolveRedirectTarget("?c=ABCDEFG2"), `${TARGET_PREFIX}ABCDEFG2`);
   assert.equal(buildRedirectTarget("abc123"), `${TARGET_PREFIX}abc123`);
@@ -40,9 +39,12 @@ test("URL 注入输入无法改变固定跳转目标", () => {
   assert.equal(resolveRedirectTarget("?c=ABCDEF2%23evil"), null);
 });
 
-test("静态页引用本地 helper 并通过 location.replace 跳转", async () => {
+test("静态页保留 App 按钮并尝试自动唤起", async () => {
   const html = await readFile(new URL("../f/index.html", import.meta.url), "utf8");
-  assert.match(html, /<script src="redirect\.js"><\/script>/);
-  assert.match(html, /window\.location\.replace\(target\)/);
+  assert.match(html, /<script src="redirect\.js\?v=20261116"><\/script>/);
+  assert.match(html, /id="open-app"/);
+  assert.match(html, /id="download-app"/);
+  assert.match(html, /window\.location\.href = target/);
+  assert.doesNotMatch(html, /tencentscf\.com/);
   assert.match(html, /返回月光茧官网/);
 });

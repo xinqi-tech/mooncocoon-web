@@ -1,0 +1,45 @@
+/*
+ * AI Context: 国内官网产品介绍与关于我们独立页面的共用样式。
+ * 关联：首页 index.html 提供内容和入口；product/、about/ 使用本文件。
+ * 核心概念：真实二级页面可直接访问，不依赖首页脚本或支付接口。
+ */
+@font-face{font-family:"QingNiao Serif";src:url("fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-display:swap}
+@font-face{font-family:"QingNiao Sans";src:url("fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-display:swap}
+:root{color-scheme:dark;--bg:#06142f;--ink:#f6fbff;--muted:#c5d8ec;--line:rgba(220,240,255,.2);--accent:#c7e5ff;--serif:"QingNiao Serif","PingFang SC",serif;--sans:"QingNiao Sans","PingFang SC",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,rgba(6,20,47,.56),rgba(3,13,32,.97)),url("images/banner_bg.webp") center top/cover fixed;color:var(--ink);font:16px/1.75 var(--sans)}
+a{color:var(--accent);text-underline-offset:5px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.skip-link{position:absolute;top:-80px;left:16px;z-index:10;background:var(--ink);color:var(--bg);padding:8px 14px}
+.skip-link:focus{top:12px}
+.site-header{border-bottom:1px solid var(--line);background:rgba(3,13,32,.74)}
+.site-nav,.site-footer-inner{max-width:1120px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--ink);font-family:var(--serif);font-size:20px;text-decoration:none;white-space:nowrap}
+.brand img{width:36px;height:36px;border-radius:9px}
+.nav-links,.footer-links{display:flex;flex-wrap:wrap;gap:12px 24px}
+.nav-links a,.footer-links a{color:var(--muted);text-decoration:none}
+.nav-links a:hover,.footer-links a:hover,.nav-links a[aria-current="page"]{color:var(--ink);text-decoration:underline}
+main{max-width:1120px;margin:auto;padding:56px 24px 96px}
+.eyebrow{margin:0 0 12px;color:var(--accent);font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.page-hero{max-width:780px;margin-bottom:56px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.35}
+h1{font-size:clamp(38px,6vw,68px);margin:0 0 22px}
+h2{font-size:clamp(28px,4vw,42px);margin:0 0 18px}
+h3{font-size:22px;margin:0 0 10px}
+.lead{font-size:clamp(17px,2vw,21px);color:var(--muted);margin:0}
+.visual{width:100%;max-height:520px;object-fit:cover;border-radius:24px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.section{padding:44px 0;border-top:1px solid var(--line)}
+.section>p{max-width:760px;color:var(--muted)}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:28px}
+.feature{padding:28px;border:1px solid var(--line);border-radius:22px;background:rgba(117,160,214,.1)}
+.feature p,.feature li{color:var(--muted)}
+.feature ul{padding-left:20px;margin:12px 0 0}
+.feature li+li{margin-top:5px}
+.section-link{display:inline-block;margin-top:16px}
+.contact-list{list-style:none;padding:0;margin:20px 0 0}
+.contact-list li+li{margin-top:12px}
+.site-footer{border-top:1px solid var(--line);background:rgba(3,13,32,.74)}
+.site-footer-inner{align-items:flex-start;font-size:14px;color:var(--muted)}
+.site-footer p{margin:0}
+@media(max-width:760px){.site-nav,.site-footer-inner{align-items:flex-start;flex-direction:column}.nav-links{gap:8px 16px}.feature-grid{grid-template-columns:1fr}main{padding-top:40px;padding-bottom:64px}.section{padding:32px 0}}

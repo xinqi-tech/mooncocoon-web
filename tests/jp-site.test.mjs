@@ -157,10 +157,12 @@ test("国内站不链接日本站，日本站保留加载页、原首页结构�
   assert.match(home, /<html lang="ja">/);
   const homeNav = home.match(/<div class="nav-links">([\s\S]*?)<\/div>/)?.[1] || "";
   const productNav = product.match(/<div class="nav-links"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
-  assert.equal((homeNav.match(/<a\b/g) || []).length, 2);
-  assert.equal((productNav.match(/<a\b/g) || []).length, 2);
-  assert.equal((homeNav.match(/<span>/g) || []).length, 2);
-  assert.equal((productNav.match(/<span>/g) || []).length, 2);
+  assert.equal((homeNav.match(/<a\b/g) || []).length, 3);
+  assert.equal((productNav.match(/<a\b/g) || []).length, 3);
+  assert.equal((homeNav.match(/<span>/g) || []).length, 3);
+  assert.equal((productNav.match(/<span>/g) || []).length, 3);
+  assert.match(homeNav, /href="\.\.\/redeem\/\?region=jp"/);
+  assert.match(productNav, /href="\.\.\/\.\.\/redeem\/\?region=jp"/);
   assert.match(productNav, /href="\.\.\/index\.html"/);
   assert.match(product, /<body class="product-page">/);
   assert.doesNotMatch(product, /data-menu-button/);

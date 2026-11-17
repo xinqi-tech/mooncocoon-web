@@ -10,25 +10,62 @@
   root.LunaKoruReservation=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
-  const DEFAULT_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
+  const DEFAULT_API_BASE='https://api.lunakoru.com';
+  const LEGACY_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
   const endpoint='/api/reservation-gift';
   const DEFAULT_REQUEST_TIMEOUT_MS=12000;
   const RESERVATION_START='2026-10-24T00:00:00+08:00';
+  const ANALYTICS_EVENT_PREFIX='reservation_';
+  const ANALYTICS_DEVICE_KEY='lunakoru_reservation_device_id';
+  const ANALYTICS_SESSION_KEY='lunakoru_reservation_session_id';
+  const ATTRIBUTION_KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
   function formatCountdown(start,now){
     const seconds=Math.max(0,Math.ceil((start-now)/1000));
     return `${String(Math.floor(seconds/3600)).padStart(2,'0')} 小时 ${String(Math.floor(seconds/60)%60).padStart(2,'0')} 分钟 ${String(seconds%60).padStart(2,'0')} 秒`;
   }
   // Approved reward categories are a preview only; counts and unlocks always come from the API.
-  const previewRewards=[{tier:3,threshold:20000,name:'专属称号'},
-    {tier:1,threshold:50000,name:'永久配饰'},{tier:2,threshold:100000,name:'永久服装'}];
+  const previewRewards=[{tier:3,threshold:10000,name:'专属称号'},
+    {tier:1,threshold:20000,name:'永久配饰'},{tier:2,threshold:50000,name:'永久服装'}];
   const validPhone=phone=>/^1[3-9]\d{9}$/.test(String(phone||''));
   const safeUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'?u.href:''}catch(_){return ''}};
   const channel=value=>/^[a-zA-Z0-9_-]{1,80}$/.test(value||'')?value:'unknown';
+  const attribution=value=>/^[a-zA-Z0-9._~-]{1,80}$/.test(String(value||'').trim())?String(value).trim():'unknown';
   const selectedPlatform=(form,ua)=>{
     const checked=form.querySelector('input[name="platform"]:checked');
     if(checked)return checked.value;
     return /iPhone|iPad/i.test(ua||'')?'IOS':'ANDROID';
   };
+  const randomId=()=>{
+    try{if(root.crypto?.randomUUID)return root.crypto.randomUUID()}catch(_){/* use fallback */}
+    return 'web-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
+  };
+  const storageValue=(storage,key,create)=>{
+    try{
+      const current=storage?.getItem(key);if(current)return current;
+      if(!create)return '';
+      const value=randomId();storage?.setItem(key,value);return value;
+    }catch(_){return create?randomId():''}
+  };
+  const analyticsErrorKind=error=>{
+    if(error?.name==='AbortError')return 'timeout';
+    if(error?.status===429)return 'rate_limited';
+    if(error?.status>=500)return 'server';
+    if(error?.name==='SyntaxError')return 'invalid_response';
+    if(error?.name==='TypeError')return 'network';
+    const message=String(error?.message||'');
+    if(/验证码/.test(message))return 'verification';
+    if(/频繁|冷却/.test(message))return 'rate_limited';
+    if(/手机号/.test(message))return 'invalid_phone';
+    if(/网络|超时|服务/.test(message))return 'network';
+    return 'request_failed';
+  };
+  const buildAnalyticsEvent=(eventType,context,properties={},timestamp=Date.now())=>({
+    event_id:randomId(),event_type:ANALYTICS_EVENT_PREFIX+eventType,
+    device_id:context.deviceId,session_id:context.sessionId,platform:'web',timestamp,
+    properties:{campaign_id:'domestic_reservation_gift',source:context.source,campaign_tag:context.campaignTag,
+      utm_source:context.utmSource,utm_medium:context.utmMedium,utm_campaign:context.utmCampaign,
+      utm_content:context.utmContent,utm_term:context.utmTerm,device_kind:context.deviceKind,...properties}
+  });
   function init(doc,fetchImpl,requestTimeoutMs=DEFAULT_REQUEST_TIMEOUT_MS){
     const form=doc.getElementById('reservationForm');if(!form)return;
     if(!form.querySelector('input[name="platform"]:checked'))form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
@@ -36,15 +73,18 @@
     const timeoutMs=Number.isFinite(requestTimeoutMs)&&requestTimeoutMs>0?requestTimeoutMs:DEFAULT_REQUEST_TIMEOUT_MS;
     const localPreview=['127.0.0.1','localhost','[::1]'].includes(root.location.hostname);
     const base=localPreview?'':String(doc.body.dataset.reservationApi||DEFAULT_API_BASE).replace(/\/$/,'');
+    const apiBases=!localPreview&&base===DEFAULT_API_BASE?[base,LEGACY_API_BASE]:[base];
+    const apiRoute=address=>address===DEFAULT_API_BASE?'custom':address===LEGACY_API_BASE?'legacy':'configured';
     const el=id=>doc.getElementById(id);
     const message=value=>{if(value!==null)el('reservationMessage').textContent=value};
     const errorHint=error=>error?.stale?null:error?.name==='AbortError'?'请求超时，请稍后重试':error instanceof TypeError?'网络异常，请稍后重试':error instanceof SyntaxError?'服务异常，请稍后重试':error.message;
-    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false,submitting:false,session:null,claimTier:null,restored:false,flow:0,cleaning:Promise.resolve()};
+    const state={activity:null,mine:null,csrf:null,verified:false,queryOnly:false,subscribing:false,submitting:false,session:null,claimTier:null,restored:false,receiptViewed:false,flow:0,cleaning:Promise.resolve()};
     const dialog=el('reservationDialog');
     async function openFlow(queryOnly,claimTier=null){
       const flow=++state.flow;
       state.mine=null;state.csrf=null;state.verified=false;state.subscribing=false;state.submitting=false;state.queryOnly=queryOnly;
       state.claimTier=claimTier;
+      state.receiptViewed=false;
       if(claimTier!==null&&state.session){state.mine=state.session;state.csrf=state.session.csrf;state.verified=true}
       form.reset();form.elements.platform.value=selectedPlatform(form,root.navigator.userAgent);
       el('reservationMine').hidden=true;
@@ -54,8 +94,8 @@
       el('reservationSubmit').disabled=true;
       await state.cleaning;if(state.flow===flow)el('reservationSubmit').disabled=false;
     }
-    el('reservationOpen').addEventListener('click',()=>openFlow(false));
-    el('reservationQuery').addEventListener('click',()=>openFlow(true));
+    el('reservationOpen').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'primary'});openFlow(false)});
+    el('reservationQuery').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'query'});openFlow(true)});
     el('reservationLogin').addEventListener('click',()=>openClaim(0));
     el('reservationLogout').addEventListener('click',async()=>{
       if(!state.session)return;
@@ -80,25 +120,53 @@
     let refreshTimer,countdownTimer;
     let boundaryRefreshRequested=false;
     const params=new URLSearchParams(root.location.search);
-    for(const key of ['utm_source','utm_campaign']){
-      const value=channel(params.get(key));
+    for(const key of ATTRIBUTION_KEYS){
+      const value=attribution(params.get(key));
       if(value!=='unknown')root.sessionStorage.setItem('reservation_'+key,value);
     }
-    const request=async(path,method='GET',body=null)=>{
+    const storedAttribution=key=>attribution(root.sessionStorage.getItem('reservation_'+key));
+    const analyticsContext={
+      deviceId:storageValue(root.localStorage,ANALYTICS_DEVICE_KEY,true),
+      sessionId:storageValue(root.sessionStorage,ANALYTICS_SESSION_KEY,true),
+      source:storedAttribution('utm_source'),
+      campaignTag:storedAttribution('utm_campaign'),
+      utmSource:storedAttribution('utm_source'),
+      utmMedium:storedAttribution('utm_medium'),
+      utmCampaign:storedAttribution('utm_campaign'),
+      utmContent:storedAttribution('utm_content'),
+      utmTerm:storedAttribution('utm_term'),
+      deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'
+    };
+    const emitAnalytics=(eventType,properties={})=>{
+      if(localPreview||!analyticsContext.deviceId||!analyticsContext.sessionId)return;
+      const event=buildAnalyticsEvent(eventType,analyticsContext,properties);
+      // Reuse the same event_id on the alternate origin; backend deduplication prevents double counting.
+      void (async()=>{
+        for(const address of apiBases){
+          const controller=new AbortController(),timer=root.setTimeout(()=>controller.abort(),6000);
+          try{
+            const response=await fetcher(address+'/api/analytics/events',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({events:[event]}),keepalive:true,signal:controller.signal});
+            if(response.ok||response.status<500)return;
+          }catch(_){/* try the other verified production origin */}
+          finally{root.clearTimeout(timer)}
+        }
+      })().catch(()=>{});
+    };
+    const request=async(path,method='GET',body=null,address=base)=>{
       const flow=state.flow;
       const stale=()=>path!=='/activity'&&path!=='/logout'&&flow!==state.flow;
       const headers={};if(body!==null)headers['Content-Type']='application/json';
       if(method!=='GET'&&state.csrf)headers['X-Reservation-CSRF']=state.csrf;
       const controller=['/activity','/reserve-with-code'].includes(path)?new AbortController():null;
-      const timeout=controller?root.setTimeout(()=>controller.abort(),timeoutMs):null;
+      const timeout=controller?root.setTimeout(()=>controller.abort(),path==='/activity'?Math.min(timeoutMs,6000):timeoutMs):null;
       try{
-        const response=await fetcher(base+endpoint+path,{method,credentials:'include',headers,signal:controller?.signal,
+        const response=await fetcher(address+endpoint+path,{method,credentials:path==='/activity'?'omit':'include',headers,signal:controller?.signal,
           body:body===null?undefined:JSON.stringify(body),cache:'no-store'});
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         if(response.status===401){state.session=null;state.mine=null;state.verified=false;state.csrf=null;form.elements.code.value='';if(state.activity)renderActivity(state.activity);else renderLogin()}
-        if(!response.ok)throw new Error(response.status===401?'未能识别登录状态，请重新验证':
+        if(!response.ok){const error=new Error(response.status===401?'未能识别登录状态，请重新验证':
           response.status===422&&path==='/reserve-with-code'?'验证码错误或已过期，请重新获取验证码':
-          response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');
+          response.status===403?'请刷新页面后重试':response.status===429?'请求太频繁，请稍后重试':response.status===400?(path==='/verify'?'验证码错误或已过期':path==='/sms'?'请填写正确的手机号':'预约信息有误，请检查'):response.status===503?'服务暂不可用，请稍后重试':'请求失败，请稍后重试');error.status=response.status;throw error}
         const envelope=await response.json();
         if(envelope.result!==0){
           const reason=String(envelope.errorMsg||'');
@@ -106,7 +174,7 @@
         }
         if(stale()){const error=new Error('closed reservation flow');error.stale=true;throw error}
         return envelope.data;
-      }catch(error){if(stale())error.stale=true;throw error}
+      }catch(error){error.apiRoute=apiRoute(address);if(stale())error.stale=true;throw error}
       finally{if(timeout!==null)root.clearTimeout(timeout)}
     };
     const date=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value))+'（北京时间）':'';
@@ -175,8 +243,8 @@
       rewards.dataset.progressActive=String(!upcoming&&Number.isFinite(data.count)&&count>0);
       const track=doc.createElement('span');track.className='reservation-track';track.setAttribute('role','progressbar');
       track.setAttribute('aria-label','预约人数奖励进度');track.setAttribute('aria-valuemin','0');
-      track.setAttribute('aria-valuemax',String(milestones.at(-1)?.threshold||100000));
-      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones.at(-1)?.threshold||100000)));
+      track.setAttribute('aria-valuemax',String(milestones[milestones.length-1]?.threshold||50000));
+      if(!upcoming&&Number.isFinite(data.count))track.setAttribute('aria-valuenow',String(Math.min(count,milestones[milestones.length-1]?.threshold||50000)));
       else track.setAttribute('aria-valuetext',upcoming?'预约尚未开启':'预约人数暂不可用');
       const start=doc.createElement('span');start.className='reservation-track-start';start.setAttribute('aria-hidden','true');track.append(start);
       const light=doc.createElement('img');light.className='reservation-progress-light';light.src='images/app-ui/reservation-progress-light.png';light.alt='';light.setAttribute('aria-hidden','true');track.append(light);rewards.append(track);
@@ -194,7 +262,7 @@
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
         status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
-        if(['CLAIMING','ENDED'].includes(phase)&&unlocked){const issued=state.session?.activationCodes?.some(code=>code.tier===reward.tier);const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent=phase==='ENDED'||issued?'查看激活码':'领取';claim.disabled=phase==='CLAIMING'&&!issued&&data.claimAvailable!==true;claim.setAttribute('aria-label',claim.textContent+'：'+reward.name);claim.addEventListener('click',()=>openClaim(reward.tier));card.append(claim)}
+        if(['CLAIMING','ENDED'].includes(phase)&&unlocked){const issued=state.session?.activationCodes?.some(code=>code.tier===reward.tier);const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent=phase==='ENDED'||issued?'查看激活码':'领取';claim.disabled=phase==='CLAIMING'&&!issued&&data.claimAvailable!==true;claim.setAttribute('aria-label',claim.textContent+'：'+reward.name);claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:reward.tier});openClaim(reward.tier)});card.append(claim)}
       }
       const canReserve=state.claimTier===null&&!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=state.claimTier!==null?state.verified:(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
@@ -212,7 +280,7 @@
         const icon=doc.createElement('img');icon.src=platform==='ANDROID'?'images/app-ui/platform-android.svg':'images/app-ui/platform-ios.svg';icon.alt='';node.append(icon);
         const text=doc.createElement('span');text.textContent=label;node.append(text);
         if(!safe){node.setAttribute('aria-disabled','true');const hint=doc.createElement('small');hint.textContent='即将开放';node.append(hint)}
-        if(safe){node.href=safe;node.rel='noopener';node.dataset.platform=platform;
+        if(safe){node.href=safe;node.rel='noopener';node.dataset.platform=platform;node.addEventListener('click',()=>emitAnalytics('download_clicked',{platform}));
           if(typeof root.qrcode==='function'){
             const qr=root.qrcode(0,'M');qr.addData(safe);qr.make();
             const canvas=doc.createElement('canvas'),size=qr.getModuleCount(),scale=4;
@@ -289,6 +357,7 @@
       const reservation=data?.reservation;
       el('reservationMine').hidden=!reservation;
       if(reservation){
+        if(!state.receiptViewed){state.receiptViewed=true;emitAnalytics('receipt_viewed',{result:existing?'existing':'new'})}
         el('reservationMineNotice').textContent=existing?'该手机号已预约，以下是你的预约信息。':'';
         el('reservationMinePhone').textContent=data.phoneMasked;
         el('reservationMineCode').textContent=reservation.code;
@@ -299,22 +368,44 @@
         const rewardList=el('reservationMineRewards');rewardList.replaceChildren();
         const stateLabels={PENDING:'发放中',GRANTED:'已到账',ALREADY_OWNED:'已拥有同款'};
         for(const reward of reservation.rewards||[]){const item=doc.createElement('li');
-          const tierLabel={3:'2 万人档',1:'5 万人档',2:'10 万人档'};
+          const tierLabel={3:'1 万人档',1:'2 万人档',2:'5 万人档'};
           item.textContent=`${tierLabel[reward.tier]||'奖励'}：${stateLabels[reward.state]||'核验中'}`;rewardList.append(item)}
         message('');}
       else if(data&&state.verified&&state.queryOnly){message('该手机号暂未查询到预约信息')}
       if(state.activity)renderActivity(state.activity);
     }
+    let activityRequest=null;
     function refreshActivity(){
-      clearTimeout(refreshTimer);
-      request('/activity').then(async data=>{
-        renderActivity(data);clearTimeout(refreshTimer);
+      if(activityRequest)return activityRequest;
+      root.clearTimeout(refreshTimer);
+      let stage='request',attempt=0;
+      const previous=state.activity;
+      activityRequest=(async()=>{
+        let data;
+        for(;;){
+          try{data=await request('/activity','GET',null,apiBases[attempt%apiBases.length]);break}
+          catch(error){
+            const transient=error?.name==='AbortError'||error instanceof TypeError||error.status>=500;
+            emitAnalytics('activity_load_failed',{stage:'request',error_kind:analyticsErrorKind(error),http_status:error.status||0,attempt:attempt+1,api_route:error.apiRoute});
+            if(!transient||attempt>=2)throw error;
+            attempt++;
+            await new Promise(resolve=>root.setTimeout(resolve,attempt*1000));
+          }
+        }
+        stage='render';
+        renderActivity(data);root.clearTimeout(refreshTimer);
+        if(!previous)emitAnalytics('activity_loaded',{available:!!data?.available,phase:data?.phase||'BEFORE',rewards_configured:data?.rewardsConfigured===true,retry_count:attempt,api_route:apiRoute(apiBases[attempt%apiBases.length])});
+        stage='session';
         if(['CLAIMING','ENDED'].includes(data.phase)&&!state.restored){state.restored=true;try{const mine=await request('/mine');state.session=mine;renderActivity(data)}catch(_){}}
         const now=Date.parse(data.serverTime),release=Date.parse(data.releaseAt),start=Date.parse(data.startAt);
         const next=[start,release,release+30*24*3600*1000].filter(time=>Number.isFinite(time)&&time>now)[0];
         const delay=next&&Number.isFinite(now)?Math.max(1000,Math.min(300000,next-now+100)):300000;
         refreshTimer=root.setTimeout(refreshActivity,delay);
-      }).catch(()=>{
+      })().catch(error=>{
+        if(stage==='render'){
+          state.activity=previous;
+          emitAnalytics('activity_load_failed',{stage:'render',error_kind:'render_failed',error_name:['TypeError','RangeError','ReferenceError'].includes(error?.name)?error.name:'Error'});
+        }
         root.clearInterval(countdownTimer);
         el('reservationRetry').hidden=false;
         if(!state.activity){
@@ -326,8 +417,9 @@
               el('reservationNotice').textContent='';
           form.hidden=true;el('reservationOpen').hidden=true;el('reservationOpen').disabled=true;
         }else el('reservationNotice').textContent='活动信息暂未更新，请稍后重试。';
-        clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
-      });
+        root.clearTimeout(refreshTimer);refreshTimer=root.setTimeout(refreshActivity,60000);
+      }).finally(()=>{activityRequest=null});
+      return activityRequest;
     }
     el('reservationRetry').addEventListener('click',()=>{el('reservationRetry').hidden=true;refreshActivity()});
     function verificationInput(){
@@ -366,10 +458,11 @@
         await state.cleaning;
         if(flow!==state.flow)return;
         if(state.claimTier===null){const existing=await request('/lookup','POST',{phone});
-          if(existing?.reservation){message('该手机号已预约，请前往查询预约查看详情');return}}
+          if(existing?.reservation){emitAnalytics('sms_result',{result:'existing'});message('该手机号已预约，请前往查询预约查看详情');return}}
         await request('/sms','POST',{phone});
+        emitAnalytics('sms_result',{result:'success'});
         smsRetryAt=Date.now()+60000;root.sessionStorage.setItem('reservation_sms_retry_at',String(smsRetryAt));message('');
-      }catch(error){message(errorHint(error))}
+      }catch(error){emitAnalytics('sms_result',{result:'failure',error_kind:analyticsErrorKind(error)});message(errorHint(error))}
       finally{smsSending=false;watchSmsCooldown()}
     });
     form.addEventListener('submit',async event=>{
@@ -378,6 +471,7 @@
       const flow=state.flow;
       let submitted=false;
       let submittedPhone=null;
+      emitAnalytics('submit_started',{mode:state.claimTier!==null?'claim':state.queryOnly?'query':'reserve'});
       state.submitting=true;renderSubmit();message('');
       try{
         if(state.claimTier!==null){
@@ -389,14 +483,16 @@
           const phone=form.elements.phone.value.trim();
           if(!phone)throw new Error('请先填写手机号');
           if(!validPhone(phone))throw new Error('请填写正确的手机号');
-          renderMine(await request('/lookup','POST',{phone}),true);
+          const lookup=await request('/lookup','POST',{phone});
+          emitAnalytics('query_result',{result:lookup?.reservation?'found':'empty'});
+          renderMine(lookup,true);
           if(!state.mine?.reservation)message('该手机号暂未查询到预约信息');
           return;
         }
         const {phone,code}=verificationInput();
         const accepting=!state.queryOnly&&state.activity?.phase==='RESERVING'&&!state.activity.reservationPaused;
-        if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){message('请先勾选相关协议');return}
-        if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){message('未查到预约记录，请核对手机号。');return}
+        if(accepting&&!state.mine?.reservation&&(!form.elements.adult.checked||!form.elements.terms.checked)){emitAnalytics('submit_result',{result:'failure',error_kind:'client_validation'});message('请先勾选相关协议');return}
+        if(state.activity?.phase!=='RESERVING'||state.activity.reservationPaused){emitAnalytics('submit_result',{result:'failure',error_kind:'reservation_closed'});message('未查到预约记录，请核对手机号。');return}
         const source=channel(root.sessionStorage.getItem('reservation_utm_source'));
         const campaignTag=channel(root.sessionStorage.getItem('reservation_utm_campaign'));
         const platform=selectedPlatform(form,root.navigator.userAgent);
@@ -405,14 +501,16 @@
         submitted=true;submittedPhone=phone;
         const receipt=await request('/reserve-with-code','POST',{phone,code,platform,adult:true,terms:true,reminder:form.elements.reminder.checked,
           source,campaignTag,deviceKind:/Mobi/i.test(root.navigator.userAgent)?'mobile':'desktop'});
+        emitAnalytics('submit_result',{result:'success',platform,reminder_subscribed:form.elements.reminder.checked});
         form.elements.phone.value=phone;form.elements.code.value='';
         renderMine(receipt);refreshActivity();
       }catch(error){
         if(error.stale||flow!==state.flow)return;
         if(submitted){
           refreshActivity();
-          try{const mine=await request('/lookup','POST',{phone:submittedPhone});if(mine.reservation){form.elements.phone.value=submittedPhone;form.elements.code.value='';renderMine(mine);return}}catch(_){}
+          try{const mine=await request('/lookup','POST',{phone:submittedPhone});if(mine.reservation){emitAnalytics('submit_result',{result:'recovered'});form.elements.phone.value=submittedPhone;form.elements.code.value='';renderMine(mine);return}}catch(_){}
         }
+        emitAnalytics('submit_result',{result:'failure',error_kind:analyticsErrorKind(error)});
         if(flow===state.flow)message(errorHint(error));
       }finally{if(flow===state.flow){state.submitting=false;renderSubmit()}}
     });
@@ -433,5 +531,5 @@
     return state;
   }
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,validPhone,safeUrl,channel,selectedPlatform,DEFAULT_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
+  return {init,validPhone,safeUrl,channel,attribution,selectedPlatform,buildAnalyticsEvent,analyticsErrorKind,DEFAULT_API_BASE,LEGACY_API_BASE,DEFAULT_REQUEST_TIMEOUT_MS,formatCountdown,RESERVATION_START};
 });

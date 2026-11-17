@@ -11,6 +11,8 @@ test('手机号和渠道参数校验，未知来源不猜测',()=>{
   assert.equal(reservation.validPhone('1380013800'),false);
   assert.equal(reservation.channel('xiaohongshu'), 'xiaohongshu');
   assert.equal(reservation.channel('test<script>'), 'unknown');
+  assert.equal(reservation.attribution('wechat.weixin'), 'wechat.weixin');
+  assert.equal(reservation.attribution('campaign name'), 'unknown');
 });
 test('仅允许 HTTPS 素材和下载地址',()=>{
   assert.equal(reservation.safeUrl('javascript:alert(1)'), '');
@@ -22,6 +24,18 @@ test('用户显式选择的平台优先于系统推荐',()=>{
   assert.equal(reservation.selectedPlatform(form,'iPhone'), 'ANDROID');
   assert.equal(reservation.selectedPlatform({querySelector:()=>null},'iPhone'), 'IOS');
 });
+test('预约埋点只携带匿名会话和漏斗元数据',()=>{
+  const event=reservation.buildAnalyticsEvent('submit_result',{
+    deviceId:'device-1',sessionId:'session-1',source:'xiaohongshu',campaignTag:'october',
+    utmSource:'xiaohongshu',utmMedium:'social',utmCampaign:'october',utmContent:'hero-a',utmTerm:'reserve',deviceKind:'mobile'
+  },{result:'success',platform:'ANDROID'});
+  assert.match(event.event_id,/^web-|^[0-9a-f-]{36}$/);
+  assert.equal(event.event_type,'reservation_submit_result');
+  assert.equal(event.platform,'web');
+  assert.deepEqual(event.properties,{campaign_id:'domestic_reservation_gift',source:'xiaohongshu',campaign_tag:'october',utm_source:'xiaohongshu',utm_medium:'social',utm_campaign:'october',utm_content:'hero-a',utm_term:'reserve',device_kind:'mobile',result:'success',platform:'ANDROID'});
+  assert.equal('phone' in event.properties,false);
+  assert.equal('code' in event.properties,false);
+});
 test('首页预约在 PV 前，视频不自动预加载',async()=>{
   const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
   assert.ok(html.indexOf('id="reservation"')<html.indexOf('id="pv"'));
@@ -32,9 +46,9 @@ test('首页预约在 PV 前，视频不自动预加载',async()=>{
   assert.match(html,/preload="none" poster="images\/pv_poster.jpg\?v=20261026-new2"/);
   assert.doesNotMatch(html,/\{src:window\.__PV_SRC,w:34,type:'video'\}/);
 });
-test('接口请求带 Cookie 且个人资料不用 HTML 字符串插值',async()=>{
+test('公开活动不带 Cookie，受保护请求保留 Cookie 且资料安全渲染',async()=>{
   const js=await readFile(new URL('../reservation.js',import.meta.url),'utf8');
-  assert.match(js,/credentials:'include'/);
+  assert.match(js,/credentials:path==='\/activity'\?'omit':'include'/);
   assert.match(js,/textContent=data\.phoneMasked/);
   assert.doesNotMatch(js,/innerHTML/);
 });
