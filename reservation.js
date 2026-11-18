@@ -207,7 +207,7 @@
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'预约成功':state.queryOnly?'查询预约':phase==='RESERVING'?'立即预约':'查询预约';
-      if(state.claimTier!==null)el('reservationFormHeading').textContent=state.verified?(previewRewards.find(reward=>reward.tier===state.claimTier)?.name||'登录成功'):'登录领取奖励';
+      if(state.claimTier!==null)el('reservationFormHeading').textContent=state.verified?(previewRewards.find(reward=>reward.tier===state.claimTier)?.name||(state.claimTier===4?'预约纪念礼包':'登录成功')):'登录领取奖励';
       renderLogin();
       const reminderAllowed=data.reminderAvailable!==false;
       renderReminderSubscription();
@@ -262,7 +262,12 @@
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
         status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
-        if(['CLAIMING','ENDED'].includes(phase)&&unlocked){const issued=state.session?.activationCodes?.some(code=>code.tier===reward.tier);const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent=phase==='ENDED'||issued?'查看激活码':'领取';claim.disabled=phase==='CLAIMING'&&!issued&&data.claimAvailable!==true;claim.setAttribute('aria-label',claim.textContent+'：'+reward.name);claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:reward.tier});openClaim(reward.tier)});card.append(claim)}
+      }
+      if(['CLAIMING','ENDED'].includes(phase)){
+        const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';
+        claim.textContent=(phase==='ENDED'||state.session?.activationCodes?.some(code=>code.tier===4)?'查看礼包兑换码':'领取预约礼包');claim.disabled=phase!=='ENDED'&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7);
+        claim.style.gridColumn='1 / -1';claim.style.justifySelf='center';
+        claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:4});openClaim(4)});rewards.append(claim);
       }
       const canReserve=state.claimTier===null&&!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=state.claimTier!==null?state.verified:(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
@@ -311,7 +316,7 @@
       if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
     }
     async function issueCode(tier){
-      const result=await request('/activation-code','POST',{tier});
+      const result=await request(tier===4?'/bundle-code':'/activation-code','POST',tier===4?{}:{tier});
       const codes=state.session.activationCodes||[];
       state.session.activationCodes=[...codes.filter(code=>code.tier!==tier),{expiresAt:state.activity.claimDeadlineAt,...result,tier}];
       renderActivity(state.activity);
@@ -321,15 +326,15 @@
       if(panel.hidden)return;
       const list=el('reservationCodeClaimList');list.replaceChildren();
       if(!state.session?.reservation){const note=doc.createElement('p');note.textContent='该手机号暂无预约记录';list.append(note);return}
-      if(state.claimTier===0){const note=doc.createElement('p');note.textContent=state.activity.phase==='ENDED'?'领取期已结束，可点击对应礼物下方的按钮查看历史激活码。':'登录成功，请点击对应礼物下方的领取按钮。';list.append(note);return}
-      for(const reward of previewRewards){
+      if(state.claimTier===0){const note=doc.createElement('p');note.textContent=state.activity.phase==='ENDED'?'领取期已结束，可查看已领取的礼包兑换码。':'登录成功，请点击领取预约礼包。';list.append(note);return}
+      for(const reward of state.claimTier===4?[{tier:4,name:'预约纪念礼包'}]:previewRewards){
         if(reward.tier!==state.claimTier)continue;
-        if(!(state.activity.unlockedMask&(1<<(reward.tier-1))))continue;
+        if(reward.tier!==4&&!(state.activity.unlockedMask&(1<<(reward.tier-1))))continue;
         const row=doc.createElement('div');row.className='reservation-activation-row';
         const name=doc.createElement('strong');name.textContent=reward.name;row.append(name);
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
         if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'激活码已过期':'复制激活码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按激活码复制'}});row.append(copy)}
-        else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，该档位未领取';row.append(note)}
+        else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，尚未领取礼包兑换码';row.append(note)}
         else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
       }
