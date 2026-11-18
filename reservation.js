@@ -264,8 +264,9 @@
         status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
       }
       if(['CLAIMING','ENDED'].includes(phase)){
+        const issued=state.session?.activationCodes?.some(code=>code.tier===4);
         const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';
-        claim.textContent=(phase==='ENDED'||state.session?.activationCodes?.some(code=>code.tier===4)?'查看礼包兑换码':'领取预约礼包');claim.disabled=phase!=='ENDED'&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7);
+        claim.textContent=(phase==='ENDED'||issued?'查看礼包兑换码':'领取预约礼包');claim.disabled=phase!=='ENDED'&&!issued&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7);
         claim.style.gridColumn='1 / -1';claim.style.justifySelf='center';
         claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:4});openClaim(4)});rewards.append(claim);
       }
@@ -313,7 +314,7 @@
     async function openClaim(tier){
       await openFlow(false,tier);
       if(state.claimTier!==tier)return;
-      if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
+      if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'&&!state.session?.activationCodes?.some(code=>code.tier===tier)){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
     }
     async function issueCode(tier){
       const result=await request(tier===4?'/bundle-code':'/activation-code','POST',tier===4?{}:{tier});
@@ -333,7 +334,7 @@
         const row=doc.createElement('div');row.className='reservation-activation-row';
         const name=doc.createElement('strong');name.textContent=reward.name;row.append(name);
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
-        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'激活码已过期':'复制激活码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按激活码复制'}});row.append(copy)}
+        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'兑换码已过期':'复制兑换码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按兑换码复制'}});row.append(copy)}
         else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，尚未领取礼包兑换码';row.append(note)}
         else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
@@ -481,7 +482,7 @@
       try{
         if(state.claimTier!==null){
           if(!state.verified)await verify();
-          if(state.claimTier>0&&state.mine?.reservation&&state.activity?.phase==='CLAIMING')await issueCode(state.claimTier);
+          if(state.claimTier>0&&state.mine?.reservation&&state.activity?.phase==='CLAIMING'&&!state.session?.activationCodes?.some(code=>code.tier===state.claimTier))await issueCode(state.claimTier);
           renderCodeClaims();return;
         }
         if(state.queryOnly){
