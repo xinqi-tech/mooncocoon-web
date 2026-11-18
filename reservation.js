@@ -94,9 +94,8 @@
       el('reservationSubmit').disabled=true;
       await state.cleaning;if(state.flow===flow)el('reservationSubmit').disabled=false;
     }
-    el('reservationOpen').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'primary'});openFlow(false)});
+    el('reservationOpen').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'primary'});if(['CLAIMING','ENDED'].includes(state.activity?.phase))openClaim(4);else openFlow(false)});
     el('reservationQuery').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'query'});openFlow(true)});
-    el('reservationLogin').addEventListener('click',()=>openClaim(0));
     el('reservationLogout').addEventListener('click',async()=>{
       if(!state.session)return;
       el('reservationLogout').disabled=true;
@@ -207,16 +206,22 @@
       el('reservationPhase').textContent=phase==='RESERVING'?(data.reservationPaused?'预约暂时暂停':'预约进行中'):
         phase==='BEFORE'?'预约即将开启':phase==='CLAIMING'?'已开放下载与领取':'领取期已结束，仍可下载';
       el('reservationFormHeading').textContent=state.mine?.reservation?'预约成功':state.queryOnly?'查询预约':phase==='RESERVING'?'立即预约':'查询预约';
-      if(state.claimTier!==null)el('reservationFormHeading').textContent=state.verified?(previewRewards.find(reward=>reward.tier===state.claimTier)?.name||'登录成功'):'登录领取奖励';
+      if(state.claimTier!==null)el('reservationFormHeading').textContent=state.verified?(previewRewards.find(reward=>reward.tier===state.claimTier)?.name||(state.claimTier===4?'预约纪念礼包':'登录成功')):'登录领取奖励';
       renderLogin();
       const reminderAllowed=data.reminderAvailable!==false;
       renderReminderSubscription();
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
-      el('reservationOpen').disabled=upcoming;
-      el('reservationOpen').hidden=upcoming||['CLAIMING','ENDED'].includes(phase);
-      el('reservationOpen').textContent='立即预约';
-      const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
+      const primary=el('reservationOpen');
+      const releasedPhase=['CLAIMING','ENDED'].includes(phase);
+      const issued=state.session?.activationCodes?.some(code=>code.tier===4);
+      primary.hidden=upcoming;
+      primary.disabled=upcoming||(phase==='CLAIMING'&&!issued&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7));
+      primary.textContent=releasedPhase
+        ? (phase==='ENDED'||issued?'查看礼包兑换码':state.session?'领取':'登录并领取')
+        : '立即预约';
+      if(!releasedPhase){const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';primary.append(' ',arrow)}
+
       const dates=upcoming?'':
         [['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
@@ -261,8 +266,7 @@
         const title=doc.createElement('strong');title.textContent=reward.name;card.append(title);
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
-        status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
-        if(['CLAIMING','ENDED'].includes(phase)&&unlocked){const issued=state.session?.activationCodes?.some(code=>code.tier===reward.tier);const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';claim.textContent=phase==='ENDED'||issued?'查看激活码':'领取';claim.disabled=phase==='CLAIMING'&&!issued&&data.claimAvailable!==true;claim.setAttribute('aria-label',claim.textContent+'：'+reward.name);claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:reward.tier});openClaim(reward.tier)});card.append(claim)}
+        status.textContent=upcoming?'待活动开启':unlocked?'已解锁':'待解锁';card.append(status);rewards.append(card);
       }
       const canReserve=state.claimTier===null&&!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=state.claimTier!==null?state.verified:(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
@@ -300,18 +304,17 @@
     function renderLogin(){
       if(state.session?.expiresAt&&Date.parse(state.session.expiresAt)<=Date.now())state.session=null;
       const released=['CLAIMING','ENDED'].includes(state.activity?.phase);
-      el('reservationLoginBar').hidden=!released;el('reservationPhase').hidden=released;
-      el('reservationLogin').hidden=!!state.session;
+      el('reservationLoginBar').hidden=!released||!state.session;el('reservationPhase').hidden=released;
       el('reservationLoginPhone').textContent=state.session?.phoneMasked||'';
       el('reservationLogout').hidden=!state.session;
     }
     async function openClaim(tier){
       await openFlow(false,tier);
       if(state.claimTier!==tier)return;
-      if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
+      if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'&&!state.session?.activationCodes?.some(code=>code.tier===tier)){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
     }
     async function issueCode(tier){
-      const result=await request('/activation-code','POST',{tier});
+      const result=await request(tier===4?'/bundle-code':'/activation-code','POST',tier===4?{}:{tier});
       const codes=state.session.activationCodes||[];
       state.session.activationCodes=[...codes.filter(code=>code.tier!==tier),{expiresAt:state.activity.claimDeadlineAt,...result,tier}];
       renderActivity(state.activity);
@@ -321,16 +324,32 @@
       if(panel.hidden)return;
       const list=el('reservationCodeClaimList');list.replaceChildren();
       if(!state.session?.reservation){const note=doc.createElement('p');note.textContent='该手机号暂无预约记录';list.append(note);return}
-      if(state.claimTier===0){const note=doc.createElement('p');note.textContent=state.activity.phase==='ENDED'?'领取期已结束，可点击对应礼物下方的按钮查看历史激活码。':'登录成功，请点击对应礼物下方的领取按钮。';list.append(note);return}
-      for(const reward of previewRewards){
+      if(state.claimTier===0){const note=doc.createElement('p');note.textContent=state.activity.phase==='ENDED'?'领取期已结束，可查看已领取的礼包兑换码。':'登录成功，请点击领取预约礼包。';list.append(note);return}
+      for(const reward of state.claimTier===4?[{tier:4,name:'预约纪念礼包'}]:previewRewards){
         if(reward.tier!==state.claimTier)continue;
-        if(!(state.activity.unlockedMask&(1<<(reward.tier-1))))continue;
+        if(reward.tier!==4&&!(state.activity.unlockedMask&(1<<(reward.tier-1))))continue;
         const row=doc.createElement('div');row.className='reservation-activation-row';
         const name=doc.createElement('strong');name.textContent=reward.name;row.append(name);
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
-        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'激活码已过期':'复制激活码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按激活码复制'}});row.append(copy)}
-        else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，该档位未领取';row.append(note)}
-        else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
+        if(code){
+          row.classList.add('has-code');
+          name.remove();
+          const line=doc.createElement('div');line.className='reservation-activation-code-line';
+          const value=doc.createElement('code');value.textContent=code.code;line.append(value);
+          const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();
+          const status=doc.createElement('span');status.className='reservation-activation-status';
+          status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';
+          const copy=doc.createElement('button');copy.type='button';copy.className='reservation-activation-copy';
+          copy.setAttribute('aria-label','复制兑换码');copy.title='复制兑换码';copy.disabled=!!expired;
+          const icon=doc.createElement('img');icon.src='images/app-ui/reservation-copy.png';icon.alt='';copy.append(icon);
+          copy.addEventListener('click',async()=>{
+            try{await root.navigator.clipboard.writeText(code.code);message('已复制兑换码')}
+            catch(_){message('请长按兑换码复制')}
+          });
+          line.append(copy);row.append(line,status);
+        }
+        else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，尚未领取礼包兑换码';row.append(note)}
+        else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.className='reservation-open';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
       }
     }
@@ -476,8 +495,10 @@
       try{
         if(state.claimTier!==null){
           if(!state.verified)await verify();
-          if(state.claimTier>0&&state.mine?.reservation&&state.activity?.phase==='CLAIMING')await issueCode(state.claimTier);
-          renderCodeClaims();return;
+          renderActivity(state.activity);
+          if(state.claimTier===4&&state.session?.reservation&&state.activity.phase==='CLAIMING')dialog.close();
+          else renderCodeClaims();
+          return;
         }
         if(state.queryOnly){
           const phone=form.elements.phone.value.trim();

@@ -14,7 +14,7 @@ PROD = 'https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com'
 TEST = 'https://1259219143-3xft5qxme3.ap-guangzhou.tencentscf.com'
 PREFIX = '/api/reservation-gift'
 READS = {'/activity', '/mine'}
-WRITES = {'POST': {'/sms', '/verify', '/reserve', '/reserve-with-code', '/lookup', '/lookup/subscribe', '/activation-code', '/subscribe', '/unsubscribe', '/logout'}, 'PATCH': {'/platform'}}
+WRITES = {'POST': {'/sms', '/verify', '/reserve', '/reserve-with-code', '/lookup', '/lookup/subscribe', '/activation-code', '/bundle-code', '/subscribe', '/unsubscribe', '/logout'}, 'PATCH': {'/platform'}}
 PUBLIC_ROOTS = {'index.html', 'reservation.js', 'reservation.css', 'app-ui.css', 'region.js',
                 'title-plates.js', 'images', 'videos', 'audio', 'fonts', 'vendor',
                 'privacy-policy', 'user-agreement'}
