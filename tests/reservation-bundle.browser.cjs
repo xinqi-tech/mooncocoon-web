@@ -25,11 +25,14 @@ test('single bundle requires login, restores same code and shows redeemed state'
   if(path==='bundle-code'){assert.equal(loggedIn,true);assert.equal(req.headers()['x-reservation-csrf'],'synthetic-csrf');issued=true;issues++;return respond(code)}
   assert.notEqual(path,'activation-code');return respond({},403);
  });
- async function load(){await page.goto('https://www.lunakoru.com/');await page.evaluate(()=>document.getElementById('loader')?.remove());await page.addScriptTag({content:script});await page.evaluate(()=>window.LunaKoruReservation.init(document));await page.waitForFunction(()=>document.querySelectorAll('.reservation-tier-claim').length===1)}
- await load();await page.locator('.reservation-tier-claim').click();
+ async function load(){await page.goto('https://www.lunakoru.com/');await page.evaluate(()=>document.getElementById('loader')?.remove());await page.addScriptTag({content:script});await page.evaluate(()=>window.LunaKoruReservation.init(document));await page.waitForFunction(()=>document.querySelectorAll('#reservationOpen').length===1)}
+ await load();await page.locator('#reservationOpen').click();
  await page.locator('#reservationForm input[name=phone]').fill('13800138000');await page.locator('#reservationForm input[name=code]').fill('123456');
  await page.locator('#reservationSubmit').click();
+ const claim=page.getByRole('button',{name:'领取',exact:true});
+ await claim.waitFor();assert.equal(issues,0);
+ await claim.click();
  await page.locator('#reservationCodeClaimList code').waitFor();assert.equal(await page.locator('#reservationCodeClaimList code').textContent(),'TEST-ONLY-CODE');assert.equal(issues,1);
- redeemed=true;ended=true;await load();await page.waitForFunction(()=>!document.getElementById('reservationLogout').hidden);await page.locator('.reservation-tier-claim').click();
+ redeemed=true;ended=true;await load();await page.waitForFunction(()=>!document.getElementById('reservationLogout').hidden);await page.locator('#reservationOpen').click();
  await page.getByText('已兑换',{exact:true}).waitFor();assert.equal(await page.locator('#reservationCodeClaimList code').count(),1);assert.equal(issues,1);
 });

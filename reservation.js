@@ -94,9 +94,8 @@
       el('reservationSubmit').disabled=true;
       await state.cleaning;if(state.flow===flow)el('reservationSubmit').disabled=false;
     }
-    el('reservationOpen').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'primary'});openFlow(false)});
+    el('reservationOpen').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'primary'});if(['CLAIMING','ENDED'].includes(state.activity?.phase))openClaim(4);else openFlow(false)});
     el('reservationQuery').addEventListener('click',()=>{emitAnalytics('cta_clicked',{entry:'query'});openFlow(true)});
-    el('reservationLogin').addEventListener('click',()=>openClaim(0));
     el('reservationLogout').addEventListener('click',async()=>{
       if(!state.session)return;
       el('reservationLogout').disabled=true;
@@ -213,10 +212,16 @@
       renderReminderSubscription();
       form.elements.reminder.disabled=!reminderAllowed;
       if(!reminderAllowed)form.elements.reminder.checked=false;
-      el('reservationOpen').disabled=upcoming;
-      el('reservationOpen').hidden=upcoming||['CLAIMING','ENDED'].includes(phase);
-      el('reservationOpen').textContent='立即预约';
-      const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';el('reservationOpen').append(' ',arrow);
+      const primary=el('reservationOpen');
+      const releasedPhase=['CLAIMING','ENDED'].includes(phase);
+      const issued=state.session?.activationCodes?.some(code=>code.tier===4);
+      primary.hidden=upcoming;
+      primary.disabled=upcoming||(phase==='CLAIMING'&&!issued&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7));
+      primary.textContent=releasedPhase
+        ? (phase==='ENDED'||issued?'查看礼包兑换码':state.session?'领取':'登录并领取')
+        : '立即预约';
+      if(!releasedPhase){const arrow=doc.createElement('img');arrow.className='app-icon';arrow.src='images/app-ui/right.png';arrow.alt='';primary.append(' ',arrow)}
+
       const dates=upcoming?'':
         [['领取截止',data.claimDeadlineAt]]
           .filter(([,value])=>value).map(([label,value])=>label+'：'+date(value)).join('；');
@@ -263,13 +268,6 @@
         const status=doc.createElement('span');status.className='reservation-reward-status';
         status.textContent=upcoming?'待活动开启':unlocked?'已解锁':'待解锁';card.append(status);rewards.append(card);
       }
-      if(['CLAIMING','ENDED'].includes(phase)){
-        const issued=state.session?.activationCodes?.some(code=>code.tier===4);
-        const claim=doc.createElement('button');claim.type='button';claim.className='reservation-tier-claim';
-        claim.textContent=(phase==='ENDED'||issued?'查看礼包兑换码':'领取预约礼包');claim.disabled=phase!=='ENDED'&&!issued&&(data.claimAvailable!==true||(data.unlockedMask&7)!==7);
-        claim.style.gridColumn='1 / -1';claim.style.justifySelf='center';
-        claim.addEventListener('click',()=>{emitAnalytics('reward_claim_clicked',{tier:4});openClaim(4)});rewards.append(claim);
-      }
       const canReserve=state.claimTier===null&&!state.queryOnly&&phase==='RESERVING'&&!data.reservationPaused;
       form.hidden=state.claimTier!==null?state.verified:(upcoming&&!state.queryOnly)||!!state.mine?.reservation;
       el('reservationCodeRow').hidden=state.queryOnly;
@@ -306,8 +304,7 @@
     function renderLogin(){
       if(state.session?.expiresAt&&Date.parse(state.session.expiresAt)<=Date.now())state.session=null;
       const released=['CLAIMING','ENDED'].includes(state.activity?.phase);
-      el('reservationLoginBar').hidden=!released;el('reservationPhase').hidden=released;
-      el('reservationLogin').hidden=!!state.session;
+      el('reservationLoginBar').hidden=!released||!state.session;el('reservationPhase').hidden=released;
       el('reservationLoginPhone').textContent=state.session?.phoneMasked||'';
       el('reservationLogout').hidden=!state.session;
     }
@@ -336,7 +333,7 @@
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
         if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'兑换码已过期':'复制兑换码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按兑换码复制'}});row.append(copy)}
         else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，尚未领取礼包兑换码';row.append(note)}
-        else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
+        else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.className='reservation-open';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
       }
     }
@@ -482,8 +479,10 @@
       try{
         if(state.claimTier!==null){
           if(!state.verified)await verify();
-          if(state.claimTier>0&&state.mine?.reservation&&state.activity?.phase==='CLAIMING'&&!state.session?.activationCodes?.some(code=>code.tier===state.claimTier))await issueCode(state.claimTier);
-          renderCodeClaims();return;
+          renderActivity(state.activity);
+          if(state.claimTier===4&&state.session?.reservation&&state.activity.phase==='CLAIMING')dialog.close();
+          else renderCodeClaims();
+          return;
         }
         if(state.queryOnly){
           const phone=form.elements.phone.value.trim();

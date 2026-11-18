@@ -274,7 +274,7 @@ body.is-loading{overflow:hidden}
 @media (max-width:768px){.loader-stage{width:250px;height:250px}.loader-ring{width:150px;height:150px}.loader-percent{font-size:38px}.loader-percent i{font-size:17px}.loader-textring text{font-size:9.5px;letter-spacing:1.4px}.loader-label{margin-top:34px;font-size:13px}}
 @media (prefers-reduced-motion:reduce){.orbit-1,.orbit-2,.loader-textring{animation:none}.loader-label{animation:none}.loader{transition:opacity .25s ease}}
 </style>
-<link rel="stylesheet" href="reservation.css?v=20261022-checkbox-inline">
+<link rel="stylesheet" href="reservation.css?v=20261118-claim-flow">
 <link rel="stylesheet" href="app-ui.css?v=20261021-content3">
 <script src="title-plates.js?v=20261021-content3" defer></script>
 </head>
@@ -429,7 +429,7 @@ body.is-loading{overflow:hidden}
     <h2 id="reservationHeading" class="reservation-panel-title">月光茧预约有礼</h2>
     <div class="reservation-overview">
       <p id="reservationPhase" class="reservation-phase" role="status">正在加载活动信息</p>
-      <div id="reservationLoginBar" class="reservation-login-bar" hidden><button type="button" id="reservationLogin" class="reservation-query"><span aria-hidden="true" class="reservation-query-art"><img src="images/app-ui/query-left.png" alt=""><img src="images/app-ui/query-middle.png" alt=""><img src="images/app-ui/query-right.png" alt=""></span><span>登录</span></button><span id="reservationLoginPhone"></span><button type="button" id="reservationLogout" hidden>退出登录</button></div>
+      <div id="reservationLoginBar" class="reservation-login-bar" hidden><span id="reservationLoginPhone"></span><button type="button" id="reservationLogout" hidden>退出登录</button></div>
       <p id="reservationCount" class="reservation-count" aria-live="polite"></p>
       <p id="reservationNext" class="reservation-next"></p>
     </div>
@@ -482,7 +482,7 @@ body.is-loading{overflow:hidden}
         <li><div><h3><img src="images/reservation/star.png" alt="">参与条件与活动时间</h3><p>仅限年满 18 周岁的中国大陆手机号用户。预约截止于正式上线时，领取窗口为上线后 30 天，时间均为北京时间。</p></div></li>
         <li><div><h3><img src="images/reservation/star.png" alt="">礼物解锁规则</h3><p>人数达到 1 万、2 万、5 万后，分别解锁专属称号、永久配饰、永久服装。全部档位解锁且正式上线后，可统一领取预约礼包。老用户也可主动预约。</p></div></li>
         <li><div><h3><img src="images/reservation/star.png" alt="">如何领取预约奖励</h3><p>App 正式上线且全部奖励解锁后，点击“领取预约礼包”，验证已预约的手机号，即可获得一枚专属礼包兑换码，包含称号“赴月之约”、项链“海洋之心”和下装“靛蓝周末”。在 App 邮箱的“兑换码”入口输入后兑换。每个预约手机号仅生成一枚，重复领取或重新登录可查看同一兑换码。请在上线后 30 天内领取并兑换。每枚兑换码可由任意 App 账号兑换一次，每个账号限兑换本活动礼包一次；已拥有的同款资产不重复发放且不提供补偿。</p></div></li>
-        <li><div><h3><img src="images/reservation/star.png" alt="">查询记录与上线提醒</h3><p>预约期间，点击右上角“查询预约”并输入手机号即可查看预约信息；正式上线后，请点击左上角“登录”，验证预约手机号后查看和领取奖励。登录有效期为验证后 30 天，退出后可换号；换设备需重新验证，领取记录不会丢失。订阅上线短信为可选项，不订阅不影响预约或奖励。目前不提供自助取消预约入口；删除预约或取消提醒请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
+        <li><div><h3><img src="images/reservation/star.png" alt="">查询记录与上线提醒</h3><p>预约期间，点击右上角“查询预约”并输入手机号即可查看预约信息；正式上线后，请点击“登录并领取”，验证预约手机号后再点击“领取”。登录有效期为验证后 30 天，退出后可换号；换设备需重新验证，领取记录不会丢失。订阅上线短信为可选项，不订阅不影响预约或奖励。目前不提供自助取消预约入口；删除预约或取消提醒请联系 <a href="mailto:hello@heabo.cn">hello@heabo.cn</a>。</p></div></li>
       </ul>
     </section>
   </div>
@@ -1377,6 +1377,6 @@ addPressAnim('.scroll-hint-icon','is-pressing');
 })();
 </script>
 <script src="vendor/qrcode-generator.js" defer></script>
-<script src="reservation.js?v=20261118-bundle-review" defer></script>
+<script src="reservation.js?v=20261118-claim-flow" defer></script>
 </body>
 </html>
