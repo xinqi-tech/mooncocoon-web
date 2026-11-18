@@ -331,7 +331,23 @@
         const row=doc.createElement('div');row.className='reservation-activation-row';
         const name=doc.createElement('strong');name.textContent=reward.name;row.append(name);
         const code=state.session.activationCodes?.find(code=>code.tier===reward.tier);
-        if(code){const value=doc.createElement('code');value.textContent=code.code;row.append(value);const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();const status=doc.createElement('span');status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';row.append(status);const copy=doc.createElement('button');copy.type='button';copy.textContent=expired&&!code.redeemed?'兑换码已过期':'复制兑换码';copy.disabled=!!expired;copy.addEventListener('click',async()=>{try{await root.navigator.clipboard.writeText(code.code);copy.textContent='已复制'}catch(_){copy.textContent='请长按兑换码复制'}});row.append(copy)}
+        if(code){
+          row.classList.add('has-code');
+          name.remove();
+          const line=doc.createElement('div');line.className='reservation-activation-code-line';
+          const value=doc.createElement('code');value.textContent=code.code;line.append(value);
+          const expired=code.expiresAt&&Date.parse(code.expiresAt)<=Date.now();
+          const status=doc.createElement('span');status.className='reservation-activation-status';
+          status.textContent=code.redeemed?'已兑换':expired?'已过期':'未兑换';
+          const copy=doc.createElement('button');copy.type='button';copy.className='reservation-activation-copy';
+          copy.setAttribute('aria-label','复制兑换码');copy.title='复制兑换码';copy.disabled=!!expired;
+          const icon=doc.createElement('img');icon.src='images/app-ui/reservation-copy.png';icon.alt='';copy.append(icon);
+          copy.addEventListener('click',async()=>{
+            try{await root.navigator.clipboard.writeText(code.code);message('已复制兑换码')}
+            catch(_){message('请长按兑换码复制')}
+          });
+          line.append(copy);row.append(line,status);
+        }
         else if(state.activity.phase==='ENDED'){const note=doc.createElement('span');note.textContent='领取已截止，尚未领取礼包兑换码';row.append(note)}
         else{const button=doc.createElement('button');button.type='button';button.textContent='领取';button.className='reservation-open';button.disabled=state.activity.claimAvailable!==true;button.addEventListener('click',async()=>{button.disabled=true;try{await issueCode(reward.tier)}catch(error){message(errorHint(error));button.disabled=false}});row.append(button)}
         list.append(row);
