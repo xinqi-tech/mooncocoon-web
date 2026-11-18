@@ -261,7 +261,7 @@
         const title=doc.createElement('strong');title.textContent=reward.name;card.append(title);
         const badge=doc.createElement('small');badge.textContent='永久拥有';card.append(badge);
         const status=doc.createElement('span');status.className='reservation-reward-status';
-        status.textContent=upcoming?'待活动开启':unlocked?(phase==='CLAIMING'?'可领取':'已解锁'):'待解锁';card.append(status);rewards.append(card);
+        status.textContent=upcoming?'待活动开启':unlocked?'已解锁':'待解锁';card.append(status);rewards.append(card);
       }
       if(['CLAIMING','ENDED'].includes(phase)){
         const issued=state.session?.activationCodes?.some(code=>code.tier===4);
