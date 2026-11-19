@@ -227,6 +227,13 @@
     return null;
   }
 
+  function resolveDocumentTarget(doc,locationLike){
+    if(doc&&typeof doc.URL==='string'&&doc.URL){
+      try{return resolveDeploymentTarget(new URL(doc.URL))}catch(_){return null}
+    }
+    return resolveDeploymentTarget(locationLike);
+  }
+
   function resolveApiBase(locationLike){const target=resolveDeploymentTarget(locationLike);return target?target.apiBase:''}
 
   function createApiClient(fetchImpl,apiBase){
@@ -302,7 +309,7 @@
     if(!doc||!doc.getElementById('loginForm'))return null;
     const fetcher=fetchImpl||(root.fetch&&root.fetch.bind(root));
     if(!fetcher){lockPage(doc,'当前浏览器无法连接充值服务。');return null}
-    const deploymentTarget=resolveDeploymentTarget(root.location);
+    const deploymentTarget=resolveDocumentTarget(doc,root.location);
     if(!deploymentTarget){lockPage(doc,'当前页面来源未绑定可信充值服务，登录、短信和付款均不可用。');return {configured:false}}
     const {apiBase,environment,channel:expectedChannel}=deploymentTarget;
     const api=createApiClient(fetcher,apiBase);
@@ -645,6 +652,6 @@
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
   return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
     createSessionStore,createAccountGuard,createApiClient,isTrustedSandboxConfig,sandboxCapabilities,environmentCapabilities,userFacingError,isDefinitiveFreshOrderRejection,formatFen,
-    resolveApiBase,resolveDeploymentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
+    resolveApiBase,resolveDeploymentTarget,resolveDocumentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
     DEPLOYED_TEST_SITE_HOST,PRODUCTION_SITE_HOST,SESSION_KEY_PREFIX,PENDING_KEY_PREFIX,SANDBOX_GATEWAY_HOST,PRODUCTION_GATEWAY_HOST,ENVIRONMENT_RULES,APP_MARKET};
 });
