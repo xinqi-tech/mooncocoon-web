@@ -132,11 +132,7 @@
         updateBar();
       }).observe(tiers,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-checked']});
       updateBar();
-      el('fixtureWechatPay').addEventListener('click',()=>{
-        const hint=el('fixturePaymentHint');
-        hint.hidden=false;hint.textContent='本地预览：微信支付不会发起实际付款。';
-      });
-      for(const id of ['checkoutButton','startPaymentButton','fixtureWechatPay']){
+      for(const id of ['checkoutButton','startPaymentButton']){
         el(id).addEventListener('click',event=>{
           if(!matches()){event.preventDefault();event.stopImmediatePropagation();el('confirmationDialog').close();el('fixtureConfirmHint').textContent='请输入完整手机号，并确保两次填写一致。';confirm.focus()}
         },{capture:true});

@@ -773,11 +773,11 @@ test('测试预览服务只监听 loopback，生产页不加载夹具',async()=>
 });
 
 test('充值页内联完整样式和启动脚本，与维护文件保持一致',async()=>{
-  const [html,css,js]=await Promise.all([
+  const [html,css,js]=(await Promise.all([
     readFile(new URL('../recharge/index.html',import.meta.url),'utf8'),
     readFile(new URL('../recharge/recharge.css',import.meta.url),'utf8'),
     readFile(new URL('../recharge/recharge.js',import.meta.url),'utf8')
-  ]);
+  ])).map(content=>content.replace(/\r\n/g,'\n'));
   const between=(start,end)=>{
     assert.equal(html.split(start).length,2);
     return html.split(start)[1].split(end)[0];
