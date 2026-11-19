@@ -213,7 +213,7 @@
 
   function resolveDeploymentTarget(locationLike){
     const protocol=locationLike&&locationLike.protocol,hostname=String(locationLike&&locationLike.hostname||'').toLowerCase();
-    if(protocol==='https:'&&(hostname===PRODUCTION_SITE_HOST||hostname==='lunakoru.com')&&!locationLike.port){
+    if(protocol==='https:'&&hostname===PRODUCTION_SITE_HOST&&!locationLike.port){
       const apiBase=trustedHttpsOrigin(PRODUCTION_API_BASE);
       return apiBase?{apiBase,environment:'production',channel:ENVIRONMENT_RULES.production.channel}:null;
     }

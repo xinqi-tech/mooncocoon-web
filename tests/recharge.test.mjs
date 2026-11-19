@@ -664,8 +664,6 @@ test('正式 API 地址复用官网既有生产入口且页面来源不能覆盖
   assert.match(preview,new RegExp(recharge.PRODUCTION_API_BASE.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   assert.deepEqual(recharge.resolveDeploymentTarget({protocol:'https:',hostname:'www.lunakoru.com',port:''}),
     {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
-  assert.deepEqual(recharge.resolveDeploymentTarget({protocol:'https:',hostname:'lunakoru.com',port:''}),
-    {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
   for(const location of [
     {protocol:'http:',hostname:'www.lunakoru.com',port:''},
     {protocol:'https:',hostname:'lunakoru.com.evil.test',port:''},
