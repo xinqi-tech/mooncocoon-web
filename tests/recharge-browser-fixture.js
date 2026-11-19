@@ -31,7 +31,7 @@
     const calls=[];
     let orderReads=0;
     const statusSequence=Array.isArray(options.statusSequence)&&options.statusSequence.length?options.statusSequence:['created','paid','fulfilled'];
-    const user={id:900004,nickname:options.confirmWithoutSms?'':'本地合成账号'};
+    const user={id:900004,nickname:'本地合成账号'};
     const orderId='WEB-SANDBOX-0001';
     const tiers=[
         {tierId:'recharge_6',name:'轻盈一束',silkAmount:60,rmbPrice:600,firstRechargeBonus:60,firstRechargeTotal:120,firstRechargeAvailable:true,isBigTier:false},
@@ -74,7 +74,7 @@
 
   function installRechargeBrowserFixture(target,options={}){
     const fetchFixture=createRechargeFetchFixture(options);target.fetch=fetchFixture;
-    if(options.confirmWithoutSms&&target.location.hostname==='127.0.0.1'){
+    if(options.showFixtureArt&&target.location.hostname==='127.0.0.1'){
       const doc=target.document;
       const el=id=>doc.getElementById(id);
       el('fixtureService').addEventListener('click',()=>el('fixtureServiceDialog').showModal());
@@ -89,40 +89,6 @@
       };
       new target.MutationObserver(updateOrderArt).observe(label,{childList:true,characterData:true,subtree:true});
       updateOrderArt();
-      const form=el('loginForm'),confirm=el('fixtureConfirmPhone'),checkout=el('checkoutButton');
-      let enteredPhone='',submitting=false;
-      const matches=()=>enteredPhone!==''&&confirm.value.trim()===enteredPhone;
-      const updateConfirmation=()=>{
-        const value=confirm.value.replace(/[^0-9]/g,'').slice(0,11);
-        if(confirm.value!==value)confirm.value=value;
-        el('fixtureConfirmHint').textContent=value.length<11?'两次填写一致后才能充值。':matches()?'手机号一致。':'两次输入的手机号不一致。';
-        checkout.hidden=false;
-      };
-      const enterRecharge=()=>{
-        const phone=el('phone').value.trim();
-        if(!/^1[3-9]\d{9}$/.test(phone))return;
-        enteredPhone=phone;
-        confirm.value='';
-        el('fixtureMaskedPhone').textContent=phone.slice(0,3)+'****'+phone.slice(-4);
-        // These hidden inputs are used by the existing UI only to enter the synthetic account.
-        el('confirmPhone').value=phone;
-        el('smsCode').value='666666';
-        updateConfirmation();
-      };
-      el('previewAccountButton').addEventListener('click',event=>{
-        if(submitting||!/^1[3-9]\d{9}$/.test(el('phone').value.trim()))return;
-        event.preventDefault();event.stopImmediatePropagation();
-        form.requestSubmit();
-      },{capture:true});
-      form.addEventListener('submit',()=>{
-        // The normal submit listener requires the first step's preview state.
-        submitting=true;
-        try{
-          if(el('phonePreview').hidden)el('previewAccountButton').click();
-          enterRecharge();
-        }finally{submitting=false}
-      },{capture:true});
-      confirm.addEventListener('input',updateConfirmation);
       const bar=el('checkoutBar'),tiers=el('tierList');
       const updateBar=()=>{bar.classList.toggle('fixture-no-tier',!tiers.querySelector('[aria-checked="true"]'));};
       new target.MutationObserver(records=>{
@@ -132,20 +98,9 @@
         updateBar();
       }).observe(tiers,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-checked']});
       updateBar();
-      for(const id of ['checkoutButton','startPaymentButton']){
-        el(id).addEventListener('click',event=>{
-          if(!matches()){event.preventDefault();event.stopImmediatePropagation();el('confirmationDialog').close();el('fixtureConfirmHint').textContent='请输入完整手机号，并确保两次填写一致。';confirm.focus()}
-        },{capture:true});
-      }
-      for(const id of ['switchAccountButton','orderSwitchAccountButton']){
-        el(id).addEventListener('click',()=>{
-          enteredPhone='';confirm.value='';el('fixtureMaskedPhone').textContent='—';updateConfirmation();
-        });
-      }
-      updateConfirmation();
     }
     if(options.seedPending)seedPending(target.sessionStorage);
-    else if(options.confirmWithoutSms)target.sessionStorage.removeItem(SESSION_KEY);
+    else if(options.showFixtureArt)target.sessionStorage.removeItem(SESSION_KEY);
     target.__rechargeFixtureCalls=fetchFixture.calls;
     return fetchFixture;
   }

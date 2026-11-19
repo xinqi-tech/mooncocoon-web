@@ -300,7 +300,7 @@
   function isTrustedSandboxConfig(config){const capabilities=sandboxCapabilities(config);return capabilities.trusted&&capabilities.orderAvailable}
 
   function lockPage(doc,message){
-    for(const id of ['phone','previewAccountButton','confirmPhone','smsCode','sendSmsButton','loginButton']){const node=doc.getElementById(id);if(node)node.disabled=true}
+    for(const id of ['phone','smsCode','sendSmsButton','loginButton']){const node=doc.getElementById(id);if(node)node.disabled=true}
     const notice=doc.getElementById('configurationNotice');
     if(notice){notice.hidden=false;const detail=notice.querySelector('span');if(detail&&message)detail.textContent=message}
     const badge=doc.getElementById('environmentBadge');if(badge)badge.hidden=true;
@@ -321,19 +321,15 @@
       loginAttempt:0,smsAttempt:0,pollCount:0,pollTimer:null,smsTimer:null,smsSeconds:0,orderBusy:false,
       orderTracker:{orderId:'',rank:0,terminal:false,latestVersion:0}};
     const message=value=>{el('pageMessage').textContent=safeText(value,180)};
-    let previewPhone='';
-    const confirmedPhone=()=>previewPhone!==''&&el('phone').value.trim()===previewPhone&&el('confirmPhone').value.trim()===previewPhone;
+    const hasValidPhone=()=>validPhone(el('phone').value.trim());
     const setLoginEnabled=enabled=>{
-      const confirmed=enabled&&confirmedPhone();
-      el('phone').disabled=!enabled;el('previewAccountButton').disabled=!enabled;
-      el('confirmPhone').disabled=!enabled||!previewPhone;
-      el('phoneVerification').hidden=!confirmed;
-      el('smsCode').disabled=!confirmed;el('loginButton').disabled=!confirmed;
-      el('sendSmsButton').disabled=!confirmed||state.smsSeconds>0;
+      const ready=enabled&&hasValidPhone();
+      el('phone').disabled=!enabled;
+      el('smsCode').disabled=!ready;el('loginButton').disabled=!ready;
+      el('sendSmsButton').disabled=!ready||state.smsSeconds>0;
     };
-    const clearPhonePreview=()=>{
-      previewPhone='';el('phonePreview').hidden=true;el('maskedPhone').textContent='';
-      el('confirmPhone').value='';el('smsCode').value='';
+    const clearLoginCode=()=>{
+      el('smsCode').value='';
       setLoginEnabled(state.loginAvailable);
     };
     const renderAvailabilityNotice=()=>{
@@ -372,7 +368,7 @@
 
     function showLogin(){
       el('loginPanel').hidden=false;el('accountWorkspace').hidden=true;el('orderPanel').hidden=true;el('checkoutBar').hidden=true;
-      el('phone').value='';clearPhonePreview();
+      el('phone').value='';clearLoginCode();
     }
 
     function expireSession(){
@@ -593,32 +589,15 @@
       el('confirmationAmount').textContent=formatFen(tier.rmbPrice);el('confirmationDialog').showModal();
     }
 
-    const previewAccount=()=>{
-      if(!state.loginAvailable)return;
-      const phone=el('phone').value.trim();
-      if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
-      previewPhone=phone;
-      el('maskedPhone').textContent=phone.slice(0,3)+'****'+phone.slice(-4);
-      el('phonePreview').hidden=false;
-      setLoginEnabled(state.loginAvailable);
-      el('confirmPhone').focus?.();
-      message('');
-    };
-    el('previewAccountButton').addEventListener('click',previewAccount);
     el('phone').addEventListener('input',()=>{
       state.loginAttempt+=1;state.smsAttempt+=1;
       if(state.smsTimer)root.clearInterval(state.smsTimer);
       state.smsTimer=null;state.smsSeconds=0;el('sendSmsButton').textContent='获取验证码';
       state.activeResumeUserId='';state.activeResumeCredential='';
-      clearPhonePreview();
+      clearLoginCode();
     });
-    el('confirmPhone').addEventListener('input',()=>{
-      if(!confirmedPhone())state.loginAttempt+=1;
-      setLoginEnabled(state.loginAvailable);
-    });
-
     el('sendSmsButton').addEventListener('click',async()=>{
-      const phone=el('phone').value.trim();if(!state.loginAvailable||!confirmedPhone())return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
+      const phone=el('phone').value.trim();if(!state.loginAvailable||!hasValidPhone())return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
       const smsAttempt=++state.smsAttempt;el('sendSmsButton').disabled=true;
       try{
         if(state.configured){state.activeResumeUserId='';state.activeResumeCredential='';await api.sendSms(phone)}
@@ -636,18 +615,17 @@
         if(smsAttempt!==state.smsAttempt)return;message('验证码已发送。');state.smsSeconds=60;
         state.smsTimer=root.setInterval(()=>{if(smsAttempt!==state.smsAttempt){root.clearInterval(state.smsTimer);state.smsTimer=null;return}
           state.smsSeconds-=1;el('sendSmsButton').textContent=state.smsSeconds>0?`${state.smsSeconds} 秒后重试`:'获取验证码';
-          if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable||!confirmedPhone()}},1000);
-      }catch(error){if(smsAttempt===state.smsAttempt){el('sendSmsButton').disabled=!state.loginAvailable||!confirmedPhone();handleError(error)}}
+          if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable||!hasValidPhone()}},1000);
+      }catch(error){if(smsAttempt===state.smsAttempt){el('sendSmsButton').disabled=!state.loginAvailable||!hasValidPhone();handleError(error)}}
     });
 
     el('loginForm').addEventListener('submit',async event=>{
       event.preventDefault();if(!state.loginAvailable)return;
-      if(!confirmedPhone()){if(!previewPhone)previewAccount();else message('请再次输入完整且一致的手机号。');return}
       const phone=el('phone').value.trim(),code=el('smsCode').value.trim();
       if(!validPhone(phone)||!validSmsCode(code)){message('请填写正确的手机号和六位验证码。');return}
       const attempt=++state.loginAttempt;el('loginButton').disabled=true;
       const recoveryCredential=state.configured?'':state.activeResumeCredential,recoveryUserId=state.configured?'':state.activeResumeUserId;
-      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable||!confirmedPhone();return}
+      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable||!hasValidPhone();return}
       try{
         const auth=await api.loginExisting(phone,code,recoveryCredential);if(attempt!==state.loginAttempt)return;
         const user=auth&&auth.user,userId=normalizeUserId(user&&user.id),token=String(auth&&auth.accessToken||'');
@@ -659,10 +637,10 @@
         if(state.configured&&!resumeExchangeCredential)throw new Error('服务未返回安全恢复凭证，已停止登录充值。');
         const session={userId,accessToken:token,nickname:safeText(user.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
         if(!store.saveSession(session))throw new Error('当前浏览器无法安全保存登录状态。');
-        state.session=session;guard.switchTo(userId);el('phone').value='';clearPhonePreview();message('');showAccount();
+        state.session=session;guard.switchTo(userId);el('phone').value='';clearLoginCode();message('');showAccount();
         if(pending)await resumePending(pending);else await loadAccountData();
       }catch(error){if(attempt===state.loginAttempt){if(recoveryUserId)invalidateRecoveryCandidate(recoveryUserId);handleError(error)}}
-      finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable||!confirmedPhone()}
+      finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable||!hasValidPhone()}
     });
 
     el('switchAccountButton').addEventListener('click',switchAccount);
