@@ -74,7 +74,7 @@ input:disabled{opacity:.55;cursor:not-allowed}
 .login-form :is(#phone,#smsCode):focus{outline:2px solid var(--ice-340);outline-offset:3px}
 .code-row{position:relative;--sms-button-width:118px}
 .code-row #smsCode{width:100%;padding-inline-end:calc(var(--sms-button-width) + 14px)}
-.code-row #sendSmsButton{position:absolute;inset-inline-end:5px;inset-block:5px;width:var(--sms-button-width);min-height:0;padding:0 6px;white-space:nowrap}
+.code-row #sendSmsButton{position:absolute;inset-inline-end:5px;inset-block:5px;width:var(--sms-button-width);min-height:0;padding:0 6px;white-space:nowrap;border:0;background:none;box-shadow:none;color:#153553}
 .primary-button,.secondary-button,.text-button{min-height:46px;border-radius:999px;padding:10px 20px;border:1px solid transparent}
 .primary-button{min-height:52px;border:0;background:transparent url("../images/app-ui/reservation-button.png") center/100% 100% no-repeat;color:#fff;font:18px/1.2 var(--font-sans);letter-spacing:.05em;text-shadow:0 1px 6px rgba(36,68,118,.5)}
 .primary-button:not(:disabled):hover{filter:brightness(1.1)}
@@ -195,7 +195,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
           <label for="smsCode">短信验证码</label>
           <div class="code-row">
             <input id="smsCode" name="smsCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="请输入 6 位验证码" disabled required>
-            <button id="sendSmsButton" class="secondary-button" type="button" disabled>获取验证码</button>
+            <button id="sendSmsButton" type="button" disabled>获取验证码</button>
           </div>
           <button id="loginButton" class="primary-button" type="submit" disabled>验证并继续充值</button>
         </div>
