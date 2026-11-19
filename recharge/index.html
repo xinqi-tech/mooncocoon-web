@@ -47,7 +47,7 @@ a{color:var(--ice-340)}
 .site-header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:rgba(3,13,32,.76);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .brand{display:flex;align-items:center;gap:10px;color:var(--text-primary);font:18px var(--font-serif);letter-spacing:.06em;text-decoration:none}
 .brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,.5))}
-.environment-badge{padding:5px 10px;border:1px solid rgba(255,217,154,.52);border-radius:999px;color:var(--warning);font-size:12px;letter-spacing:.08em;background:rgba(255,217,154,.07)}
+.environment-badge{padding:5px 12px;border:1px solid var(--line-strong);border-radius:999px;color:var(--ice-340);font-size:12px;letter-spacing:.08em;background:linear-gradient(145deg,rgba(156,203,255,.18),rgba(130,174,230,.06));box-shadow:inset 0 1px rgba(236,247,255,.14)}
 .recharge-shell{width:min(100% - 32px,760px);margin:0 auto;padding:56px 0 148px;position:relative}
 .page-intro{position:relative;isolation:isolate;overflow:hidden;margin-bottom:30px;padding:34px 38px 38px;border:1px solid var(--line-strong);border-radius:28px;background:var(--night-920);box-shadow:0 24px 70px rgba(0,5,20,.28)}
 .page-intro::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,13,32,.94) 0%,rgba(3,13,32,.86) 42%,rgba(3,13,32,.48) 100%),url("../images/banner_bg.webp") center 38%/cover no-repeat}
@@ -59,11 +59,11 @@ a{color:var(--ice-340)}
 .page-intro>p:last-child{max-width:600px;margin:14px 0 0;color:var(--text-secondary)}
 .configuration-notice{display:flex;gap:5px;flex-direction:column;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(255,217,154,.38);border-radius:16px;background:rgba(255,217,154,.07);color:var(--warning)}
 .configuration-notice span{font-size:13px;color:var(--text-secondary)}
-.transaction-section,.account-ledger,.order-panel{margin-top:18px;padding:24px;border:1px solid var(--line);border-radius:22px;background:radial-gradient(ellipse at 30% 0%,rgba(140,174,231,.13),transparent 58%),linear-gradient(145deg,rgba(36,60,96,.8),rgba(16,36,64,.8));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 70px rgba(0,5,20,.24)}
+.transaction-section,.account-ledger,.order-panel{margin-top:18px;padding:24px;border:1px solid var(--line);border-radius:22px;background:radial-gradient(ellipse at 30% 0%,rgba(140,174,231,.13),transparent 58%),linear-gradient(145deg,rgba(36,60,96,.8),rgba(16,36,64,.8));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 70px rgba(0,5,20,.24)}
 .section-heading{display:flex;align-items:center;gap:13px;margin-bottom:22px}
 .section-heading h2{margin:0;font:25px/1.3 var(--font-serif);font-weight:400;letter-spacing:.05em}
 .section-heading p{margin:2px 0 0;color:var(--text-muted);font-size:13px}
-.section-mark{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line-strong);border-radius:50%;color:var(--ice-340);font-family:var(--font-serif);background:rgba(199,229,255,.05)}
+.section-mark{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line-strong);border-radius:12px;color:var(--ice-340);background:linear-gradient(145deg,rgba(156,203,255,.23),rgba(130,174,230,.07));box-shadow:inset 0 1px rgba(236,247,255,.16),0 0 16px rgba(156,203,255,.12)}
 .account-heading .text-button{margin-left:auto}
 .login-form{display:grid;gap:10px}
 .login-form label{color:var(--text-secondary);font-size:13px;margin-top:3px}
@@ -138,6 +138,12 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
   .dialog-actions,.order-actions{flex-direction:column-reverse}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.section-mark svg,.section-mark img{width:22px;height:22px}
+.phone-preview,.phone-verification{display:grid;gap:8px}
+.phone-preview{margin:4px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--glass)}
+.phone-preview strong{color:var(--moon-080);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+#previewAccountButton{width:min(100%,280px);margin-top:6px}
   </style>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
@@ -158,7 +164,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         <span class="product-mark">月绸充值</span>
       </div>
       <h1 id="pageTitle">充值到你的游戏账号</h1>
-      <p>登录后请核对昵称和 UID。月绸会在服务端确认付款后进入同一游戏钱包。</p>
+      <p>请核对充值手机号及游戏账号。月绸会在服务端确认付款后进入同一游戏钱包。</p>
     </section>
 
     <div id="configurationNotice" class="configuration-notice" role="status" aria-live="polite">
@@ -169,9 +175,9 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
     <section id="loginPanel" class="transaction-section" aria-labelledby="loginHeading">
       <div class="section-heading">
-        <span class="section-mark" aria-hidden="true">月</span>
+        <span class="section-mark" aria-hidden="true"><img src="../images/app-ui/recharge-account-search.svg" alt="" width="22" height="22"></span>
         <div>
-          <h2 id="loginHeading">验证游戏账号</h2>
+          <h2 id="loginHeading">确认充值账号</h2>
           <p>使用注册游戏时绑定的中国大陆手机号。</p>
         </div>
       </div>
@@ -179,12 +185,21 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       <form id="loginForm" class="login-form" novalidate>
         <label for="phone">手机号</label>
         <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" placeholder="请输入 11 位手机号" disabled required>
-        <label for="smsCode">短信验证码</label>
-        <div class="code-row">
-          <input id="smsCode" name="smsCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="请输入 6 位验证码" disabled required>
-          <button id="sendSmsButton" class="secondary-button" type="button" disabled>获取验证码</button>
+        <button id="previewAccountButton" class="primary-button" type="button" disabled>查看账号</button>
+        <div id="phonePreview" class="phone-preview" hidden>
+          <span>充值手机号</span>
+          <strong id="maskedPhone" aria-live="polite"></strong>
+          <label for="confirmPhone">确认手机号</label>
+          <input id="confirmPhone" type="tel" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="请再次输入完整手机号" disabled>
         </div>
-        <button id="loginButton" class="primary-button" type="submit" disabled>登录并查看账号</button>
+        <div id="phoneVerification" class="phone-verification" hidden>
+          <label for="smsCode">短信验证码</label>
+          <div class="code-row">
+            <input id="smsCode" name="smsCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="请输入 6 位验证码" disabled required>
+            <button id="sendSmsButton" class="secondary-button" type="button" disabled>获取验证码</button>
+          </div>
+          <button id="loginButton" class="primary-button" type="submit" disabled>验证并继续充值</button>
+        </div>
         <p class="form-note">登录只用于确认本人游戏账号，不支持输入 UID 为他人充值。继续即表示你同意<a href="../user-agreement/" target="_blank" rel="noopener">用户协议</a>和<a href="../privacy-policy/" target="_blank" rel="noopener">隐私政策</a>。</p>
       </form>
     </section>
@@ -192,7 +207,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     <div id="accountWorkspace" hidden>
       <section class="account-ledger" aria-labelledby="accountHeading">
         <div class="section-heading account-heading">
-          <span class="section-mark" aria-hidden="true">账</span>
+          <span class="section-mark" aria-hidden="true"><img src="../images/app-ui/recharge-account-search.svg" alt="" width="22" height="22"></span>
           <div>
             <h2 id="accountHeading">到账账号</h2>
             <p>付款前请再次核对。</p>
@@ -211,7 +226,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
       <section class="transaction-section tier-section" aria-labelledby="tierHeading">
         <div class="section-heading">
-          <span class="section-mark" aria-hidden="true">充</span>
+          <span class="section-mark" aria-hidden="true"><img src="../images/app-ui/recharge-wallet.svg" alt="" width="22" height="22"></span>
           <div>
             <h2 id="tierHeading">选择充值档位</h2>
             <p>价格、月绸与首充加赠均以服务端显示为准。</p>
@@ -246,7 +261,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
   <aside id="checkoutBar" class="checkout-bar" hidden>
     <div>
-      <span>将充值到 <strong id="checkoutAccount">—</strong></span>
+      <span>将充值到UID<strong id="checkoutAccount">—</strong></span>
       <b id="checkoutAmount">请选择充值档位</b>
     </div>
     <button id="checkoutButton" class="primary-button" type="button" disabled>确认充值</button>
@@ -582,7 +597,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
   function isTrustedSandboxConfig(config){const capabilities=sandboxCapabilities(config);return capabilities.trusted&&capabilities.orderAvailable}
 
   function lockPage(doc,message){
-    for(const id of ['phone','smsCode','sendSmsButton','loginButton']){const node=doc.getElementById(id);if(node)node.disabled=true}
+    for(const id of ['phone','previewAccountButton','confirmPhone','smsCode','sendSmsButton','loginButton']){const node=doc.getElementById(id);if(node)node.disabled=true}
     const notice=doc.getElementById('configurationNotice');
     if(notice){notice.hidden=false;const detail=notice.querySelector('span');if(detail&&message)detail.textContent=message}
     const badge=doc.getElementById('environmentBadge');if(badge)badge.hidden=true;
@@ -603,9 +618,20 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       loginAttempt:0,smsAttempt:0,pollCount:0,pollTimer:null,smsTimer:null,smsSeconds:0,orderBusy:false,
       orderTracker:{orderId:'',rank:0,terminal:false,latestVersion:0}};
     const message=value=>{el('pageMessage').textContent=safeText(value,180)};
+    let previewPhone='';
+    const confirmedPhone=()=>previewPhone!==''&&el('phone').value.trim()===previewPhone&&el('confirmPhone').value.trim()===previewPhone;
     const setLoginEnabled=enabled=>{
-      el('phone').disabled=!enabled;el('smsCode').disabled=!enabled;el('loginButton').disabled=!enabled;
-      el('sendSmsButton').disabled=!enabled||state.smsSeconds>0;
+      const confirmed=enabled&&confirmedPhone();
+      el('phone').disabled=!enabled;el('previewAccountButton').disabled=!enabled;
+      el('confirmPhone').disabled=!enabled||!previewPhone;
+      el('phoneVerification').hidden=!confirmed;
+      el('smsCode').disabled=!confirmed;el('loginButton').disabled=!confirmed;
+      el('sendSmsButton').disabled=!confirmed||state.smsSeconds>0;
+    };
+    const clearPhonePreview=()=>{
+      previewPhone='';el('phonePreview').hidden=true;el('maskedPhone').textContent='';
+      el('confirmPhone').value='';el('smsCode').value='';
+      setLoginEnabled(state.loginAvailable);
     };
     const renderAvailabilityNotice=()=>{
       if(!state.environmentTrusted)return;
@@ -637,13 +663,13 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       el('loginPanel').hidden=true;el('accountWorkspace').hidden=false;el('checkoutBar').hidden=false;
       el('accountNickname').textContent=state.session.nickname||'当前账号';
       el('accountUid').textContent=state.session.userId;
-      el('checkoutAccount').textContent=`${state.session.nickname||'当前账号'} · UID ${state.session.userId}`;
+      el('checkoutAccount').textContent=`${state.session.userId}`;
       el('moonSilkBalance').textContent='—';
     }
 
     function showLogin(){
       el('loginPanel').hidden=false;el('accountWorkspace').hidden=true;el('orderPanel').hidden=true;el('checkoutBar').hidden=true;
-      el('phone').value='';el('smsCode').value='';setLoginEnabled(state.loginAvailable);
+      el('phone').value='';clearPhonePreview();
     }
 
     function expireSession(){
@@ -676,8 +702,8 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     function selectTier(tier){
       state.selectedTier=tier;
       for(const option of el('tierList').querySelectorAll('.tier-option'))option.setAttribute('aria-checked',String(option.dataset.tierId===tier.tierId));
-      const bonus=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`，首次共 ${formatNumber(tier.firstRechargeTotal)} 月绸`:'';
-      el('checkoutAmount').textContent=`${formatFen(tier.rmbPrice)} · ${formatNumber(tier.silkAmount)} 月绸${bonus}`;
+      const bonus=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`（含加赠${formatNumber(tier.firstRechargeBonus)}月绸）`:'';
+      el('checkoutAmount').textContent=`${formatFen(tier.rmbPrice)}${bonus}`;
       el('checkoutButton').disabled=!state.configured;
     }
 
@@ -749,7 +775,10 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
           if(!advanceOrderTracker(tracker,status))return;
           renderOrderBase(order);message('');
           stopPolling();invalidateRecoveryCandidate(state.session.userId);store.forgetPending(state.session.userId);refreshLoginAvailability();renderWallet(order.wallet);
-          setOrderState('fulfilled','充值已到账',`当前月绸 ${formatNumber(balance)}。你可以回到游戏查看。`);return;
+          const credited=finiteNonNegative(order.creditedSilkAmount);
+          setOrderState('fulfilled','充值已到账',credited>0
+            ? `成功充值${formatNumber(credited)}月绸。你可以回到游戏查看。`
+            : '充值已到账，你可以回到游戏查看。');return;
         }
         if(['cancelled','failed','closed'].includes(status)){
           if(!advanceOrderTracker(tracker,status))return;
@@ -861,8 +890,32 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       el('confirmationAmount').textContent=formatFen(tier.rmbPrice);el('confirmationDialog').showModal();
     }
 
+    const previewAccount=()=>{
+      if(!state.loginAvailable)return;
+      const phone=el('phone').value.trim();
+      if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
+      previewPhone=phone;
+      el('maskedPhone').textContent=phone.slice(0,3)+'****'+phone.slice(-4);
+      el('phonePreview').hidden=false;
+      setLoginEnabled(state.loginAvailable);
+      el('confirmPhone').focus?.();
+      message('');
+    };
+    el('previewAccountButton').addEventListener('click',previewAccount);
+    el('phone').addEventListener('input',()=>{
+      state.loginAttempt+=1;state.smsAttempt+=1;
+      if(state.smsTimer)root.clearInterval(state.smsTimer);
+      state.smsTimer=null;state.smsSeconds=0;el('sendSmsButton').textContent='获取验证码';
+      state.activeResumeUserId='';state.activeResumeCredential='';
+      clearPhonePreview();
+    });
+    el('confirmPhone').addEventListener('input',()=>{
+      if(!confirmedPhone())state.loginAttempt+=1;
+      setLoginEnabled(state.loginAvailable);
+    });
+
     el('sendSmsButton').addEventListener('click',async()=>{
-      const phone=el('phone').value.trim();if(!state.loginAvailable)return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
+      const phone=el('phone').value.trim();if(!state.loginAvailable||!confirmedPhone())return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
       const smsAttempt=++state.smsAttempt;el('sendSmsButton').disabled=true;
       try{
         if(state.configured){state.activeResumeUserId='';state.activeResumeCredential='';await api.sendSms(phone)}
@@ -880,17 +933,18 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         if(smsAttempt!==state.smsAttempt)return;message('验证码已发送。');state.smsSeconds=60;
         state.smsTimer=root.setInterval(()=>{if(smsAttempt!==state.smsAttempt){root.clearInterval(state.smsTimer);state.smsTimer=null;return}
           state.smsSeconds-=1;el('sendSmsButton').textContent=state.smsSeconds>0?`${state.smsSeconds} 秒后重试`:'获取验证码';
-          if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable}},1000);
-      }catch(error){if(smsAttempt===state.smsAttempt){el('sendSmsButton').disabled=!state.loginAvailable;handleError(error)}}
+          if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable||!confirmedPhone()}},1000);
+      }catch(error){if(smsAttempt===state.smsAttempt){el('sendSmsButton').disabled=!state.loginAvailable||!confirmedPhone();handleError(error)}}
     });
 
     el('loginForm').addEventListener('submit',async event=>{
       event.preventDefault();if(!state.loginAvailable)return;
+      if(!confirmedPhone()){if(!previewPhone)previewAccount();else message('请再次输入完整且一致的手机号。');return}
       const phone=el('phone').value.trim(),code=el('smsCode').value.trim();
       if(!validPhone(phone)||!validSmsCode(code)){message('请填写正确的手机号和六位验证码。');return}
       const attempt=++state.loginAttempt;el('loginButton').disabled=true;
       const recoveryCredential=state.configured?'':state.activeResumeCredential,recoveryUserId=state.configured?'':state.activeResumeUserId;
-      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable;return}
+      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable||!confirmedPhone();return}
       try{
         const auth=await api.loginExisting(phone,code,recoveryCredential);if(attempt!==state.loginAttempt)return;
         const user=auth&&auth.user,userId=normalizeUserId(user&&user.id),token=String(auth&&auth.accessToken||'');
@@ -902,10 +956,10 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         if(state.configured&&!resumeExchangeCredential)throw new Error('服务未返回安全恢复凭证，已停止登录充值。');
         const session={userId,accessToken:token,nickname:safeText(user.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
         if(!store.saveSession(session))throw new Error('当前浏览器无法安全保存登录状态。');
-        state.session=session;guard.switchTo(userId);el('phone').value='';el('smsCode').value='';message('');showAccount();
+        state.session=session;guard.switchTo(userId);el('phone').value='';clearPhonePreview();message('');showAccount();
         if(pending)await resumePending(pending);else await loadAccountData();
       }catch(error){if(attempt===state.loginAttempt){if(recoveryUserId)invalidateRecoveryCandidate(recoveryUserId);handleError(error)}}
-      finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable}
+      finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable||!confirmedPhone()}
     });
 
     el('switchAccountButton').addEventListener('click',switchAccount);

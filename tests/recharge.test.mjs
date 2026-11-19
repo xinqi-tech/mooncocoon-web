@@ -32,10 +32,24 @@ function fakeRechargeDocument(){
   const ids=['accountNickname','accountUid','accountWorkspace','backToTiersButton','checkoutAccount','checkoutAmount','checkoutBar','checkoutButton',
     'configurationNotice','confirmationAmount','confirmationDialog','confirmationNickname','confirmationProduct','confirmationUid','environmentBadge','loginButton',
     'loginForm','loginPanel','moonSilkBalance','orderAccount','orderGlyph','orderHeading','orderLabel','orderMessage','orderNumber','orderPanel','orderProduct','orderSwitchAccountButton',
-    'pageMessage','phone','refreshOrderButton','retryTiersButton','sendSmsButton','smsCode','startPaymentButton','switchAccountButton','tierList'];
+    'pageMessage','phone','previewAccountButton','phonePreview','maskedPhone','confirmPhone','phoneVerification','refreshOrderButton','retryTiersButton','sendSmsButton','smsCode','startPaymentButton','switchAccountButton','tierList'];
   const elements=Object.fromEntries(ids.map(id=>[id,new FakeElement(id)]));
   elements.configurationNotice.noticeDetail=new FakeElement('configurationNoticeDetail');
   return {hidden:false,elements,getElementById:id=>elements[id]||null,createElement:tag=>new FakeElement(tag),addEventListener(){}};
+}
+
+function confirmRechargePhone(doc){
+  const e=doc.elements;
+  e.phone.value='13800138000';
+  e.previewAccountButton.listeners.get('click')();
+  assert.equal(e.maskedPhone.textContent,'138****8000');
+  assert.equal(e.phoneVerification.hidden,true);
+  e.confirmPhone.value='13800138001';
+  e.confirmPhone.listeners.get('input')();
+  assert.equal(e.sendSmsButton.disabled,true);
+  e.confirmPhone.value=e.phone.value;
+  e.confirmPhone.listeners.get('input')();
+  assert.equal(e.phoneVerification.hidden,false);
 }
 
 function okResponse(data){return {ok:true,status:200,json:async()=>({result:0,data})}}
@@ -199,12 +213,13 @@ test('实际页面在无效支付地址后查询到 fulfilled，不会被 catch 
       if(path==='/api/web-recharge/orders'&&options.method==='POST')return okResponse({orderId:'WEB-SANDBOX-0001',paymentUrl:'https://openapi-sandbox.dl.alipaydev.com/not-a-gateway',resumeCredential:RESUME_CREDENTIAL});
       if(path==='/api/web-recharge/orders/WEB-SANDBOX-0001'){
         sawRejectedUrlMessage=/支付地址未通过/.test(doc.elements.pageMessage.textContent);
-        return okResponse({orderId:'WEB-SANDBOX-0001',status:'fulfilled',productType:'recharge',productId:'recharge_6',channel:'alipay_wap_test',rmbPrice:600,wallet:{moonSilk:208}});
+        return okResponse({orderId:'WEB-SANDBOX-0001',status:'fulfilled',productType:'recharge',productId:'recharge_6',channel:'alipay_wap_test',rmbPrice:600,creditedSilkAmount:120,wallet:{moonSilk:208}});
       }
       assert.fail(`未匹配的接口：${path}`);
     };
     recharge.init(doc,fetchImpl);
     await waitFor(()=>doc.elements.orderHeading.textContent==='充值已到账','页面显示 fulfilled');
+    assert.equal(doc.elements.orderMessage.textContent,'成功充值120月绸。你可以回到游戏查看。');
   });
   assert.equal(sawRejectedUrlMessage,true);
   assert.equal(doc.elements.pageMessage.textContent,'');
@@ -227,6 +242,7 @@ test('实际页面停新单时仍用原 requestId 恢复无 orderId 的待确认
     };
     recharge.init(doc,fetchImpl);
     await waitFor(()=>doc.elements.orderHeading.textContent==='充值已到账','停新单恢复 fulfilled');
+    assert.equal(doc.elements.orderMessage.textContent,'充值已到账，你可以回到游戏查看。');
   });
   assert.deepEqual(replayBody,{tierId:'recharge_6',clientRequestId:REQUEST_ID_A});
   assert.equal(store.pendingFor('900004'),null);
@@ -361,7 +377,14 @@ test('官网根域名读取正式配置后开放手机号验证',async()=>{
   },{protocol:'https:',hostname:'lunakoru.com',port:''});
   assert.deepEqual(calls,['/api/web-recharge/config']);
   assert.equal(doc.elements.phone.disabled,false);
-  assert.equal(doc.elements.sendSmsButton.disabled,false);
+  assert.equal(doc.elements.previewAccountButton.disabled,false);
+  assert.equal(doc.elements.sendSmsButton.disabled,true);
+  confirmRechargePhone(doc);
+  doc.elements.phone.value='13900139000';
+  doc.elements.phone.listeners.get('input')();
+  assert.equal(doc.elements.phonePreview.hidden,true);
+  assert.equal(doc.elements.confirmPhone.value,'');
+  assert.equal(doc.elements.sendSmsButton.disabled,true);
   assert.equal(doc.elements.configurationNotice.hidden,true);
 });
 
@@ -444,9 +467,9 @@ test('审核等待态在服务端验证后仍拒绝把恢复凭证用于其他 U
       assert.fail(`未匹配的接口：${path}`);
     };
     const controller=recharge.init(doc,fetchImpl);
-    await waitFor(()=>doc.elements.loginButton.disabled===false,'服务端验证恢复凭证后打开登录');
+    await waitFor(()=>doc.elements.previewAccountButton.disabled===false,'服务端验证恢复凭证后开放账号预览');
     assert.equal(store.readSession(),null);
-    doc.elements.phone.value='13800138000';
+    confirmRechargePhone(doc);
     await doc.elements.sendSmsButton.listeners.get('click')();
     doc.elements.phone.value='13800138000';doc.elements.smsCode.value='666666';
     await doc.elements.loginForm.listeners.get('submit')({preventDefault(){}});
@@ -479,8 +502,8 @@ test('审核等待态允许同 UID 重新认证并恢复原订单',async()=>{
       assert.fail(`未匹配的接口：${path}`);
     };
     const controller=recharge.init(doc,fetchImpl);
-    await waitFor(()=>doc.elements.loginButton.disabled===false,'服务端验证恢复凭证后打开登录');
-    doc.elements.phone.value='13800138000';
+    await waitFor(()=>doc.elements.previewAccountButton.disabled===false,'服务端验证恢复凭证后开放账号预览');
+    confirmRechargePhone(doc);
     await doc.elements.sendSmsButton.listeners.get('click')();
     doc.elements.phone.value='13800138000';doc.elements.smsCode.value='666666';
     await doc.elements.loginForm.listeners.get('submit')({preventDefault(){}});
@@ -511,7 +534,7 @@ test('production available=true 离线链路从短信登录到建单并打开正
     };
     const controller=recharge.init(doc,fetchImpl);
     await waitFor(()=>controller.state.loginAvailable,'正式可用配置解锁登录');
-    doc.elements.phone.value='13800138000';
+    confirmRechargePhone(doc);
     await doc.elements.sendSmsButton.listeners.get('click')();
     doc.elements.smsCode.value='666666';
     await doc.elements.loginForm.listeners.get('submit')({preventDefault(){}});
@@ -579,7 +602,7 @@ test('建单响应丢失后只通过 exchange 与服务端真实 pending 恢复�
     };
     const controller=recharge.init(secondDoc,fetchImpl);
     await waitFor(()=>controller.state.loginAvailable,'exchange 后由服务端配置解锁恢复登录');
-    secondDoc.elements.phone.value='13800138000';
+    confirmRechargePhone(secondDoc);
     await secondDoc.elements.sendSmsButton.listeners.get('click')();
     secondDoc.elements.smsCode.value='666666';
     await secondDoc.elements.loginForm.listeners.get('submit')({preventDefault(){}});
