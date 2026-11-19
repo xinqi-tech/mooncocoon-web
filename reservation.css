@@ -418,6 +418,7 @@
 #reservationDownloadLinks .reservation-download-popup{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;background:#172b4b;border:1px solid #cce9ff88;border-radius:12px;padding:8px;z-index:5}
 .reservation-download-option[data-open] .reservation-download-popup{display:flex!important}
 @media(hover:hover){.reservation-download-option:has(>button:hover) .reservation-download-popup{display:flex!important}}
+.reservation-community-qr{display:block;width:min(144px,38vw);height:auto;margin-top:8px;border-radius:10px}
 #reservationDownloadLinks .reservation-qr{display:block;width:min(128px,34vw);height:auto}
 /* Each star belongs to its heading, so body wrapping cannot move it. */
 .first-screen .reservation-rule-list li{display:block;padding-left:18px}
