@@ -27,7 +27,7 @@ const contentTypes={'.html':'text/html; charset=utf-8','.css':'text/css; charset
 
 async function fixtureHtml(seedPending){
   let html=await readFile(resolve(projectRoot,'recharge/index.html'),'utf8');
-  html=html.replaceAll('="../','="/').replace('</head>','<link rel="stylesheet" href="/fixture/fixture.css"></head>');
+  html=html.replaceAll('="../','="/').replaceAll('url("../','url("/').replace('</head>','<link rel="stylesheet" href="/fixture/fixture.css"></head>');
   html=html.replace('<label for="smsCode">','<label for="smsCode" hidden>')
     .replace('<div class="code-row">','<div class="code-row" hidden>')
     .replace('<div id="phonePreview" class="phone-preview" hidden>','<div id="phonePreview" class="phone-preview" hidden style="display:none!important">')
@@ -66,10 +66,7 @@ function mobileFixturePage(){return `<!doctype html><html lang="zh-CN"><head><me
 
 const fixtureCss='.fixture-banner{position:relative;z-index:1000;padding:7px 14px;background:#ffd99a;color:#26364d;text-align:center;font:600 12px/1.4 system-ui;letter-spacing:.04em}.site-header{top:0}';
 const checkoutFixtureCss=`
-@font-face{font-family:RechargeTitle;src:url("/fonts/JHB.ttf") format("truetype");font-display:swap}
-.page-intro-brand .product-mark{box-sizing:border-box;width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("/tests/recharge-assets/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
-#previewAccountButton,#refreshOrderButton{width:min(100%,260px);min-height:0;aspect-ratio:658/144;padding:0;background-image:url("/tests/recharge-assets/recharge-query-frame.png");background-size:contain}
-#previewAccountButton{justify-self:center}
+#refreshOrderButton{width:min(100%,260px);min-height:0;aspect-ratio:658/144;padding:0;background-image:url("/images/app-ui/recharge-query-frame.png");background-size:contain}
 #refreshOrderButton{align-self:center}
 #fixtureConfirmHint{font-size:13px;opacity:.7}
 #checkoutBar.fixture-no-tier{display:none!important}
