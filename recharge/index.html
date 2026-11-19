@@ -1178,9 +1178,9 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     root.addEventListener('pageshow',resume);
     (async()=>{
       try{
-        const capabilities=environmentCapabilities(await api.getConfig(),environment);
+        const config=await api.getConfig(),capabilities=environmentCapabilities(config,environment);
         if(!capabilities.trusted)throw new Error('充值服务尚未完成可信配置。');
-        state.available=capabilities.orderAvailable;setInputs(state.available);
+        state.available=capabilities.orderAvailable&&config.guestAvailable===true;setInputs(state.available);
         el('environmentBadge').hidden=false;el('environmentBadge').textContent=environment==='sandbox'?'沙箱验证':'官网充值';
         el('configurationNotice').hidden=state.available;
         if(!state.available)el('configurationNotice').querySelector('span').textContent='暂不开放新付款，已有订单仍可查询状态。';

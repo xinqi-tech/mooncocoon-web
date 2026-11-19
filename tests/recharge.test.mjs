@@ -102,7 +102,7 @@ test('免登录付款要求两次相同输入，按 UID 建单并仅凭服务端
   const orderId=`mo_${'a'.repeat(32)}`;
   const fetcher=async(url,options)=>{
     calls.push({url,options});
-    if(url.endsWith('/config'))return okResponse({environment:'sandbox',available:true,loginAvailable:true});
+    if(url.endsWith('/config'))return okResponse({environment:'sandbox',available:true,loginAvailable:true,guestAvailable:true});
     if(url.endsWith('/guest/resolve'))return okResponse({uid:4,nickname:'月光账号',guestGrant:grant,
       tiers:[{tierId:'recharge_6',silkAmount:60,rmbPrice:600,firstRechargeBonus:40,firstRechargeTotal:100,firstRechargeAvailable:true}]});
     if(url.endsWith('/guest/orders'))return okResponse({orderId,status:'created'});
@@ -127,6 +127,23 @@ test('免登录付款要求两次相同输入，按 UID 建单并仅凭服务端
     assert.equal(calls.filter(call=>call.url.endsWith('/guest/orders/status')).length,1);
     assert.equal(calls.some(call=>call.url.includes('/login-existing')||call.url.includes('/mall/wallet')),false);
     assert.match(elements.orderMessage.textContent,/回到游戏查看/);
+  });
+});
+
+test('旧后端只有 available 时仍锁定免登录表单',async()=>{
+  const elements={};
+  const getElementById=id=>elements[id]||(elements[id]=new FakeElement(id));
+  getElementById('configurationNotice').noticeDetail=new FakeElement('detail');
+  const doc={URL:'http://127.0.0.1/recharge/',hidden:false,getElementById,
+    createElement:tag=>new FakeElement(tag),addEventListener(){}};
+  const calls=[];
+  await withBrowserGlobals(memoryStorage(),async()=>{
+    const page=recharge.initGuest(doc,async url=>{calls.push(url);return okResponse({environment:'sandbox',available:true,loginAvailable:true})});
+    await waitFor(()=>getElementById('configurationNotice').noticeDetail.textContent.includes('暂不开放'),'旧配置锁定');
+    assert.equal(page.state.available,false);
+    assert.equal(getElementById('accountValue').disabled,true);
+    assert.equal(getElementById('resolveButton').disabled,true);
+    assert.equal(calls.length,1);
   });
 });
 
