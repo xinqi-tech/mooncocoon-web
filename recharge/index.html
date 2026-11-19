@@ -147,7 +147,9 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .phone-preview,.phone-verification{display:grid;gap:8px}
 .phone-preview{margin:4px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--glass)}
 .phone-preview strong{color:var(--moon-080);font-variant-numeric:tabular-nums;letter-spacing:.08em}
-#previewAccountButton{width:min(100%,280px);margin-top:6px}
+@font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
+.page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
+#previewAccountButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
   </style>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>

@@ -279,12 +279,12 @@
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
       const links=el('reservationDownloadLinks');links.replaceChildren();
       if(released)for(const [platform,url,label,iconName] of [
-        ['ANDROID',data.androidUrl,'Android 版','platform-android.svg'],
+        ['ANDROID','https://releases.lunakoru.com/','Android 版','platform-android.svg'],
         ['IOS',data.iosUrl,'iOS 版','platform-ios.svg'],
         ['RECHARGE','https://lunakoru.com/recharge','iOS 充值官网','recharge-wallet.svg'],
       ]){
         const safe=safeUrl(url),group=doc.createElement('div');group.className='reservation-download-option';
-        const node=doc.createElement(platform==='RECHARGE'?'a':safe?'button':'span');node.className='reservation-download-button';
+        const node=doc.createElement(safe?(platform==='IOS'?'button':'a'):'span');node.className='reservation-download-button';
         const icon=doc.createElement('img');icon.src='images/app-ui/'+iconName;icon.alt='';node.append(icon);
         const text=doc.createElement('span');text.textContent=label;node.append(text);
         if(platform==='RECHARGE'){
@@ -295,13 +295,17 @@
         }
         if(!safe){node.setAttribute('aria-disabled','true');const hint=doc.createElement('small');hint.textContent='即将开放';node.append(hint)}
         if(safe){
-          node.type='button';node.setAttribute('aria-expanded','false');
           const popup=doc.createElement('div');popup.className='reservation-download-popup';popup.id='reservation-download-'+platform;
-          node.setAttribute('aria-controls',popup.id);
-          const setOpen=open=>{group.toggleAttribute('data-open',open);node.setAttribute('aria-expanded',String(open))};
-          node.addEventListener('pointerleave',event=>{if(event.pointerType!=='touch')setOpen(false)});
-          node.addEventListener('click',()=>{const open=!group.hasAttribute('data-open');for(const other of links.querySelectorAll('[data-open]')){other.removeAttribute('data-open');other.querySelector('button').setAttribute('aria-expanded','false')}setOpen(open)});
-          group.addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);node.focus()}});
+          if(platform==='ANDROID'){
+            node.href=safe;group.classList.add('reservation-download-direct');
+          }else{
+            node.type='button';node.setAttribute('aria-expanded','false');
+            node.setAttribute('aria-controls',popup.id);
+            const setOpen=open=>{group.toggleAttribute('data-open',open);node.setAttribute('aria-expanded',String(open))};
+            node.addEventListener('pointerleave',event=>{if(event.pointerType!=='touch')setOpen(false)});
+            node.addEventListener('click',()=>{const open=!group.hasAttribute('data-open');for(const other of links.querySelectorAll('[data-open]')){other.removeAttribute('data-open');other.querySelector('button').setAttribute('aria-expanded','false')}setOpen(open)});
+            group.addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);node.focus()}});
+          }
           if(typeof root.qrcode==='function'){
             const qr=root.qrcode(0,'M');qr.addData(safe);qr.make();
             const canvas=doc.createElement('canvas'),size=qr.getModuleCount(),scale=4;
