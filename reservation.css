@@ -417,7 +417,7 @@
 .reservation-download-button[aria-disabled=true]{opacity:.6;cursor:default}
 #reservationDownloadLinks .reservation-download-popup{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;background:#172b4b;border:1px solid #cce9ff88;border-radius:12px;padding:8px;z-index:5}
 .reservation-download-option[data-open] .reservation-download-popup{display:flex!important}
-@media(hover:hover){.reservation-download-option:has(>button:hover) .reservation-download-popup{display:flex!important}}
+@media(hover:hover){.reservation-download-option:has(>button:hover) .reservation-download-popup,.reservation-download-direct:hover .reservation-download-popup,.reservation-download-direct:has(>a:focus-visible) .reservation-download-popup{display:flex!important}}
 .reservation-community-qr{border-radius:10px}
 #reservationDownloadLinks :is(.reservation-qr,.reservation-community-qr){box-sizing:border-box;display:block;flex:none;width:min(144px,38vw);max-width:none;height:auto;margin:0;transform:none}
 #reservationDownloadLinks .reservation-community-qr{margin-top:8px}
