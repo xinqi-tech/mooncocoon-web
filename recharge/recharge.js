@@ -234,6 +234,23 @@
     return resolveDeploymentTarget(locationLike);
   }
 
+  function deploymentOriginCode(locationLike){
+    if(!locationLike)return '0';
+    try{
+      if(locationLike.protocol!=='https:')return 'P';
+      if(String(locationLike.hostname||'').toLowerCase()!==PRODUCTION_SITE_HOST)return 'H';
+      return locationLike.port?'T':'1';
+    }catch(_){return 'E'}
+  }
+
+  function deploymentDiagnosticCode(doc,locationLike){
+    let documentCode='0';
+    if(doc&&typeof doc.URL==='string'&&doc.URL){
+      try{documentCode=deploymentOriginCode(new URL(doc.URL))}catch(_){documentCode='E'}
+    }
+    return `D${documentCode}-W${deploymentOriginCode(locationLike)}-A${trustedHttpsOrigin(PRODUCTION_API_BASE)?'1':'0'}-B4`;
+  }
+
   function resolveApiBase(locationLike){const target=resolveDeploymentTarget(locationLike);return target?target.apiBase:''}
 
   function createApiClient(fetchImpl,apiBase){
@@ -310,7 +327,7 @@
     const fetcher=fetchImpl||(root.fetch&&root.fetch.bind(root));
     if(!fetcher){lockPage(doc,'当前浏览器无法连接充值服务。');return null}
     const deploymentTarget=resolveDocumentTarget(doc,root.location);
-    if(!deploymentTarget){lockPage(doc,'当前页面来源未绑定可信充值服务，登录、短信和付款均不可用。');return {configured:false}}
+    if(!deploymentTarget){lockPage(doc,`当前页面来源未绑定可信充值服务，登录、短信和付款均不可用。（诊断码 ${deploymentDiagnosticCode(doc,root.location)}）`);return {configured:false}}
     const {apiBase,environment,channel:expectedChannel}=deploymentTarget;
     const api=createApiClient(fetcher,apiBase);
     const store=createSessionStore(root.sessionStorage,storageNamespace(apiBase,environment)),guard=createAccountGuard();
@@ -652,6 +669,6 @@
   if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
   return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
     createSessionStore,createAccountGuard,createApiClient,isTrustedSandboxConfig,sandboxCapabilities,environmentCapabilities,userFacingError,isDefinitiveFreshOrderRejection,formatFen,
-    resolveApiBase,resolveDeploymentTarget,resolveDocumentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
+    resolveApiBase,resolveDeploymentTarget,resolveDocumentTarget,deploymentDiagnosticCode,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
     DEPLOYED_TEST_SITE_HOST,PRODUCTION_SITE_HOST,SESSION_KEY_PREFIX,PENDING_KEY_PREFIX,SANDBOX_GATEWAY_HOST,PRODUCTION_GATEWAY_HOST,ENVIRONMENT_RULES,APP_MARKET};
 });
