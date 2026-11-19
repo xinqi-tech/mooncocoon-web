@@ -718,3 +718,18 @@ test('测试预览服务只监听 loopback，生产页不加载夹具',async()=>
   assert.doesNotMatch(html,/recharge-browser-fixture|fixture\/install/);
   assert.doesNotMatch(html,/本地合成数据|非真实沙箱付款/);
 });
+
+test('充值页内联完整样式和启动脚本，与维护文件保持一致',async()=>{
+  const [html,css,js]=await Promise.all([
+    readFile(new URL('../recharge/index.html',import.meta.url),'utf8'),
+    readFile(new URL('../recharge/recharge.css',import.meta.url),'utf8'),
+    readFile(new URL('../recharge/recharge.js',import.meta.url),'utf8')
+  ]);
+  const between=(start,end)=>{
+    assert.equal(html.split(start).length,2);
+    return html.split(start)[1].split(end)[0];
+  };
+  assert.equal(between('  <style id="recharge-inline-css">\n','  </style>'),css);
+  assert.equal(between('  <script id="recharge-inline-js">\n','  </script>'),js);
+  assert.doesNotMatch(html,/<(?:script|link)[^>]+(?:src|href)="recharge\.(?:js|css)/);
+});

@@ -61,6 +61,8 @@ node tests/recharge-preview-server.mjs --port 8908
 生产配置与密钥核对后，按后端发布流程启用 `available` 并进行真实小额验收。服务端 CORS 白名单需允许官网 Origin 使用 `X-Web-Recharge-Resume`，但不得放宽 Origin；未来测试站发布必须由受控构建同时固定 `recharge/recharge.js` 的 `DEPLOYED_TEST_API_BASE` 与 `DEPLOYED_TEST_SITE_HOST`，并保留 `environment=sandbox` 二次校验；不得改为 query、localStorage 或任意运行时输入。
 
 当前充值页是中国大陆站，所有接口固定携带 `X-App-Market: CN`，并显式使用 `credentials: 'omit'`，防止浏览器残留 Cookie 参与鉴权。服务端跨域白名单需精确包含实际测试站域名；本地预览仅用于内存夹具验收，不会请求云端接口。
+
+充值页的完整 CSS/JS 同时内联在 `recharge/index.html`，供移动浏览器直接随 HTML 加载。修改 `recharge.css` 或 `recharge.js` 后须同步内联副本；`node --test tests/recharge.test.mjs` 会检查两份内容完全一致。
 ## 本地预约预览
 
 运行 `python preview_server.py`，打开 http://127.0.0.1:8769/。预约面板直接展示，PV 位于预约首屏之后；开放状态以后台活动配置为准。预览服务器只代理真实活动状态 GET 请求，避免 localhost 被线上 CORS 拒绝；不转发短信、登录或预约写请求。生产仍直连原 API。普通静态服务器无法提供这个本地代理。
