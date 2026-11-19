@@ -6,6 +6,7 @@
  */
 @font-face{font-family:"QingNiao Serif";src:url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-display:swap}
 @font-face{font-family:"QingNiao Sans";src:url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-display:swap}
+@font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 :root{
   --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
   --mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;--moon-080:#f6fbff;
@@ -38,7 +39,7 @@ a{color:var(--ice-340)}
 .page-intro::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,13,32,.94) 0%,rgba(3,13,32,.86) 42%,rgba(3,13,32,.48) 100%),url("../images/banner_bg.webp") center 38%/cover no-repeat}
 .page-intro-brand{display:flex;align-items:center;gap:16px;margin:0 0 12px}
 .page-intro-brand img{width:120px;height:68px;object-fit:cover;mix-blend-mode:screen;filter:drop-shadow(0 0 14px rgba(199,229,255,.42))}
-.product-mark{display:grid;place-items:center;min-width:140px;min-height:44px;padding:4px 20px;background:url("../images/app-ui/title-plate.webp") center/100% 100% no-repeat;color:var(--moon-080);font:18px/1.2 var(--font-serif);letter-spacing:.12em;text-shadow:0 1px 8px rgba(6,20,47,.85)}
+.product-mark{display:grid;place-items:center;width:135px;height:67px;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;color:var(--moon-080);font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
 .page-kicker,.dialog-kicker,.order-label{margin:0 0 8px;color:var(--ice-340);font-size:12px;letter-spacing:.14em}
 .page-intro h1{margin:0;font:clamp(32px,8vw,48px)/1.25 var(--font-serif);font-weight:400;letter-spacing:.04em}
 .page-intro>p:last-child{max-width:600px;margin:14px 0 0;color:var(--text-secondary)}
@@ -62,7 +63,7 @@ input:disabled{opacity:.55;cursor:not-allowed}
 .primary-button{min-height:52px;border:0;background:transparent url("../images/app-ui/reservation-button.png") center/100% 100% no-repeat;color:#fff;font:18px/1.2 var(--font-sans);letter-spacing:.05em;text-shadow:0 1px 6px rgba(36,68,118,.5)}
 .primary-button:not(:disabled):hover{filter:brightness(1.1)}
 .primary-button:not(:disabled):active{filter:brightness(.96)}
-#loginButton{width:min(100%,280px);margin-top:6px}
+#loginButton,#previewAccountButton{justify-self:center;width:min(100%,260px);min-height:0;aspect-ratio:658/144;margin-top:6px;padding:0;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
 .secondary-button{background:rgba(199,229,255,.07);border-color:var(--line-strong);color:var(--text-primary)}
 .text-button{min-height:40px;padding:6px 9px;background:transparent;border:0;color:var(--ice-340);text-decoration:underline;text-underline-offset:4px}
 button:disabled{opacity:.45;cursor:not-allowed}
@@ -118,7 +119,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 @media(max-width:480px){
   .recharge-shell{width:min(100% - 24px,760px);padding-top:38px}.page-intro{margin-bottom:23px}
   .page-intro{padding:22px 18px 26px;border-radius:22px}.page-intro::before{background:linear-gradient(90deg,rgba(3,13,32,.95),rgba(3,13,32,.78)),url("../images/banner_bg.webp") 52% center/cover no-repeat}
-  .page-intro-brand{gap:8px}.page-intro-brand img{width:100px;height:58px}.product-mark{min-width:120px;min-height:40px;padding-inline:12px;font-size:16px}
+  .page-intro-brand{gap:8px}.page-intro-brand img{width:100px;height:58px}
   .transaction-section,.account-ledger,.order-panel{padding:20px 16px;border-radius:18px}
   .section-heading{align-items:flex-start}.section-mark{width:36px;height:36px;flex-basis:36px}
   .section-heading h2{font-size:22px}.account-heading{flex-wrap:wrap}.account-heading .text-button{margin-left:49px}
@@ -132,4 +133,3 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .phone-preview,.phone-verification{display:grid;gap:8px}
 .phone-preview{margin:4px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--glass)}
 .phone-preview strong{color:var(--moon-080);font-variant-numeric:tabular-nums;letter-spacing:.08em}
-#previewAccountButton{width:min(100%,280px);margin-top:6px}
