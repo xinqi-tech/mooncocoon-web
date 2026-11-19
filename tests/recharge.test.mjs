@@ -76,12 +76,58 @@ function seedSessionAndPending(storage,{orderId='' }={}){
 test('默认页面为未配置安全态，支付控件不伪造可用',async()=>{
   const html=await readFile(new URL('../recharge/index.html',import.meta.url),'utf8');
   assert.match(html,/id="configurationNotice"/);
-  assert.match(html,/id="phone"[\s\S]*disabled/);
-  assert.match(html,/id="sendSmsButton"[\s\S]*disabled/);
-  assert.match(html,/id="loginButton"[\s\S]*disabled/);
+  assert.match(html,/id="accountKind"[\s\S]*disabled/);
+  assert.match(html,/id="accountValue"[\s\S]*disabled/);
+  assert.match(html,/id="accountConfirm"[\s\S]*disabled/);
+  assert.match(html,/id="resolveButton"[\s\S]*disabled/);
+  assert.doesNotMatch(html,/id="sendSmsButton"|id="smsCode"|id="loginForm"/);
   assert.match(html,/id="checkoutButton"[\s\S]*disabled/);
   assert.match(html,/id="environmentBadge"[^>]*hidden/);
   assert.doesNotMatch(html,/cursor_stop|cursor_fly|cursor_trail/);
+});
+
+test('免登录付款要求两次相同输入，按 UID 建单并仅凭服务端 fulfilled 显示到账',async()=>{
+  const ids=['accountKind','accountValue','accountConfirm','resolveButton','guestForm','configurationNotice','environmentBadge',
+    'pageMessage','loginPanel','accountWorkspace','orderPanel','checkoutBar','accountNickname','accountUid','checkoutAccount',
+    'checkoutAmount','checkoutButton','tierList','retryTiersButton','orderHeading','orderMessage','orderNumber','orderAccount',
+    'orderProduct','orderLabel','orderGlyph','refreshOrderButton','backToTiersButton','switchAccountButton','orderSwitchAccountButton',
+    'confirmationNickname','confirmationUid','confirmationProduct','confirmationAmount','confirmationDialog','startPaymentButton'];
+  const elements=Object.fromEntries(ids.map(id=>[id,new FakeElement(id)]));
+  elements.configurationNotice.noticeDetail=new FakeElement('detail');
+  elements.accountKind.value='phone';
+  const doc={URL:'http://127.0.0.1/recharge/',hidden:false,getElementById:id=>elements[id]||null,
+    createElement:tag=>new FakeElement(tag),addEventListener(){}};
+  const calls=[];
+  const grant=`wrx1.${'g'.repeat(60)}`;
+  const orderId=`mo_${'a'.repeat(32)}`;
+  const fetcher=async(url,options)=>{
+    calls.push({url,options});
+    if(url.endsWith('/config'))return okResponse({environment:'sandbox',available:true,loginAvailable:true});
+    if(url.endsWith('/guest/resolve'))return okResponse({uid:4,nickname:'月光账号',guestGrant:grant,
+      tiers:[{tierId:'recharge_6',silkAmount:60,rmbPrice:600,firstRechargeBonus:40,firstRechargeTotal:100,firstRechargeAvailable:true}]});
+    if(url.endsWith('/guest/orders'))return okResponse({orderId,status:'created'});
+    if(url.endsWith('/guest/orders/status'))return okResponse({orderId,status:'fulfilled',channel:'alipay_wap_test',
+      productType:'recharge',productId:'recharge_6',rmbPrice:600});
+    assert.fail(url);
+  };
+  await withBrowserGlobals(memoryStorage(),async()=>{
+    const page=recharge.initGuest(doc,fetcher);
+    await waitFor(()=>page.state.available,'guest config');
+    elements.accountValue.value='13800138000';elements.accountConfirm.value='13800138001';
+    await elements.guestForm.listeners.get('submit')({preventDefault(){}});
+    assert.equal(calls.filter(call=>call.url.endsWith('/guest/resolve')).length,0);
+    elements.accountConfirm.value='13800138000';
+    await elements.guestForm.listeners.get('submit')({preventDefault(){}});
+    assert.equal(page.state.account.uid,'4');
+    assert.equal(page.state.selectedTier.tierId,'recharge_6');
+    elements.checkoutButton.listeners.get('click')();
+    elements.startPaymentButton.listeners.get('click')();
+    await waitFor(()=>elements.orderHeading.textContent==='充值已到账','fulfilled');
+    assert.equal(calls.filter(call=>call.url.endsWith('/guest/orders')).length,1);
+    assert.equal(calls.filter(call=>call.url.endsWith('/guest/orders/status')).length,1);
+    assert.equal(calls.some(call=>call.url.includes('/login-existing')||call.url.includes('/mall/wallet')),false);
+    assert.match(elements.orderMessage.textContent,/回到游戏查看/);
+  });
 });
 
 test('支付地址按环境固定支付宝 HTTPS 网关并拒绝串环境',()=>{

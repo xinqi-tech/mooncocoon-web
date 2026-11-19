@@ -2,7 +2,7 @@
 <!--
   AI Context
   本文件是什么：月光茧国内官网的独立月绸充值页，默认处于未配置安全态。
-  关联文件：recharge.css 负责视觉；recharge.js 负责鉴权、订单与支付状态机；后端 Aildo-JAVA 提供可信运行配置和商城接口。
+  关联文件：recharge.css 负责视觉；recharge.js 负责免登录账号确认、订单与支付状态机；后端 Aildo-JAVA 提供可信运行配置和商城接口。
   核心概念：浏览器回跳不代表到账；只有服务端订单 fulfilled 才展示充值成功。
 -->
 <html lang="zh-CN">
@@ -151,7 +151,11 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .phone-verification{display:grid;gap:8px}
 @font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
-#loginButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+#loginButton,#resolveButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+
+.login-form select{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;color:#153553;font-size:16px}
+.login-form :is(#accountValue,#accountConfirm){background:#fff;color:#153553;opacity:1}
+.login-form :is(#accountValue,#accountConfirm):focus,.login-form select:focus{outline:2px solid var(--ice-340);outline-offset:3px}
 
 #refreshOrderButton{width:min(100%,260px);background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
 #confirmationDialog #startPaymentButton{background-image:url("../images/app-ui/recharge-confirm-frame.png");background-size:contain}
@@ -189,12 +193,12 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         <span class="product-mark">月绸充值</span>
       </div>
       <h1 id="pageTitle">充值到你的游戏账号</h1>
-      <p>请核对充值手机号及游戏账号。月绸会在服务端确认付款后进入同一游戏钱包。</p>
+      <p>输入并再次确认游戏账号信息，核对 UID 和昵称后付款。月绸会在服务端确认付款后进入该游戏钱包。</p>
     </section>
 
     <div id="configurationNotice" class="configuration-notice" role="status" aria-live="polite">
       <strong>充值暂不可用</strong>
-      <span>当前环境尚未完成可信配置，登录、短信和付款均已锁定。</span>
+      <span>当前环境尚未完成可信配置，查找账号和付款均已锁定。</span>
       <a href="review/">查看商品与支付流程审核演示（不收款）</a>
     </div>
 
@@ -203,22 +207,23 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         <span class="section-mark" aria-hidden="true"><img src="../images/app-ui/recharge-account-search.svg" alt="" width="22" height="22"></span>
         <div>
           <h2 id="loginHeading">确认充值账号</h2>
-          <p>使用注册游戏时绑定的中国大陆手机号。</p>
+          <p>选择手机号、游戏 UID 或昵称，输入两次确认。</p>
         </div>
       </div>
 
-      <form id="loginForm" class="login-form" novalidate>
-        <label for="phone">手机号</label>
-        <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" placeholder="请输入 11 位手机号" disabled required>
-        <div id="phoneVerification" class="phone-verification">
-          <label for="smsCode">短信验证码</label>
-          <div class="code-row">
-            <input id="smsCode" name="smsCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="请输入 6 位验证码" disabled required>
-            <button id="sendSmsButton" type="button" disabled>获取验证码</button>
-          </div>
-          <button id="loginButton" class="primary-button" type="submit" disabled>验证并继续充值</button>
-        </div>
-        <p class="form-note">登录只用于确认本人游戏账号，不支持输入 UID 为他人充值。继续即表示你同意<a href="../user-agreement/" target="_blank" rel="noopener">用户协议</a>和<a href="../privacy-policy/" target="_blank" rel="noopener">隐私政策</a>。</p>
+      <form id="guestForm" class="login-form" novalidate>
+        <label for="accountKind">查找方式</label>
+        <select id="accountKind" name="accountKind" disabled>
+          <option value="phone">手机号</option>
+          <option value="uid">游戏 UID</option>
+          <option value="nickname">昵称</option>
+        </select>
+        <label for="accountValue">账号信息</label>
+        <input id="accountValue" name="accountValue" type="tel" inputmode="numeric" autocomplete="off" maxlength="40" placeholder="请输入 11 位手机号" disabled required>
+        <label for="accountConfirm">再次输入相同信息</label>
+        <input id="accountConfirm" name="accountConfirm" type="tel" inputmode="numeric" autocomplete="off" maxlength="40" placeholder="再次输入 11 位手机号" disabled required>
+        <button id="resolveButton" class="primary-button" type="submit" disabled>查找并确认账号</button>
+        <p class="form-note">昵称重名时请改用游戏 UID。付款前请核对到账 UID；继续即表示你同意<a href="../user-agreement/" target="_blank" rel="noopener">用户协议</a>和<a href="../privacy-policy/" target="_blank" rel="noopener">隐私政策</a>。</p>
       </form>
     </section>
 
@@ -236,10 +241,6 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
           <div><dt>昵称</dt><dd id="accountNickname">—</dd></div>
           <div><dt>UID</dt><dd id="accountUid">—</dd></div>
         </dl>
-        <div class="balance-line">
-          <span>当前月绸</span>
-          <strong id="moonSilkBalance">—</strong>
-        </div>
       </section>
 
       <section class="transaction-section tier-section" aria-labelledby="tierHeading">
@@ -261,7 +262,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       <div id="orderGlyph" class="order-glyph" data-art="loading" aria-hidden="true">···</div>
       <p id="orderLabel" class="order-label">正在确认</p>
       <h2 id="orderHeading">正在等待服务端确认到账</h2>
-      <p id="orderMessage">可以保留此页面，也可以稍后使用同一账号重新登录查询。</p>
+      <p id="orderMessage">可以保留此页面，稍后点击查询最新状态。</p>
       <dl class="order-summary">
         <div><dt>订单</dt><dd id="orderNumber">—</dd></div>
         <div><dt>到账账号</dt><dd id="orderAccount">—</dd></div>
@@ -270,7 +271,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       <div class="order-actions">
         <button id="refreshOrderButton" class="primary-button" type="button">查询最新状态</button>
         <button id="orderSwitchAccountButton" class="secondary-button" type="button">切换账号</button>
-        <button id="backToTiersButton" class="secondary-button" type="button" hidden>返回充值档位</button>
+        <button id="backToTiersButton" class="secondary-button" type="button" hidden>再次充值</button>
       </div>
     </section>
 
@@ -323,13 +324,13 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
   <script id="recharge-inline-js">
 /**
- * @fileoverview 月光茧独立官网充值页的鉴权、订单与支付状态机。
+ * @fileoverview 月光茧独立官网充值页的免登录账号确认、订单与支付状态机。
  *
  * AI Context
  * -----------
  * 关联文件:
  * - 上游: recharge/index.html — 账号、档位、确认与订单状态界面
- * - 下游: Aildo-JAVA /api/web-recharge、/api/users、/api/mall — 可信配置与业务真源
+ * - 下游: Aildo-JAVA /api/web-recharge/guest — 可信配置、收款对象、订单与业务真源
  * - 测试: tests/recharge.test.mjs — API 契约、URL 边界、会话清理和异步账号隔离
  *
  * 核心概念:
@@ -338,6 +339,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
  * - resume credential — 服务端签名并绑定环境、通道、UID、requestId、订单及期限，不信任浏览器自报归属
  * - generation — 切换账号后使旧异步响应失效，避免串号渲染
  * - fulfilled — 唯一可展示到账成功的服务端订单状态，浏览器回跳不作为成功证据
+ * - guest grant — 只绑定一个收款 UID 与随机请求编号，不是游戏登录 token
  */
 (function(root,factory){
   const api=factory(root);
@@ -597,7 +599,13 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
       getWallet:token=>request('/api/mall/wallet',{accessToken:token}),
       getRecharge:token=>request('/api/mall/recharge',{accessToken:token}),
       createOrder:(token,tierId,clientRequestId)=>request('/api/web-recharge/orders',{method:'POST',accessToken:token,body:{tierId,clientRequestId}}),
-      getOrder:(token,orderId)=>request(`/api/web-recharge/orders/${encodeURIComponent(orderId)}`,{accessToken:token})
+      getOrder:(token,orderId)=>request(`/api/web-recharge/orders/${encodeURIComponent(orderId)}`,{accessToken:token}),
+      resolveGuest:(kind,value,confirmValue,clientRequestId)=>request('/api/web-recharge/guest/resolve',
+        {method:'POST',body:{kind,value,confirmValue,clientRequestId}}),
+      createGuestOrder:(tierId,clientRequestId,guestGrant)=>request('/api/web-recharge/guest/orders',
+        {method:'POST',body:{tierId,clientRequestId,guestGrant}}),
+      getGuestOrder:(orderId,clientRequestId,guestGrant)=>request('/api/web-recharge/guest/orders/status',
+        {method:'POST',body:{orderId,clientRequestId,guestGrant}})
     };
   }
 
@@ -996,8 +1004,198 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     return {state,store,guard,api,resumePending};
   }
 
-  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
-  return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
+  /** The public checkout never receives a game login token or wallet read permission. */
+  function initGuest(doc,fetchImpl){
+    if(!doc||!doc.getElementById('guestForm'))return null;
+    const el=id=>doc.getElementById(id),fetcher=fetchImpl||(root.fetch&&root.fetch.bind(root));
+    const target=resolveDocumentTarget(doc,root.location);
+    if(!target||!fetcher){
+      const notice=el('configurationNotice');notice.hidden=false;
+      notice.querySelector('span').textContent='当前页面来源未绑定可信充值服务，查找账号和付款均不可用。';
+      return null;
+    }
+    const {apiBase,environment,channel}=target;
+    const api=createApiClient(fetcher,apiBase);
+    const storage=root.sessionStorage;
+    const pendingKey=`lunakoru.recharge.guest.v1:${storageNamespace(apiBase,environment)}`;
+    const state={available:false,account:null,tiers:[],selectedTier:null,pending:null,busy:false,polls:0,timer:null,generation:0};
+    const message=value=>{el('pageMessage').textContent=safeText(value,180)};
+    const setInputs=enabled=>{for(const id of ['accountKind','accountValue','accountConfirm','resolveButton'])el(id).disabled=!enabled};
+    const readPending=()=>{
+      try{
+        const value=JSON.parse(storage.getItem(pendingKey)||'null');
+        if(!value||!normalizeUserId(value.uid)||!normalizeRequestId(value.requestId)||!normalizeCredential(value.guestGrant)
+          ||!safeText(value.tierId,80)||Date.now()-Number(value.createdAt)>7*24*60*60*1000)return null;
+        return value;
+      }catch(_){return null}
+    };
+    const savePending=pending=>{try{storage.setItem(pendingKey,JSON.stringify(pending));return true}catch(_){return false}};
+    const clearPending=()=>{state.pending=null;try{storage.removeItem(pendingKey)}catch(_){}};
+    const stopPoll=()=>{if(state.timer)root.clearTimeout(state.timer);state.timer=null};
+    const showAccount=()=>{
+      el('loginPanel').hidden=true;el('accountWorkspace').hidden=false;el('orderPanel').hidden=true;el('checkoutBar').hidden=false;
+      el('accountNickname').textContent=state.account.nickname||'未设置昵称';
+      el('accountUid').textContent=state.account.uid;
+      el('checkoutAccount').textContent=state.account.uid;
+    };
+    const showLookup=()=>{
+      stopPoll();state.generation+=1;state.account=null;state.selectedTier=null;state.tiers=[];
+      el('loginPanel').hidden=false;el('accountWorkspace').hidden=true;el('orderPanel').hidden=true;el('checkoutBar').hidden=true;
+      el('accountValue').value='';el('accountConfirm').value='';message('');
+    };
+    const showOrder=(heading,detail,orderId)=>{
+      el('loginPanel').hidden=true;el('accountWorkspace').hidden=true;el('checkoutBar').hidden=true;el('orderPanel').hidden=false;
+      el('orderHeading').textContent=heading;el('orderMessage').textContent=detail;
+      el('orderLabel').textContent='正在确认';el('orderGlyph').dataset.art='loading';
+      el('refreshOrderButton').hidden=false;el('backToTiersButton').hidden=true;
+      el('orderNumber').textContent=orderId||'待服务端确认';
+      el('orderAccount').textContent=state.pending?`UID ${state.pending.uid}`:'—';
+      el('orderProduct').textContent=state.pending?state.pending.tierId:'—';
+    };
+    const renderTiers=tiers=>{
+      state.tiers=(Array.isArray(tiers)?tiers:[]).filter(t=>safeText(t.tierId,80)
+        &&finiteNonNegative(t.rmbPrice)!==null&&finiteNonNegative(t.silkAmount)!==null);
+      const list=el('tierList');list.replaceChildren();
+      const select=tier=>{
+        state.selectedTier=tier;
+        for(const option of list.querySelectorAll('.tier-option'))option.setAttribute('aria-checked',String(option.dataset.tierId===tier.tierId));
+        el('checkoutAmount').textContent=`${formatFen(tier.rmbPrice)} · ${formatNumber(tier.silkAmount)} 月绸`;
+        el('checkoutButton').disabled=!state.available;
+      };
+      for(const tier of state.tiers){
+        const button=doc.createElement('button');button.type='button';button.className='tier-option';button.dataset.tierId=tier.tierId;
+        button.setAttribute('role','radio');button.setAttribute('aria-checked','false');
+        const amount=doc.createElement('strong'),price=doc.createElement('span'),detail=doc.createElement('small');
+        amount.textContent=`${formatNumber(tier.silkAmount)} 月绸`;price.textContent=formatFen(tier.rmbPrice);
+        detail.textContent=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0
+          ?`首次加赠 ${formatNumber(tier.firstRechargeBonus)}，共 ${formatNumber(tier.firstRechargeTotal)}`:safeText(tier.name,60);
+        button.append(amount,price,detail);button.addEventListener('click',()=>select(tier));list.append(button);
+      }
+      if(!state.tiers.length){const empty=doc.createElement('p');empty.className='empty-copy';empty.textContent='暂无可用充值档位。';list.append(empty)}
+      el('retryTiersButton').hidden=true;
+      el('checkoutButton').disabled=true;
+      const defaultTier=state.tiers.find(t=>Number(t.silkAmount)===60)||state.tiers[0];
+      if(defaultTier)select(defaultTier);
+    };
+    const poll=async()=>{
+      const pending=state.pending;if(!pending||!pending.orderId)return;
+      const generation=state.generation;
+      try{
+        const order=await api.getGuestOrder(pending.orderId,pending.requestId,pending.guestGrant);
+        if(generation!==state.generation||state.pending!==pending)return;
+        if(!order||order.orderId!==pending.orderId||order.channel!==channel||order.productType!=='recharge')
+          throw new Error('订单信息校验失败，请稍后重试。');
+        const status=safeText(order.status,24).toLowerCase();
+        showOrder('正在等待服务端确认到账','不要重复付款。可以保留此页面并查询最新状态。',pending.orderId);
+        el('orderProduct').textContent=`${safeText(order.productId,80)} · ${formatFen(order.rmbPrice)}`;
+        if(status==='fulfilled'){
+          stopPoll();clearPending();el('orderLabel').textContent='月绸已到账';el('orderGlyph').dataset.art='success';
+          el('orderHeading').textContent='充值已到账';el('orderMessage').textContent='月绸已发放到确认的游戏账号，请回到游戏查看。';
+          el('refreshOrderButton').hidden=true;el('backToTiersButton').hidden=false;return;
+        }
+        if(['closed','cancelled','failed'].includes(status)){
+          stopPoll();clearPending();el('orderLabel').textContent='订单已结束';el('orderHeading').textContent='本次订单未完成';
+          el('orderMessage').textContent='没有确认到月绸到账，请返回充值档位重新发起。';
+          el('refreshOrderButton').hidden=true;el('backToTiersButton').hidden=false;return;
+        }
+        el('orderLabel').textContent=status==='paid'?'付款已确认':'等待付款确认';
+        if(status==='paid')el('orderHeading').textContent='付款已确认，月绸发放中';
+        if(state.polls++<ORDER_POLL_LIMIT)state.timer=root.setTimeout(poll,ORDER_POLL_DELAY);
+      }catch(error){if(generation===state.generation){
+        if(error&&error.code===100008){showLookup();message('查询凭证已过期，请重新输入同一账号信息确认后查询原订单。')}
+        else{message(userFacingError(error));showOrder('订单状态待确认','服务端会继续处理，请稍后点击查询。',pending.orderId)}
+      }}
+    };
+    const create=async()=>{
+      const pending=state.pending;if(!pending||state.busy)return;state.busy=true;
+      const generation=state.generation;
+      showOrder('正在创建充值订单','请勿重复付款或切换账号。',pending.orderId);
+      try{
+        const order=await api.createGuestOrder(pending.tierId,pending.requestId,pending.guestGrant);
+        if(generation!==state.generation||state.pending!==pending)return;
+        const orderId=safeText(order&&order.orderId,80),url=safePaymentUrl(order&&order.paymentUrl,environment);
+        if(!/^mo_[0-9a-f]{32}$/.test(orderId))throw new Error('服务端未返回有效订单号。');
+        pending.orderId=orderId;if(!savePending(pending))throw new Error('无法保存订单状态，已停止打开收银台。');
+        if(url){root.location.assign(url);return}
+        if(order&&order.paymentUrl)message('支付地址未通过安全校验，未打开收银台。');
+        await poll();
+      }catch(error){if(generation===state.generation){
+        if(error&&error.code===100008){showLookup();message('确认凭证已过期，请重新输入同一账号信息继续查询原请求。')}
+        else{message(userFacingError(error));showOrder('订单创建结果待确认','已保留原请求编号，点击查询会安全重试。',pending.orderId)}
+      }}
+      finally{state.busy=false}
+    };
+    const resume=()=>state.pending&&(state.pending.orderId?poll():create());
+
+    el('accountKind').addEventListener('change',()=>{
+      const kind=el('accountKind').value,numeric=kind!=='nickname';
+      for(const id of ['accountValue','accountConfirm']){
+        const input=el(id);input.value='';input.type=numeric?'tel':'text';input.inputMode=numeric?'numeric':'text';
+        input.placeholder=kind==='phone'?'请输入 11 位手机号':kind==='uid'?'请输入游戏 UID':'请输入游戏昵称';
+      }
+    });
+    el('guestForm').addEventListener('submit',async event=>{
+      event.preventDefault();if(!state.available||state.busy)return;
+      const kind=el('accountKind').value,value=el('accountValue').value.trim(),confirm=el('accountConfirm').value.trim();
+      if(!value||value!==confirm){message('两次输入的账号信息不一致。');return}
+      if((kind==='phone'&&!validPhone(value))||(kind==='uid'&&!normalizeUserId(value))
+        ||(kind==='nickname'&&value.length>40)){message('请填写有效的账号信息。');return}
+      const requestId=state.pending?state.pending.requestId:newRequestId();
+      state.busy=true;el('resolveButton').disabled=true;const generation=++state.generation;
+      try{
+        const result=await api.resolveGuest(kind,value,confirm,requestId);
+        if(generation!==state.generation)return;
+        const uid=normalizeUserId(result&&result.uid),grant=normalizeCredential(result&&result.guestGrant);
+        if(!uid||!grant)throw new Error('账号确认结果无效。');
+        if(state.pending&&state.pending.uid!==uid)throw new Error('当前浏览器还有其他账号的待确认订单，请先处理该订单。');
+        state.account={uid,nickname:safeText(result.nickname,80),guestGrant:grant,requestId};
+        if(state.pending){state.pending.guestGrant=grant;savePending(state.pending);message('已重新确认账号，正在查询原订单。');root.setTimeout(resume,0);return}
+        showAccount();renderTiers(result.tiers);message('请核对 UID 和昵称，确认无误后选择档位。');
+      }catch(error){if(generation===state.generation)message(kind==='nickname'&&error&&error.code===110001
+        ?'未找到唯一匹配的昵称，请改用游戏 UID。':error&&error.code===100008
+          ?'该账号暂不能网页充值，请在游戏内核对实名及账号状态。':userFacingError(error))}
+      finally{if(generation===state.generation){state.busy=false;el('resolveButton').disabled=false}}
+    });
+    el('switchAccountButton').addEventListener('click',showLookup);
+    el('orderSwitchAccountButton').addEventListener('click',()=>{if(state.pending){message('此订单仍在确认中，请先查询结果。');return}showLookup()});
+    el('checkoutButton').addEventListener('click',()=>{
+      if(!state.account||!state.selectedTier||!state.available)return;
+      const tier=state.selectedTier;el('confirmationNickname').textContent=state.account.nickname||'未设置昵称';
+      el('confirmationUid').textContent=state.account.uid;
+      el('confirmationProduct').textContent=`${formatNumber(tier.silkAmount)} 月绸${tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`（首次共 ${formatNumber(tier.firstRechargeTotal)}）`:''}`;
+      el('confirmationAmount').textContent=formatFen(tier.rmbPrice);el('confirmationDialog').showModal();
+    });
+    el('startPaymentButton').addEventListener('click',()=>{
+      el('confirmationDialog').close();if(!state.account||!state.selectedTier)return;
+      state.pending={uid:state.account.uid,nickname:state.account.nickname,guestGrant:state.account.guestGrant,
+        requestId:state.account.requestId,tierId:state.selectedTier.tierId,orderId:'',createdAt:Date.now()};
+      if(!savePending(state.pending)){state.pending=null;message('浏览器无法安全保存订单，请勿付款。');return}
+      create();
+    });
+    el('refreshOrderButton').addEventListener('click',resume);
+    el('backToTiersButton').addEventListener('click',showLookup);
+    doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)resume()});
+    root.addEventListener('pageshow',resume);
+    (async()=>{
+      try{
+        const capabilities=environmentCapabilities(await api.getConfig(),environment);
+        if(!capabilities.trusted)throw new Error('充值服务尚未完成可信配置。');
+        state.available=capabilities.orderAvailable;setInputs(state.available);
+        el('environmentBadge').hidden=false;el('environmentBadge').textContent=environment==='sandbox'?'沙箱验证':'官网充值';
+        el('configurationNotice').hidden=state.available;
+        if(!state.available)el('configurationNotice').querySelector('span').textContent='暂不开放新付款，已有订单仍可查询状态。';
+        state.pending=readPending();
+        if(state.pending){state.account={uid:state.pending.uid,nickname:safeText(state.pending.nickname,80),guestGrant:state.pending.guestGrant,
+          requestId:state.pending.requestId};resume()}
+      }catch(_){setInputs(false);el('configurationNotice').hidden=false;
+        el('configurationNotice').querySelector('span').textContent='未能连接可信充值服务，查找账号和付款均不可用。'}
+    })();
+    return {state,api,resume};
+  }
+
+  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>root.document.getElementById('guestForm')
+    ?initGuest(root.document):init(root.document));
+  return {init,initGuest,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
     createSessionStore,createAccountGuard,createApiClient,isTrustedSandboxConfig,sandboxCapabilities,environmentCapabilities,userFacingError,isDefinitiveFreshOrderRejection,formatFen,
     resolveApiBase,resolveDeploymentTarget,resolveDocumentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
     DEPLOYED_TEST_SITE_HOST,PRODUCTION_SITE_HOST,SESSION_KEY_PREFIX,PENDING_KEY_PREFIX,SANDBOX_GATEWAY_HOST,PRODUCTION_GATEWAY_HOST,ENVIRONMENT_RULES,APP_MARKET};
