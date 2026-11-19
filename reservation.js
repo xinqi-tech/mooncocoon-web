@@ -305,6 +305,7 @@
               popup.append(canvas);
             }
           }
+          popup.append(link);group.append(popup);
         }
         group.prepend(node);links.append(group);
       }
