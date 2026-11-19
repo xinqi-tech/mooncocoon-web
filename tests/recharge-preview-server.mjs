@@ -36,11 +36,6 @@ async function fixtureHtml(seedPending){
     .replace('登录只用于确认本人游戏账号，不支持输入 UID 为他人充值。','请确认充值手机号无误。');
   const installPath=seedPending?'/fixture/pending/install.js':'/fixture/install.js';
   html=html.replace('<body>','<body><aside class="fixture-banner">本地合成数据 · 非真实沙箱付款</aside>');
-  const support = '<button id="fixtureService" type="button" aria-label="联系客服" aria-haspopup="dialog" aria-controls="fixtureServiceDialog"><span></span><img src="/tests/recharge-assets/recharge-service-icon.svg" alt=""></button>'
-    + '<dialog id="fixtureServiceDialog" class="confirmation-dialog" aria-labelledby="fixtureServiceHeading"><form method="dialog">'
-    + '<button class="dialog-close" aria-label="关闭客服窗口"><img src="/images/app-ui/reservation-close.png" alt=""></button>'
-    + '<h2 id="fixtureServiceHeading">客服 QQ 群</h2><img class="fixture-qq" src="/tests/recharge-assets/recharge-service-qq.jpg" alt="客服 QQ 群二维码"></form></dialog>';
-  html=html.replace('<script id="recharge-inline-js">',support+'<script id="recharge-inline-js">');
   return html.replace(/<script id="recharge-inline-js">[\s\S]*?<\/script>/,
     `<script src="/tests/recharge-browser-fixture.js"></script><script src="${installPath}"></script><script src="/recharge/recharge.js"></script>`);
 }
@@ -70,11 +65,6 @@ const checkoutFixtureCss=`
 @media(prefers-reduced-motion:reduce){.order-glyph[data-art="loading"]{animation:none}}
 .dialog-close{display:grid;place-items:center;padding:0}
 .dialog-close img{display:block;width:22px;height:22px;object-fit:contain}
-#fixtureService{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(104px + env(safe-area-inset-bottom));z-index:21;width:58px;height:58px;padding:0;border:0;background:transparent;cursor:pointer}
-#fixtureService>span{position:absolute;inset:0;background:url("/tests/recharge-assets/recharge-service-base.png") 49% 48%/140.58% 134.06% no-repeat}
-#fixtureService>img{position:absolute;left:23.91%;top:26.09%;width:47.83%;height:auto}
-#fixtureServiceHeading{text-align:center;padding-inline:36px}
-#fixtureServiceDialog .fixture-qq{display:block;width:min(100%,260px);max-height:60vh;object-fit:contain;margin:16px auto 0;border-radius:14px}
 @media(max-width:480px){#checkoutButton{width:min(44vw,196px)}}
 `;
 

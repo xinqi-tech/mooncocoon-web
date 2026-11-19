@@ -650,6 +650,7 @@
     el('switchAccountButton').addEventListener('click',switchAccount);
     el('orderSwitchAccountButton').addEventListener('click',switchAccount);
     el('retryTiersButton').addEventListener('click',loadAccountData);
+    el('rechargeCommunityButton')?.addEventListener('click',()=>el('rechargeCommunityDialog')?.showModal());
     el('checkoutButton').addEventListener('click',beginCheckout);
     el('startPaymentButton').addEventListener('click',()=>{
       if(!state.session||!state.selectedTier)return;el('confirmationDialog').close();

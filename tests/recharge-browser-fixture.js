@@ -77,7 +77,6 @@
     if(options.showFixtureArt&&target.location.hostname==='127.0.0.1'){
       const doc=target.document;
       const el=id=>doc.getElementById(id);
-      el('fixtureService').addEventListener('click',()=>el('fixtureServiceDialog').showModal());
       const label=el('orderLabel'),glyph=el('orderGlyph');
       const updateOrderArt=()=>{
         const state=label.textContent;

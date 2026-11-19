@@ -162,6 +162,13 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .order-glyph[data-art="success"]{background-image:url("../images/app-ui/recharge-order-success.png")}
 @keyframes recharge-order-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.order-glyph[data-art="loading"]{animation:none}}
+
+.recharge-community-button{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(104px + env(safe-area-inset-bottom));z-index:21;width:58px;height:58px;padding:0;border:0;background:transparent url("../images/app-ui/recharge-service-base.png") 49% 48%/140.58% 134.06% no-repeat;cursor:pointer;display:grid;place-items:center}
+.recharge-community-button img{width:27px;height:auto}
+.recharge-community-dialog h2{text-align:center;margin:0 32px 16px}
+.recharge-community-dialog .dialog-close{display:grid;place-items:center;padding:0}
+.recharge-community-dialog .dialog-close img{width:22px;height:22px;object-fit:contain}
+.recharge-community-qr{display:block;width:min(100%,260px);height:auto;max-height:60vh;object-fit:contain;margin:0 auto;border-radius:14px}
   </style>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
@@ -294,6 +301,15 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         <button class="secondary-button" value="cancel">返回修改</button>
         <button id="startPaymentButton" class="primary-button" type="button">前往支付宝付款</button>
       </div>
+    </form>
+  </dialog>
+
+  <button id="rechargeCommunityButton" class="recharge-community-button" type="button" aria-label="iOS 初见群" aria-haspopup="dialog" aria-controls="rechargeCommunityDialog"><img src="../images/app-ui/recharge-service-icon.svg" alt=""></button>
+  <dialog id="rechargeCommunityDialog" class="confirmation-dialog recharge-community-dialog" aria-labelledby="rechargeCommunityHeading">
+    <form method="dialog">
+      <button class="dialog-close" aria-label="关闭群二维码"><img src="../images/app-ui/reservation-close.png" alt=""></button>
+      <h2 id="rechargeCommunityHeading">月光茧 iOS 初见群</h2>
+      <img class="recharge-community-qr" src="../images/app-ui/ios-community-qr.png" alt="月光茧 iOS 初见群二维码，群号 238080565" loading="lazy">
     </form>
   </dialog>
 
@@ -958,6 +974,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     el('switchAccountButton').addEventListener('click',switchAccount);
     el('orderSwitchAccountButton').addEventListener('click',switchAccount);
     el('retryTiersButton').addEventListener('click',loadAccountData);
+    el('rechargeCommunityButton')?.addEventListener('click',()=>el('rechargeCommunityDialog')?.showModal());
     el('checkoutButton').addEventListener('click',beginCheckout);
     el('startPaymentButton').addEventListener('click',()=>{
       if(!state.session||!state.selectedTier)return;el('confirmationDialog').close();
