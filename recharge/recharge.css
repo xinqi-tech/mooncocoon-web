@@ -147,3 +147,10 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .order-glyph[data-art="success"]{background-image:url("../images/app-ui/recharge-order-success.png")}
 @keyframes recharge-order-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.order-glyph[data-art="loading"]{animation:none}}
+
+.recharge-community-button{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(104px + env(safe-area-inset-bottom));z-index:21;width:58px;height:58px;padding:0;border:0;background:transparent url("../images/app-ui/recharge-service-base.png") 49% 48%/140.58% 134.06% no-repeat;cursor:pointer;display:grid;place-items:center}
+.recharge-community-button img{width:27px;height:auto}
+.recharge-community-dialog h2{text-align:center;margin:0 32px 16px}
+.recharge-community-dialog .dialog-close{display:grid;place-items:center;padding:0}
+.recharge-community-dialog .dialog-close img{width:22px;height:22px;object-fit:contain}
+.recharge-community-qr{display:block;width:min(100%,260px);height:auto;max-height:60vh;object-fit:contain;margin:0 auto;border-radius:14px}
