@@ -46,9 +46,8 @@ async function fixtureHtml(seedPending){
     .replace('aria-label="关闭确认窗口">×</button>','aria-label="关闭确认窗口"><img src="/images/app-ui/reservation-close.png" alt=""></button>')
     .replace('<button id="orderSwitchAccountButton"','<button hidden id="orderSwitchAccountButton"')
     .replace('离开支付宝后，页面会继续向服务端查询到账结果。','请选择支付方式。')
-    .replace('<button class="secondary-button" value="cancel">返回修改</button>','<button id="fixtureWechatPay" class="secondary-button" type="button">微信支付</button>')
+    .replace('<button class="secondary-button" value="cancel">返回修改</button>','')
     .replace('前往支付宝付款','支付宝支付')
-    .replace('</div>\n    </form>\n  </dialog>','</div><p id="fixturePaymentHint" role="status" hidden></p>\n    </form>\n  </dialog>')
     .replace('登录只用于确认本人游戏账号，不支持输入 UID 为他人充值。','请确认充值手机号无误。');
   const installPath=seedPending?'/fixture/pending/install.js':'/fixture/install.js';
   html=html.replace('<body>','<body><aside class="fixture-banner">本地合成数据 · 非真实沙箱付款</aside>');
@@ -78,10 +77,9 @@ const checkoutFixtureCss=`
 #confirmationDialog{background:linear-gradient(rgba(180,215,255,.20),rgba(130,174,230,.16)),#182d49;border-color:rgba(220,240,255,.30)}
 #checkoutButton,#confirmationDialog .dialog-actions button{width:min(100%,196px);aspect-ratio:384/132;min-height:0;padding:0;font-size:15px}
 #checkoutButton,#confirmationDialog #startPaymentButton{background-image:url("/tests/recharge-assets/recharge-confirm-frame.png");background-size:contain}
-#confirmationDialog .dialog-actions{display:grid;grid-template-columns:repeat(2,minmax(0,196px));justify-content:center;gap:22px;padding-inline:10px}
+#confirmationDialog .dialog-actions{display:grid;grid-template-columns:minmax(0,196px);justify-content:center;gap:22px;padding-inline:10px}
 #confirmationDialog .dialog-actions>*{min-width:0}
 
-#confirmationDialog #fixtureWechatPay{height:auto;aspect-ratio:auto;align-self:center;min-height:38px;height:80%}
 .fixture-banner~.recharge-shell .order-glyph[data-art]{width:80px;height:80px;border:0;color:transparent;background:center/contain no-repeat}
 .order-glyph[data-art="loading"]{background-image:url("/tests/recharge-assets/recharge-order-loading.webp")!important;animation:fixture-order-spin 1.2s linear infinite}
 .order-glyph[data-art="success"]{background-image:url("/tests/recharge-assets/recharge-order-success.png")!important}
