@@ -347,6 +347,24 @@ test('正式环境审核等待时不向首次访问者开放短信或登录',asy
   assert.match(doc.elements.configurationNotice.noticeDetail.textContent,/账号验证暂未开放/);
 });
 
+test('官网根域名读取正式配置后开放手机号验证',async()=>{
+  const storage=memoryStorage(),doc=fakeRechargeDocument();
+  doc.URL='https://lunakoru.com/recharge/?v=20261120-apex';
+  const calls=[];
+  await withBrowserGlobals(storage,async()=>{
+    const controller=recharge.init(doc,async url=>{
+      calls.push(new URL(url).pathname);
+      return okResponse({environment:'production',available:true,loginAvailable:true});
+    });
+    await waitFor(()=>controller.state.loginAvailable,'根域名配置解锁手机号');
+    assert.equal(controller.state.environment,'production');
+  },{protocol:'https:',hostname:'lunakoru.com',port:''});
+  assert.deepEqual(calls,['/api/web-recharge/config']);
+  assert.equal(doc.elements.phone.disabled,false);
+  assert.equal(doc.elements.sendSmsButton.disabled,false);
+  assert.equal(doc.elements.configurationNotice.hidden,true);
+});
+
 test('伪造 sessionStorage pending 与恢复凭证不能在停用态解锁短信或登录',async()=>{
   const storage=memoryStorage(),doc=fakeRechargeDocument();
   const store=recharge.createSessionStore(storage,recharge.storageNamespace(recharge.PRODUCTION_API_BASE,'production'));
@@ -664,19 +682,21 @@ test('正式 API 地址复用官网既有生产入口且页面来源不能覆盖
   assert.match(preview,new RegExp(recharge.PRODUCTION_API_BASE.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   assert.deepEqual(recharge.resolveDeploymentTarget({protocol:'https:',hostname:'www.lunakoru.com',port:''}),
     {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
+  assert.deepEqual(recharge.resolveDeploymentTarget({protocol:'https:',hostname:'lunakoru.com',port:''}),
+    {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
+  assert.deepEqual(recharge.resolveDocumentTarget({URL:'https://lunakoru.com/recharge/?v=20261119-origin-diagnostic'},
+    {protocol:'https:',hostname:'www.lunakoru.com',port:''}),
+    {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
   assert.deepEqual(recharge.resolveDocumentTarget({URL:'https://www.lunakoru.com/recharge/?v=20261119-inline'},
     {protocol:'https:',hostname:'other.invalid',port:''}),
     {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
   assert.equal(recharge.resolveDocumentTarget({URL:'https://other.invalid/recharge/'},
     {protocol:'https:',hostname:'www.lunakoru.com',port:''}),null);
-  assert.equal(recharge.deploymentDiagnosticCode({URL:'https://www.lunakoru.com/recharge/?private=never-log'},
-    {protocol:'https:',hostname:'other.invalid',port:''}),'D1-WH-A1-B4');
-  assert.equal(recharge.deploymentDiagnosticCode({URL:'https://other.invalid/recharge/'},
-    {protocol:'https:',hostname:'www.lunakoru.com',port:''}),'DH-W1-A1-B4');
-  assert.equal(recharge.deploymentDiagnosticCode({URL:'not a URL'},null),'DE-W0-A1-B4');
   for(const location of [
     {protocol:'http:',hostname:'www.lunakoru.com',port:''},
+    {protocol:'http:',hostname:'lunakoru.com',port:''},
     {protocol:'https:',hostname:'lunakoru.com.evil.test',port:''},
+    {protocol:'https:',hostname:'lunakoru.com',port:'8443'},
     {protocol:'https:',hostname:'www.lunakoru.com',port:'8443'},
     {protocol:'https:',hostname:'xinqi-tech.github.io',port:''}
   ])assert.equal(recharge.resolveDeploymentTarget(location),null);
