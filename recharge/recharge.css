@@ -136,7 +136,11 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .phone-verification{display:grid;gap:8px}
 @font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
-#loginButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+#loginButton,#resolveButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+
+.login-form select{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;color:#153553;font-size:16px}
+.login-form :is(#accountValue,#accountConfirm){background:#fff;color:#153553;opacity:1}
+.login-form :is(#accountValue,#accountConfirm):focus,.login-form select:focus{outline:2px solid var(--ice-340);outline-offset:3px}
 
 #refreshOrderButton{width:min(100%,260px);background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
 #confirmationDialog #startPaymentButton{background-image:url("../images/app-ui/recharge-confirm-frame.png");background-size:contain}
