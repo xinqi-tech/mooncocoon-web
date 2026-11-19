@@ -289,10 +289,9 @@
           const popup=doc.createElement('div');popup.className='reservation-download-popup';popup.id='reservation-download-'+platform;
           node.setAttribute('aria-controls',popup.id);
           const setOpen=open=>{group.toggleAttribute('data-open',open);node.setAttribute('aria-expanded',String(open))};
+          node.addEventListener('pointerleave',event=>{if(event.pointerType!=='touch')setOpen(false)});
           node.addEventListener('click',()=>{const open=!group.hasAttribute('data-open');for(const other of links.querySelectorAll('[data-open]')){other.removeAttribute('data-open');other.querySelector('button').setAttribute('aria-expanded','false')}setOpen(open)});
           group.addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);node.focus()}});
-          const link=doc.createElement('a');link.href=safe;link.rel='noopener';link.textContent=label;
-          link.addEventListener('click',()=>emitAnalytics('download_clicked',{platform}));
           if(typeof root.qrcode==='function'){
             const qr=root.qrcode(0,'M');qr.addData(safe);qr.make();
             const canvas=doc.createElement('canvas'),size=qr.getModuleCount(),scale=4;
@@ -305,7 +304,7 @@
               popup.append(canvas);
             }
           }
-          popup.append(link);group.append(popup);
+          group.append(popup);
         }
         group.prepend(node);links.append(group);
       }
