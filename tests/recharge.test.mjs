@@ -664,6 +664,11 @@ test('正式 API 地址复用官网既有生产入口且页面来源不能覆盖
   assert.match(preview,new RegExp(recharge.PRODUCTION_API_BASE.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   assert.deepEqual(recharge.resolveDeploymentTarget({protocol:'https:',hostname:'www.lunakoru.com',port:''}),
     {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
+  assert.deepEqual(recharge.resolveDocumentTarget({URL:'https://www.lunakoru.com/recharge/?v=20261119-inline'},
+    {protocol:'https:',hostname:'other.invalid',port:''}),
+    {apiBase:recharge.PRODUCTION_API_BASE,environment:'production',channel:'alipay_wap'});
+  assert.equal(recharge.resolveDocumentTarget({URL:'https://other.invalid/recharge/'},
+    {protocol:'https:',hostname:'www.lunakoru.com',port:''}),null);
   for(const location of [
     {protocol:'http:',hostname:'www.lunakoru.com',port:''},
     {protocol:'https:',hostname:'lunakoru.com.evil.test',port:''},
