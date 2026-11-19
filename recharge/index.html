@@ -108,6 +108,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 .checkout-bar span{color:var(--text-muted);font-size:12px}
 .checkout-bar b{margin-top:2px;color:var(--text-primary);font-weight:500}
 .checkout-bar button{flex:0 0 auto}
+#checkoutButton{width:min(44vw,196px);min-height:0;aspect-ratio:384/132;padding:0;background-image:url("../images/app-ui/recharge-confirm-frame.png");background-size:contain;font-size:15px}
 .confirmation-dialog{width:min(100% - 28px,520px);padding:0;border:1px solid var(--line-strong);border-radius:24px;background:radial-gradient(circle at 30% 0,rgba(111,160,214,.2),transparent 55%),var(--night-920);color:var(--text-primary);box-shadow:0 28px 100px rgba(0,5,20,.7)}
 .confirmation-dialog::backdrop{background:rgba(1,7,20,.76);backdrop-filter:blur(6px)}
 .confirmation-dialog form{padding:28px;position:relative}
@@ -705,7 +706,8 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
     function renderTiers(payload){
       const tiers=Array.isArray(payload&&payload.tiers)?payload.tiers.map(normalizeTier).filter(Boolean):[];
-      state.tiers=tiers;state.selectedTier=null;const list=el('tierList');list.replaceChildren();
+      const previousTierId=state.selectedTier?.tierId;
+      state.tiers=tiers;state.selectedTier=null;el('checkoutButton').disabled=true;el('checkoutAmount').textContent='请选择充值档位';const list=el('tierList');list.replaceChildren();
       if(!tiers.length){const empty=doc.createElement('p');empty.className='empty-copy';empty.textContent='暂无可用充值档位。';list.append(empty);el('retryTiersButton').hidden=false;el('checkoutButton').disabled=true;return}
       el('retryTiersButton').hidden=true;
       for(const tier of tiers){
@@ -716,6 +718,8 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
         const detail=doc.createElement('small');detail.textContent=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`首次加赠 ${formatNumber(tier.firstRechargeBonus)}，共 ${formatNumber(tier.firstRechargeTotal)}`:tier.name;
         option.append(amount,price,detail);option.addEventListener('click',()=>selectTier(tier));list.append(option);
       }
+      const initialTier=tiers.find(tier=>tier.tierId===previousTierId)||tiers.find(tier=>tier.silkAmount===60);
+      if(initialTier)selectTier(initialTier);
     }
 
     async function loadAccountData(){

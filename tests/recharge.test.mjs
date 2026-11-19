@@ -529,8 +529,8 @@ test('production available=true 离线链路从短信登录到建单并打开正
     await doc.elements.sendSmsButton.listeners.get('click')();
     doc.elements.smsCode.value='666666';
     await doc.elements.loginForm.listeners.get('submit')({preventDefault(){}});
-    await waitFor(()=>doc.elements.tierList.children.length===1,'正式充值档位加载');
-    doc.elements.tierList.children[0].listeners.get('click')();
+    await waitFor(()=>controller.state.selectedTier?.tierId==='recharge_6','正式充值默认选中 60 月绸');
+    assert.equal(doc.elements.checkoutButton.disabled,false);
     doc.elements.checkoutButton.listeners.get('click')();
     doc.elements.startPaymentButton.listeners.get('click')();
     await waitFor(()=>assignedUrl===paymentUrl,'打开正式支付宝收银台');

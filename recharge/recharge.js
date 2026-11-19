@@ -408,7 +408,8 @@
 
     function renderTiers(payload){
       const tiers=Array.isArray(payload&&payload.tiers)?payload.tiers.map(normalizeTier).filter(Boolean):[];
-      state.tiers=tiers;state.selectedTier=null;const list=el('tierList');list.replaceChildren();
+      const previousTierId=state.selectedTier?.tierId;
+      state.tiers=tiers;state.selectedTier=null;el('checkoutButton').disabled=true;el('checkoutAmount').textContent='请选择充值档位';const list=el('tierList');list.replaceChildren();
       if(!tiers.length){const empty=doc.createElement('p');empty.className='empty-copy';empty.textContent='暂无可用充值档位。';list.append(empty);el('retryTiersButton').hidden=false;el('checkoutButton').disabled=true;return}
       el('retryTiersButton').hidden=true;
       for(const tier of tiers){
@@ -419,6 +420,8 @@
         const detail=doc.createElement('small');detail.textContent=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`首次加赠 ${formatNumber(tier.firstRechargeBonus)}，共 ${formatNumber(tier.firstRechargeTotal)}`:tier.name;
         option.append(amount,price,detail);option.addEventListener('click',()=>selectTier(tier));list.append(option);
       }
+      const initialTier=tiers.find(tier=>tier.tierId===previousTierId)||tiers.find(tier=>tier.silkAmount===60);
+      if(initialTier)selectTier(initialTier);
     }
 
     async function loadAccountData(){
