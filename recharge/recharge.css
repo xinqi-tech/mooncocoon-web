@@ -137,3 +137,13 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 @font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
 #loginButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+
+#refreshOrderButton{width:min(100%,260px);background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+#confirmationDialog #startPaymentButton{background-image:url("../images/app-ui/recharge-confirm-frame.png");background-size:contain}
+#confirmationDialog .dialog-close{display:grid;place-items:center;padding:0}
+#confirmationDialog .dialog-close img{width:22px;height:22px;object-fit:contain}
+.order-glyph:is([data-art="loading"],[data-art="success"]){width:80px;height:80px;border:0;color:transparent;background:center/contain no-repeat}
+.order-glyph[data-art="loading"]{background-image:url("../images/app-ui/recharge-order-loading.webp");animation:recharge-order-spin 1.2s linear infinite}
+.order-glyph[data-art="success"]{background-image:url("../images/app-ui/recharge-order-success.png")}
+@keyframes recharge-order-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.order-glyph[data-art="loading"]{animation:none}}

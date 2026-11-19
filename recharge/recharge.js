@@ -444,6 +444,7 @@
     function setOrderState(kind,heading,detail){
       const symbols={pending:'···',paid:'✓',fulfilled:'✓',closed:'×',unknown:'?'};
       const labels={pending:'等待付款确认',paid:'付款已确认',fulfilled:'月绸已到账',closed:'订单已结束',unknown:'状态待确认'};
+      el('orderGlyph').dataset.art=kind==='fulfilled'?'success':['pending','paid','unknown'].includes(kind)?'loading':'';
       el('orderGlyph').textContent=symbols[kind]||'?';el('orderLabel').textContent=labels[kind]||labels.unknown;
       el('orderHeading').textContent=heading;el('orderMessage').textContent=detail;
       el('backToTiersButton').hidden=!state.configured||(kind!=='closed'&&kind!=='fulfilled');

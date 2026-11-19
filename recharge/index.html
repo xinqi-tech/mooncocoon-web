@@ -152,6 +152,16 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 @font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
 #loginButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+
+#refreshOrderButton{width:min(100%,260px);background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+#confirmationDialog #startPaymentButton{background-image:url("../images/app-ui/recharge-confirm-frame.png");background-size:contain}
+#confirmationDialog .dialog-close{display:grid;place-items:center;padding:0}
+#confirmationDialog .dialog-close img{width:22px;height:22px;object-fit:contain}
+.order-glyph:is([data-art="loading"],[data-art="success"]){width:80px;height:80px;border:0;color:transparent;background:center/contain no-repeat}
+.order-glyph[data-art="loading"]{background-image:url("../images/app-ui/recharge-order-loading.webp");animation:recharge-order-spin 1.2s linear infinite}
+.order-glyph[data-art="success"]{background-image:url("../images/app-ui/recharge-order-success.png")}
+@keyframes recharge-order-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.order-glyph[data-art="loading"]{animation:none}}
   </style>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
@@ -241,7 +251,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     </div>
 
     <section id="orderPanel" class="order-panel" aria-labelledby="orderHeading" hidden>
-      <div id="orderGlyph" class="order-glyph" aria-hidden="true">···</div>
+      <div id="orderGlyph" class="order-glyph" data-art="loading" aria-hidden="true">···</div>
       <p id="orderLabel" class="order-label">正在确认</p>
       <h2 id="orderHeading">正在等待服务端确认到账</h2>
       <p id="orderMessage">可以保留此页面，也可以稍后使用同一账号重新登录查询。</p>
@@ -270,7 +280,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 
   <dialog id="confirmationDialog" class="confirmation-dialog" aria-labelledby="confirmationHeading">
     <form method="dialog">
-      <button class="dialog-close" value="cancel" aria-label="关闭确认窗口">×</button>
+      <button class="dialog-close" value="cancel" aria-label="关闭确认窗口"><img src="../images/app-ui/reservation-close.png" alt=""></button>
       <p class="dialog-kicker">确认本次充值</p>
       <h2 id="confirmationHeading">请核对到账账号和金额</h2>
       <dl class="confirmation-details">
@@ -742,6 +752,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
     function setOrderState(kind,heading,detail){
       const symbols={pending:'···',paid:'✓',fulfilled:'✓',closed:'×',unknown:'?'};
       const labels={pending:'等待付款确认',paid:'付款已确认',fulfilled:'月绸已到账',closed:'订单已结束',unknown:'状态待确认'};
+      el('orderGlyph').dataset.art=kind==='fulfilled'?'success':['pending','paid','unknown'].includes(kind)?'loading':'';
       el('orderGlyph').textContent=symbols[kind]||'?';el('orderLabel').textContent=labels[kind]||labels.unknown;
       el('orderHeading').textContent=heading;el('orderMessage').textContent=detail;
       el('backToTiersButton').hidden=!state.configured||(kind!=='closed'&&kind!=='fulfilled');
