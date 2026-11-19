@@ -280,11 +280,19 @@
       const links=el('reservationDownloadLinks');links.replaceChildren();
       if(released)for(const [platform,url,label] of [['ANDROID',data.androidUrl,'Android 版'],['IOS',data.iosUrl,'iOS 版']]){
         const safe=safeUrl(url),group=doc.createElement('div');group.className='reservation-download-option';
-        const node=doc.createElement(safe?'a':'span');node.className='reservation-download-button';
+        const node=doc.createElement(safe?'button':'span');node.className='reservation-download-button';
         const icon=doc.createElement('img');icon.src=platform==='ANDROID'?'images/app-ui/platform-android.svg':'images/app-ui/platform-ios.svg';icon.alt='';node.append(icon);
         const text=doc.createElement('span');text.textContent=label;node.append(text);
         if(!safe){node.setAttribute('aria-disabled','true');const hint=doc.createElement('small');hint.textContent='即将开放';node.append(hint)}
-        if(safe){node.href=safe;node.rel='noopener';node.dataset.platform=platform;node.addEventListener('click',()=>emitAnalytics('download_clicked',{platform}));
+        if(safe){
+          node.type='button';node.setAttribute('aria-expanded','false');
+          const popup=doc.createElement('div');popup.className='reservation-download-popup';popup.id='reservation-download-'+platform;
+          node.setAttribute('aria-controls',popup.id);
+          const setOpen=open=>{group.toggleAttribute('data-open',open);node.setAttribute('aria-expanded',String(open))};
+          node.addEventListener('click',()=>{const open=!group.hasAttribute('data-open');for(const other of links.querySelectorAll('[data-open]')){other.removeAttribute('data-open');other.querySelector('button').setAttribute('aria-expanded','false')}setOpen(open)});
+          group.addEventListener('keydown',event=>{if(event.key==='Escape'){setOpen(false);node.focus()}});
+          const link=doc.createElement('a');link.href=safe;link.rel='noopener';link.textContent=label;
+          link.addEventListener('click',()=>emitAnalytics('download_clicked',{platform}));
           if(typeof root.qrcode==='function'){
             const qr=root.qrcode(0,'M');qr.addData(safe);qr.make();
             const canvas=doc.createElement('canvas'),size=qr.getModuleCount(),scale=4;
@@ -294,11 +302,11 @@
             if(context){context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);
               context.fillStyle='#172b4b';for(let row=0;row<size;row++)for(let col=0;col<size;col++)
                 if(qr.isDark(row,col))context.fillRect(col*scale,row*scale,scale,scale);
-              group.append(canvas);
+              popup.append(canvas);
             }
           }
         }
-        group.append(node);links.append(group);
+        group.prepend(node);links.append(group);
       }
     }
     function renderLogin(){
@@ -308,9 +316,20 @@
       el('reservationLoginPhone').textContent=state.session?.phoneMasked||'';
       el('reservationLogout').hidden=!state.session;
     }
+    async function refreshClaimStatus(){
+      if(!dialog.open||state.claimTier===null||!state.session)return;
+      const flow=state.flow;
+      try{
+        const mine=await request('/mine');
+        if(flow!==state.flow||!dialog.open)return;
+        state.session=mine;state.mine=mine;state.csrf=mine.csrf;
+        renderCodeClaims();
+      }catch(_){}
+    }
     async function openClaim(tier){
       await openFlow(false,tier);
-      if(state.claimTier!==tier)return;
+      await refreshClaimStatus();
+      if(!dialog.open||state.claimTier!==tier)return;
       if(state.verified&&tier>0&&state.activity?.phase==='CLAIMING'&&!state.session?.activationCodes?.some(code=>code.tier===tier)){try{await issueCode(tier)}catch(error){message(errorHint(error))}}
     }
     async function issueCode(tier){
@@ -547,7 +566,7 @@
       catch(error){message(errorHint(error))}
       finally{if(flow===state.flow){state.subscribing=false;renderReminderSubscription()}}
     });
-    doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)refreshActivity()});
+    doc.addEventListener('visibilitychange',()=>{if(!doc.hidden){refreshActivity();refreshClaimStatus()}});
     refreshActivity();
     return state;
   }
