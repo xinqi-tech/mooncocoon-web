@@ -278,11 +278,21 @@
       if(state.claimTier!==null){el('reservationMine').hidden=true;renderCodeClaims()}
       const released=phase==='CLAIMING'||phase==='ENDED';el('reservationDownload').hidden=!released;
       const links=el('reservationDownloadLinks');links.replaceChildren();
-      if(released)for(const [platform,url,label] of [['ANDROID',data.androidUrl,'Android 版'],['IOS',data.iosUrl,'iOS 版']]){
+      if(released)for(const [platform,url,label,iconName] of [
+        ['ANDROID',data.androidUrl,'Android 版','platform-android.svg'],
+        ['IOS',data.iosUrl,'iOS 版','platform-ios.svg'],
+        ['RECHARGE','https://lunakoru.com/recharge','iOS 充值官网','recharge-wallet.svg'],
+      ]){
         const safe=safeUrl(url),group=doc.createElement('div');group.className='reservation-download-option';
-        const node=doc.createElement(safe?'button':'span');node.className='reservation-download-button';
-        const icon=doc.createElement('img');icon.src=platform==='ANDROID'?'images/app-ui/platform-android.svg':'images/app-ui/platform-ios.svg';icon.alt='';node.append(icon);
+        const node=doc.createElement(platform==='RECHARGE'?'a':safe?'button':'span');node.className='reservation-download-button';
+        const icon=doc.createElement('img');icon.src='images/app-ui/'+iconName;icon.alt='';node.append(icon);
         const text=doc.createElement('span');text.textContent=label;node.append(text);
+        if(platform==='RECHARGE'){
+          node.href=safe;
+          const hint=doc.createElement('small');hint.textContent='（安卓通用）';node.append(hint);
+          group.append(node);links.append(group);
+          continue;
+        }
         if(!safe){node.setAttribute('aria-disabled','true');const hint=doc.createElement('small');hint.textContent='即将开放';node.append(hint)}
         if(safe){
           node.type='button';node.setAttribute('aria-expanded','false');
