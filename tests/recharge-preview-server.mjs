@@ -28,22 +28,7 @@ const contentTypes={'.html':'text/html; charset=utf-8','.css':'text/css; charset
 async function fixtureHtml(seedPending){
   let html=await readFile(resolve(projectRoot,'recharge/index.html'),'utf8');
   html=html.replaceAll('="../','="/').replace('</head>','<link rel="stylesheet" href="/fixture/fixture.css"></head>');
-  html=html.replace('<label for="smsCode">','<label for="smsCode" hidden>')
-    .replace('<div class="code-row">','<div class="code-row" hidden>')
-    .replace('<div id="phonePreview" class="phone-preview" hidden>','<div id="phonePreview" class="phone-preview" hidden style="display:none!important">')
-    .replace('<div id="phoneVerification" class="phone-verification" hidden>','<div id="phoneVerification" class="phone-verification" hidden style="display:none!important">')
-    .replace('<div><dt>昵称</dt><dd id="accountNickname">','<div hidden><dt>昵称</dt><dd id="accountNickname">')
-    .replace('<div class="balance-line">','<div class="balance-line" hidden>')
-    .replace('<div><dt>昵称</dt><dd id="confirmationNickname">','<div hidden><dt>昵称</dt><dd id="confirmationNickname">')
-    .replace('<div><dt>UID</dt><dd id="accountUid">—</dd></div>',`<div><dt>UID</dt><dd id="accountUid">—</dd></div>
-          <div><dt>手机号</dt><dd id="fixtureMaskedPhone">—</dd></div>`)
-    .replace('        <div class="balance-line" hidden>', `        <div class="phone-preview">
-          <label for="fixtureConfirmPhone">确认手机号</label>
-          <input id="fixtureConfirmPhone" type="tel" inputmode="numeric" autocomplete="off" maxlength="11" placeholder="请再次输入完整手机号" aria-describedby="fixtureConfirmHint">
-          <span id="fixtureConfirmHint" role="status">两次填写一致后才能充值。</span>
-        </div>
-        <div class="balance-line" hidden>`)
-    .replace('aria-label="关闭确认窗口">×</button>','aria-label="关闭确认窗口"><img src="/images/app-ui/reservation-close.png" alt=""></button>')
+  html=html    .replace('aria-label="关闭确认窗口">×</button>','aria-label="关闭确认窗口"><img src="/images/app-ui/reservation-close.png" alt=""></button>')
     .replace('<button id="orderSwitchAccountButton"','<button hidden id="orderSwitchAccountButton"')
     .replace('离开支付宝后，页面会继续向服务端查询到账结果。','请选择支付方式。')
     .replace('<button class="secondary-button" value="cancel">返回修改</button>','')
@@ -60,7 +45,7 @@ async function fixtureHtml(seedPending){
     `<script src="/tests/recharge-browser-fixture.js"></script><script src="${installPath}"></script><script src="/recharge/recharge.js"></script>`);
 }
 
-function installScript(seedPending){return `RechargeBrowserFixture.installRechargeBrowserFixture(window,{seedPending:${seedPending},confirmWithoutSms:true});`}
+function installScript(seedPending){return `RechargeBrowserFixture.installRechargeBrowserFixture(window,{seedPending:${seedPending},showFixtureArt:true});`}
 
 function mobileFixturePage(){return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>充值页 390×844 预览</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#020817;color:#c7e5ff;font:14px system-ui}main{text-align:center}p{margin:0 0 10px}iframe{display:block;width:390px;height:844px;border:1px solid rgba(199,229,255,.4);background:#06142f;box-shadow:0 24px 80px rgba(0,0,0,.55)}</style></head><body><main><p>测试视口 · 390 × 844</p><iframe src="/fixture/" title="月光茧充值页 390 像素预览"></iframe></main></body></html>`}
 
@@ -68,10 +53,8 @@ const fixtureCss='.fixture-banner{position:relative;z-index:1000;padding:7px 14p
 const checkoutFixtureCss=`
 @font-face{font-family:RechargeTitle;src:url("/fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{box-sizing:border-box;width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("/tests/recharge-assets/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
-#previewAccountButton,#refreshOrderButton{width:min(100%,260px);min-height:0;aspect-ratio:658/144;padding:0;background-image:url("/tests/recharge-assets/recharge-query-frame.png");background-size:contain}
-#previewAccountButton{justify-self:center}
+#refreshOrderButton{width:min(100%,260px);min-height:0;aspect-ratio:658/144;padding:0;background-image:url("/tests/recharge-assets/recharge-query-frame.png");background-size:contain}
 #refreshOrderButton{align-self:center}
-#fixtureConfirmHint{font-size:13px;opacity:.7}
 #checkoutBar.fixture-no-tier{display:none!important}
 #checkoutBar{background:linear-gradient(rgba(130,174,230,.16),rgba(130,174,230,.16)),#172b45}
 #confirmationDialog{background:linear-gradient(rgba(180,215,255,.20),rgba(130,174,230,.16)),#182d49;border-color:rgba(220,240,255,.30)}

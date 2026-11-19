@@ -55,9 +55,12 @@ a{color:var(--ice-340)}
 input{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(246,251,255,.95);color:#153553;font-size:16px}
 input::placeholder{color:#6d8095}
 input:disabled{opacity:.55;cursor:not-allowed}
+.login-form :is(#phone,#smsCode){background:#fff;color:#153553;opacity:1}
+.login-form :is(#phone,#smsCode):-webkit-autofill{box-shadow:0 0 0 1000px #fff inset;-webkit-text-fill-color:#153553;caret-color:#153553}
+.login-form :is(#phone,#smsCode):focus{outline:2px solid var(--ice-340);outline-offset:3px}
 .code-row{position:relative;--sms-button-width:118px}
 .code-row #smsCode{width:100%;padding-inline-end:calc(var(--sms-button-width) + 14px)}
-.code-row #sendSmsButton{position:absolute;inset-inline-end:5px;inset-block:5px;width:var(--sms-button-width);min-height:0;padding:0 6px;white-space:nowrap}
+.code-row #sendSmsButton{position:absolute;inset-inline-end:5px;inset-block:5px;width:var(--sms-button-width);min-height:0;padding:0 6px;white-space:nowrap;border:0;background:none;box-shadow:none;color:#153553}
 .primary-button,.secondary-button,.text-button{min-height:46px;border-radius:999px;padding:10px 20px;border:1px solid transparent}
 .primary-button{min-height:52px;border:0;background:transparent url("../images/app-ui/reservation-button.png") center/100% 100% no-repeat;color:#fff;font:18px/1.2 var(--font-sans);letter-spacing:.05em;text-shadow:0 1px 6px rgba(36,68,118,.5)}
 .primary-button:not(:disabled):hover{filter:brightness(1.1)}
@@ -129,9 +132,7 @@ dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .section-mark svg,.section-mark img{width:22px;height:22px}
-.phone-preview,.phone-verification{display:grid;gap:8px}
-.phone-preview{margin:4px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--glass)}
-.phone-preview strong{color:var(--moon-080);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.phone-verification{display:grid;gap:8px}
 @font-face{font-family:RechargeTitle;src:url("../fonts/JHB.ttf") format("truetype");font-display:swap}
 .page-intro-brand .product-mark{width:135px;min-width:0;height:67px;min-height:0;padding:0 12px 0 0;background:url("../images/app-ui/recharge-title-halo.png") center/contain no-repeat;font:25px/1 RechargeTitle,var(--font-serif);letter-spacing:-.25px;text-shadow:0 1px rgba(0,0,0,.4)}
-#previewAccountButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}
+#loginButton{justify-self:center;width:min(100%,260px);min-height:44px;aspect-ratio:658/144;margin-top:6px;padding:0 12px;background-image:url("../images/app-ui/recharge-query-frame.png");background-size:contain}

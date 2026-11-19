@@ -32,7 +32,7 @@ function fakeRechargeDocument(){
   const ids=['accountNickname','accountUid','accountWorkspace','backToTiersButton','checkoutAccount','checkoutAmount','checkoutBar','checkoutButton',
     'configurationNotice','confirmationAmount','confirmationDialog','confirmationNickname','confirmationProduct','confirmationUid','environmentBadge','loginButton',
     'loginForm','loginPanel','moonSilkBalance','orderAccount','orderGlyph','orderHeading','orderLabel','orderMessage','orderNumber','orderPanel','orderProduct','orderSwitchAccountButton',
-    'pageMessage','phone','previewAccountButton','phonePreview','maskedPhone','confirmPhone','phoneVerification','refreshOrderButton','retryTiersButton','sendSmsButton','smsCode','startPaymentButton','switchAccountButton','tierList'];
+    'pageMessage','phone','phoneVerification','refreshOrderButton','retryTiersButton','sendSmsButton','smsCode','startPaymentButton','switchAccountButton','tierList'];
   const elements=Object.fromEntries(ids.map(id=>[id,new FakeElement(id)]));
   elements.configurationNotice.noticeDetail=new FakeElement('configurationNoticeDetail');
   return {hidden:false,elements,getElementById:id=>elements[id]||null,createElement:tag=>new FakeElement(tag),addEventListener(){}};
@@ -41,15 +41,8 @@ function fakeRechargeDocument(){
 function confirmRechargePhone(doc){
   const e=doc.elements;
   e.phone.value='13800138000';
-  e.previewAccountButton.listeners.get('click')();
-  assert.equal(e.maskedPhone.textContent,'138****8000');
-  assert.equal(e.phoneVerification.hidden,true);
-  e.confirmPhone.value='13800138001';
-  e.confirmPhone.listeners.get('input')();
-  assert.equal(e.sendSmsButton.disabled,true);
-  e.confirmPhone.value=e.phone.value;
-  e.confirmPhone.listeners.get('input')();
-  assert.equal(e.phoneVerification.hidden,false);
+  e.phone.listeners.get('input')();
+  assert.equal(e.sendSmsButton.disabled,false);
 }
 
 function okResponse(data){return {ok:true,status:200,json:async()=>({result:0,data})}}
@@ -377,14 +370,12 @@ test('官网根域名读取正式配置后开放手机号验证',async()=>{
   },{protocol:'https:',hostname:'lunakoru.com',port:''});
   assert.deepEqual(calls,['/api/web-recharge/config']);
   assert.equal(doc.elements.phone.disabled,false);
-  assert.equal(doc.elements.previewAccountButton.disabled,false);
   assert.equal(doc.elements.sendSmsButton.disabled,true);
   confirmRechargePhone(doc);
   doc.elements.phone.value='13900139000';
   doc.elements.phone.listeners.get('input')();
-  assert.equal(doc.elements.phonePreview.hidden,true);
-  assert.equal(doc.elements.confirmPhone.value,'');
-  assert.equal(doc.elements.sendSmsButton.disabled,true);
+  assert.equal(doc.elements.smsCode.value,'');
+  assert.equal(doc.elements.sendSmsButton.disabled,false);
   assert.equal(doc.elements.configurationNotice.hidden,true);
 });
 
@@ -467,7 +458,7 @@ test('审核等待态在服务端验证后仍拒绝把恢复凭证用于其他 U
       assert.fail(`未匹配的接口：${path}`);
     };
     const controller=recharge.init(doc,fetchImpl);
-    await waitFor(()=>doc.elements.previewAccountButton.disabled===false,'服务端验证恢复凭证后开放账号预览');
+    await waitFor(()=>doc.elements.phone.disabled===false,'服务端验证恢复凭证后开放账号预览');
     assert.equal(store.readSession(),null);
     confirmRechargePhone(doc);
     await doc.elements.sendSmsButton.listeners.get('click')();
@@ -502,7 +493,7 @@ test('审核等待态允许同 UID 重新认证并恢复原订单',async()=>{
       assert.fail(`未匹配的接口：${path}`);
     };
     const controller=recharge.init(doc,fetchImpl);
-    await waitFor(()=>doc.elements.previewAccountButton.disabled===false,'服务端验证恢复凭证后开放账号预览');
+    await waitFor(()=>doc.elements.phone.disabled===false,'服务端验证恢复凭证后开放账号预览');
     confirmRechargePhone(doc);
     await doc.elements.sendSmsButton.listeners.get('click')();
     doc.elements.phone.value='13800138000';doc.elements.smsCode.value='666666';
