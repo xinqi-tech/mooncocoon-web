@@ -314,6 +314,13 @@
               popup.append(canvas);
             }
           }
+          if(platform==='IOS'){
+            const communityQr=doc.createElement('img');
+            communityQr.src='images/app-ui/ios-community-qr.png';
+            communityQr.alt='月光茧 iOS 初见群二维码，群号 238080565';
+            communityQr.className='reservation-community-qr';
+            popup.append(communityQr);
+          }
           group.append(popup);
         }
         group.prepend(node);links.append(group);
