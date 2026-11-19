@@ -27,10 +27,10 @@ const contentTypes={'.html':'text/html; charset=utf-8','.css':'text/css; charset
 
 async function fixtureHtml(seedPending){
   let html=await readFile(resolve(projectRoot,'recharge/index.html'),'utf8');
-  html=html.replaceAll('="../','="/').replace(/href="recharge\.css[^"]*"/,'href="/recharge/recharge.css"><link rel="stylesheet" href="/fixture/fixture.css"');
+  html=html.replaceAll('="../','="/').replace('</head>','<link rel="stylesheet" href="/fixture/fixture.css"></head>');
   const installPath=seedPending?'/fixture/pending/install.js':'/fixture/install.js';
   html=html.replace('<body>','<body><aside class="fixture-banner">本地合成数据 · 非真实沙箱付款</aside>');
-  return html.replace(/<script src="recharge\.js[^"]*"><\/script>/,
+  return html.replace(/<script id="recharge-inline-js">[\s\S]*?<\/script>/,
     `<script src="/tests/recharge-browser-fixture.js"></script><script src="${installPath}"></script><script src="/recharge/recharge.js"></script>`);
 }
 

@@ -12,20 +12,135 @@
   <meta name="theme-color" content="#06142f">
   <meta name="referrer" content="no-referrer">
   <title>月光茧 · 月绸充值</title>
-  <style>
-    /* Keep the account and disabled-payment state readable if mobile Safari misses the stylesheet. */
-    :root{color-scheme:dark;background:#06142f;color:#f6fbff;font:16px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
-    *{box-sizing:border-box}[hidden]{display:none!important}body{margin:0}
-    .site-header{display:flex;align-items:center;justify-content:space-between;min-height:64px;padding:12px 18px;background:#030d20}
-    .brand{display:flex;align-items:center;gap:10px;color:#f6fbff;text-decoration:none}.brand img{width:32px;height:32px;border-radius:8px}
-    .recharge-shell{width:min(100% - 32px,760px);margin:auto;padding:32px 0 100px}
-    .page-intro,.transaction-section,.configuration-notice,.account-ledger,.order-panel{margin:0 0 18px;padding:20px;border:1px solid #5a779d;border-radius:18px;background:#0a2149}
-    .page-intro h1{font-size:clamp(28px,8vw,42px);line-height:1.2}
-    input{max-width:100%;min-height:44px}button,input{font:inherit}a{color:#c7e5ff}
+  <style id="recharge-inline-css">
+/*
+ * AI Context
+ * 本文件是什么：独立充值页的手机优先交易视觉，复用国内官网夜蓝、冰白和青鸟华光字体。
+ * 关联文件：index.html 提供语义结构；recharge.js 只切换状态类和 hidden 属性。
+ * 核心概念：页面保留原生指针、减少非必要动效，并让环境、账号与订单状态始终可见。
+ */
+@font-face{font-family:"QingNiao Serif";src:url("../fonts/QingNiaoHuaGuang-Serif.ttf") format("truetype");font-display:swap}
+@font-face{font-family:"QingNiao Sans";src:url("../fonts/QingNiaoHuaGuang-Sans.ttf") format("truetype");font-display:swap}
+:root{
+  --night-990:#030d20;--night-960:#06142f;--night-920:#081e48;--night-860:#0f2d63;
+  --mist-540:#6fa0d6;--ice-420:#9ccbff;--ice-340:#c7e5ff;--moon-080:#f6fbff;
+  --text-primary:#f6fbff;--text-secondary:rgba(236,247,255,.8);--text-muted:rgba(236,247,255,.6);
+  --line:rgba(220,240,255,.2);--line-strong:rgba(220,240,255,.44);--glass:rgba(130,174,230,.1);
+  --warning:#ffd99a;--success:#bcebcf;--danger:#ffc2c2;
+  --font-serif:"QingNiao Serif","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --font-sans:"QingNiao Sans","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{color-scheme:dark;background:var(--night-960)}
+body{margin:0;min-height:100vh;color:var(--text-primary);font:15px/1.65 var(--font-sans);background:
+  linear-gradient(180deg,rgba(3,13,32,.76),rgba(6,20,47,.76) 44%,rgba(3,13,32,.94)),
+  url("../images/bg.png") center top/cover fixed no-repeat,
+  var(--night-960);
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:
+  linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px);background-size:100% 72px}
+button,input{font:inherit}
+button,a,input{cursor:auto}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--ice-340);outline-offset:3px}
+a{color:var(--ice-340)}
+.site-header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:rgba(3,13,32,.76);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text-primary);font:18px var(--font-serif);letter-spacing:.06em;text-decoration:none}
+.brand img{width:32px;height:32px;border-radius:8px;filter:drop-shadow(0 0 8px rgba(191,227,255,.5))}
+.environment-badge{padding:5px 10px;border:1px solid rgba(255,217,154,.52);border-radius:999px;color:var(--warning);font-size:12px;letter-spacing:.08em;background:rgba(255,217,154,.07)}
+.recharge-shell{width:min(100% - 32px,760px);margin:0 auto;padding:56px 0 148px;position:relative}
+.page-intro{position:relative;isolation:isolate;overflow:hidden;margin-bottom:30px;padding:34px 38px 38px;border:1px solid var(--line-strong);border-radius:28px;background:var(--night-920);box-shadow:0 24px 70px rgba(0,5,20,.28)}
+.page-intro::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,13,32,.94) 0%,rgba(3,13,32,.86) 42%,rgba(3,13,32,.48) 100%),url("../images/banner_bg.webp") center 38%/cover no-repeat}
+.page-intro-brand{display:flex;align-items:center;gap:16px;margin:0 0 12px}
+.page-intro-brand img{width:120px;height:68px;object-fit:cover;mix-blend-mode:screen;filter:drop-shadow(0 0 14px rgba(199,229,255,.42))}
+.product-mark{display:grid;place-items:center;min-width:140px;min-height:44px;padding:4px 20px;background:url("../images/app-ui/title-plate.webp") center/100% 100% no-repeat;color:var(--moon-080);font:18px/1.2 var(--font-serif);letter-spacing:.12em;text-shadow:0 1px 8px rgba(6,20,47,.85)}
+.page-kicker,.dialog-kicker,.order-label{margin:0 0 8px;color:var(--ice-340);font-size:12px;letter-spacing:.14em}
+.page-intro h1{margin:0;font:clamp(32px,8vw,48px)/1.25 var(--font-serif);font-weight:400;letter-spacing:.04em}
+.page-intro>p:last-child{max-width:600px;margin:14px 0 0;color:var(--text-secondary)}
+.configuration-notice{display:flex;gap:5px;flex-direction:column;margin:0 0 18px;padding:16px 18px;border:1px solid rgba(255,217,154,.38);border-radius:16px;background:rgba(255,217,154,.07);color:var(--warning)}
+.configuration-notice span{font-size:13px;color:var(--text-secondary)}
+.transaction-section,.account-ledger,.order-panel{margin-top:18px;padding:24px;border:1px solid var(--line);border-radius:22px;background:radial-gradient(ellipse at 30% 0%,rgba(140,174,231,.13),transparent 58%),linear-gradient(145deg,rgba(36,60,96,.8),rgba(16,36,64,.8));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 70px rgba(0,5,20,.24)}
+.section-heading{display:flex;align-items:center;gap:13px;margin-bottom:22px}
+.section-heading h2{margin:0;font:25px/1.3 var(--font-serif);font-weight:400;letter-spacing:.05em}
+.section-heading p{margin:2px 0 0;color:var(--text-muted);font-size:13px}
+.section-mark{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line-strong);border-radius:50%;color:var(--ice-340);font-family:var(--font-serif);background:rgba(199,229,255,.05)}
+.account-heading .text-button{margin-left:auto}
+.login-form{display:grid;gap:10px}
+.login-form label{color:var(--text-secondary);font-size:13px;margin-top:3px}
+input{width:100%;min-height:50px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(246,251,255,.95);color:#153553;font-size:16px}
+input::placeholder{color:#6d8095}
+input:disabled{opacity:.55;cursor:not-allowed}
+.code-row{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:10px}
+.primary-button,.secondary-button,.text-button{min-height:46px;border-radius:999px;padding:10px 20px;border:1px solid transparent}
+.primary-button{min-height:52px;border:0;background:transparent url("../images/app-ui/reservation-button.png") center/100% 100% no-repeat;color:#fff;font:18px/1.2 var(--font-sans);letter-spacing:.05em;text-shadow:0 1px 6px rgba(36,68,118,.5)}
+.primary-button:not(:disabled):hover{filter:brightness(1.1)}
+.primary-button:not(:disabled):active{filter:brightness(.96)}
+#loginButton{width:min(100%,280px);margin-top:6px}
+.secondary-button{background:rgba(199,229,255,.07);border-color:var(--line-strong);color:var(--text-primary)}
+.text-button{min-height:40px;padding:6px 9px;background:transparent;border:0;color:var(--ice-340);text-decoration:underline;text-underline-offset:4px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.form-note{margin:5px 0 0;color:var(--text-muted);font-size:12px}
+.account-identity,.order-summary,.confirmation-details{margin:0;display:grid;gap:0}
+.account-identity>div,.order-summary>div,.confirmation-details>div{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+dt{color:var(--text-muted);font-size:13px}
+dd{margin:0;overflow-wrap:anywhere;text-align:right;color:var(--text-primary)}
+#accountNickname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#accountUid{font-variant-numeric:tabular-nums;user-select:all}
+.balance-line{display:flex;align-items:baseline;justify-content:space-between;margin-top:16px;padding-top:18px;border-top:1px solid var(--line-strong);color:var(--text-secondary)}
+.balance-line strong{font:36px var(--font-serif);color:var(--ice-340);font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(156,203,255,.34)}
+.tier-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.tier-option{position:relative;min-height:112px;padding:17px;text-align:left;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;background:rgba(199,229,255,.025);color:var(--text-primary)}
+.tier-option[aria-checked=true]{background:rgba(156,203,255,.14);box-shadow:inset 0 0 0 1px var(--ice-340)}
+.tier-option strong,.tier-option span,.tier-option small{display:block}
+.tier-option strong{font:24px var(--font-serif)}
+.tier-option span{margin-top:5px;color:var(--ice-340)}
+.tier-option small{margin-top:4px;color:var(--text-muted)}
+.empty-copy{grid-column:1/-1;margin:0;padding:26px;text-align:center;color:var(--text-muted)}
+.compact-button{display:block;margin:16px auto 0}
+.checkout-bar{position:fixed;z-index:20;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px max(18px,calc((100vw - 760px)/2));padding-bottom:max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--line-strong);background:rgba(3,13,32,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.checkout-bar>div{min-width:0}
+.checkout-bar span,.checkout-bar b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.checkout-bar span{color:var(--text-muted);font-size:12px}
+.checkout-bar b{margin-top:2px;color:var(--text-primary);font-weight:500}
+.checkout-bar button{flex:0 0 auto}
+.confirmation-dialog{width:min(100% - 28px,520px);padding:0;border:1px solid var(--line-strong);border-radius:24px;background:radial-gradient(circle at 30% 0,rgba(111,160,214,.2),transparent 55%),var(--night-920);color:var(--text-primary);box-shadow:0 28px 100px rgba(0,5,20,.7)}
+.confirmation-dialog::backdrop{background:rgba(1,7,20,.76);backdrop-filter:blur(6px)}
+.confirmation-dialog form{padding:28px;position:relative}
+.confirmation-dialog h2{margin:0 36px 20px 0;font:27px/1.35 var(--font-serif);font-weight:400}
+.confirmation-dialog form>p:not(.dialog-kicker){color:var(--text-muted);font-size:13px}
+.dialog-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--text-primary);font-size:24px}
+.dialog-actions,.order-actions{display:flex;gap:10px;margin-top:22px}
+.dialog-actions>*{flex:1}
+.order-panel{text-align:center}
+.order-glyph{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border:1px solid var(--line-strong);border-radius:50%;color:var(--ice-340);font:24px var(--font-serif)}
+.order-panel h2{margin:0;font:28px/1.35 var(--font-serif);font-weight:400}
+.order-panel>p:not(.order-label){color:var(--text-secondary)}
+.order-summary{margin-top:22px;text-align:left}
+.order-actions{justify-content:center}
+.page-message{min-height:25px;margin:18px 6px;color:var(--ice-340);text-align:center}
+.site-footer{padding:28px 18px 34px;border-top:1px solid var(--line);color:var(--text-muted);font-size:12px;text-align:center;background:var(--night-990)}
+.site-footer p{margin:0 0 8px}
+.site-footer nav{display:flex;gap:18px;justify-content:center}
+.site-footer a{color:var(--text-secondary)}
+@media(min-width:720px){
+  .recharge-shell{padding-top:74px}.transaction-section,.account-ledger,.order-panel{padding:30px}
+  .tier-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:480px){
+  .recharge-shell{width:min(100% - 24px,760px);padding-top:38px}.page-intro{margin-bottom:23px}
+  .page-intro{padding:22px 18px 26px;border-radius:22px}.page-intro::before{background:linear-gradient(90deg,rgba(3,13,32,.95),rgba(3,13,32,.78)),url("../images/banner_bg.webp") 52% center/cover no-repeat}
+  .page-intro-brand{gap:8px}.page-intro-brand img{width:100px;height:58px}.product-mark{min-width:120px;min-height:40px;padding-inline:12px;font-size:16px}
+  .transaction-section,.account-ledger,.order-panel{padding:20px 16px;border-radius:18px}
+  .section-heading{align-items:flex-start}.section-mark{width:36px;height:36px;flex-basis:36px}
+  .section-heading h2{font-size:22px}.account-heading{flex-wrap:wrap}.account-heading .text-button{margin-left:49px}
+  .code-row{grid-template-columns:minmax(0,1fr) 108px}.code-row button{padding-inline:10px}
+  .tier-option{min-height:105px;padding:14px}.checkout-bar{gap:10px}.checkout-bar button{padding-inline:16px}
+  .dialog-actions,.order-actions{flex-direction:column-reverse}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   </style>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Sans.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../fonts/QingNiaoHuaGuang-Serif.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="recharge.css?v=20261119-ios">
 </head>
 <body>
   <header class="site-header">
@@ -164,6 +279,657 @@
     </nav>
   </footer>
 
-  <script src="recharge.js?v=20261119-ios"></script>
+  <script id="recharge-inline-js">
+/**
+ * @fileoverview 月光茧独立官网充值页的鉴权、订单与支付状态机。
+ *
+ * AI Context
+ * -----------
+ * 关联文件:
+ * - 上游: recharge/index.html — 账号、档位、确认与订单状态界面
+ * - 下游: Aildo-JAVA /api/web-recharge、/api/users、/api/mall — 可信配置与业务真源
+ * - 测试: tests/recharge.test.mjs — API 契约、URL 边界、会话清理和异步账号隔离
+ *
+ * 核心概念:
+ * - fail-closed — 页面来源绑定预期环境；停用态还须由服务端验证恢复凭证才开放账号恢复
+ * - pending record — 提交前保存 requestId 与恢复交换凭证；网络丢响应后仍由服务端核对真实订单
+ * - resume credential — 服务端签名并绑定环境、通道、UID、requestId、订单及期限，不信任浏览器自报归属
+ * - generation — 切换账号后使旧异步响应失效，避免串号渲染
+ * - fulfilled — 唯一可展示到账成功的服务端订单状态，浏览器回跳不作为成功证据
+ */
+(function(root,factory){
+  const api=factory(root);
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  root.LunaKoruRecharge=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(root){
+  'use strict';
+
+  const LOOPBACK_API_BASE='http://127.0.0.1:9000';
+  // 测试站发布时由受控构建替换为固定 HTTPS test API；空值确保静态生产页面 fail-closed。
+  const DEPLOYED_TEST_API_BASE='';
+  const DEPLOYED_TEST_SITE_HOST='';
+  // 与官网现有 reservation.js / preview_server.py 共用的正式 SCF 入口，不接受运行时覆盖。
+  const PRODUCTION_API_BASE='https://1259219143-fp8pc6xpyz.ap-guangzhou.tencentscf.com';
+  const PRODUCTION_SITE_HOST='www.lunakoru.com';
+  const SESSION_KEY_PREFIX='lunakoru.recharge.session.v1';
+  const PENDING_KEY_PREFIX='lunakoru.recharge.pending.v1';
+  const SANDBOX_GATEWAY_HOST='openapi-sandbox.dl.alipaydev.com';
+  const PRODUCTION_GATEWAY_HOST='openapi.alipay.com';
+  const ENVIRONMENT_RULES=Object.freeze({
+    sandbox:Object.freeze({channel:'alipay_wap_test',gatewayHost:SANDBOX_GATEWAY_HOST}),
+    production:Object.freeze({channel:'alipay_wap',gatewayHost:PRODUCTION_GATEWAY_HOST})
+  });
+  const APP_MARKET='CN';
+  const ORDER_POLL_DELAY=3000;
+  const ORDER_POLL_LIMIT=30;
+
+  class ApiError extends Error{
+    constructor(code,message,httpStatus){super(message||'请求失败');this.name='ApiError';this.code=Number(code)||0;this.httpStatus=Number(httpStatus)||0}
+  }
+
+  const validPhone=value=>/^1[3-9]\d{9}$/.test(String(value||''));
+  const validSmsCode=value=>/^\d{6}$/.test(String(value||''));
+
+  function safePaymentUrl(value,environment){
+    try{
+      const rules=ENVIRONMENT_RULES[environment];if(!rules)return '';
+      const url=new URL(String(value||''));
+      if(url.protocol!=='https:'||url.hostname!==rules.gatewayHost||url.port||url.username||url.password||url.hash)return '';
+      if(url.pathname!=='/gateway.do')return '';
+      const methods=url.searchParams.getAll('method');
+      if(methods.length!==1||methods[0]!=='alipay.trade.wap.pay')return '';
+      return url.href;
+    }catch(_){return ''}
+  }
+
+  function safeSandboxPaymentUrl(value){return safePaymentUrl(value,'sandbox')}
+
+  function normalizeUserId(value){
+    const normalized=String(value==null?'':value).trim();
+    return /^[1-9]\d{0,18}$/.test(normalized)?normalized:'';
+  }
+
+  function normalizeRequestId(value){
+    const normalized=String(value||'').trim();
+    return /^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/.test(normalized)?normalized:'';
+  }
+
+  function normalizeCredential(value){
+    const normalized=String(value||'');
+    return /^[\x21-\x7e]{32,4096}$/.test(normalized)?normalized:'';
+  }
+
+  function safeText(value,maxLength=80){return String(value==null?'':value).trim().slice(0,maxLength)}
+  function finiteNonNegative(value){
+    if(value===null||value===undefined||value===''||typeof value==='boolean')return null;
+    const number=Number(value);return Number.isFinite(number)&&number>=0?number:null;
+  }
+  function formatNumber(value){const number=finiteNonNegative(value);return number===null?'—':Math.trunc(number).toLocaleString('zh-CN')}
+  function formatFen(value){const fen=finiteNonNegative(value);return fen===null?'—':`¥${(fen/100).toFixed(fen%100===0?0:2)}`}
+
+  function orderStatusRank(status){
+    if(status==='created')return 1;
+    if(status==='paid')return 2;
+    if(status==='fulfilled'||['cancelled','failed','closed'].includes(status))return 3;
+    return 0;
+  }
+
+  function advanceOrderTracker(tracker,status){
+    if(!tracker||tracker.terminal)return false;
+    const rank=orderStatusRank(status),isTerminal=rank===3;
+    if(rank<tracker.rank||(rank===0&&tracker.rank>0))return false;
+    tracker.rank=rank;if(isTerminal)tracker.terminal=true;return true;
+  }
+
+  function newRequestId(cryptoImpl){
+    const source=cryptoImpl||(root&&root.crypto);
+    if(source&&typeof source.randomUUID==='function')return source.randomUUID();
+    if(source&&typeof source.getRandomValues==='function'){
+      const bytes=new Uint8Array(16);source.getRandomValues(bytes);
+      return Array.from(bytes,value=>value.toString(16).padStart(2,'0')).join('');
+    }
+    throw new Error('当前浏览器无法安全创建订单请求，请更新浏览器后重试');
+  }
+
+  function parseJson(value,fallback){try{return value?JSON.parse(value):fallback}catch(_){return fallback}}
+
+  function storageNamespace(apiBase,environment='sandbox'){
+    try{
+      const url=new URL(apiBase),safeEnvironment=safeText(environment,20).toLowerCase();
+      if(!safeEnvironment||!url.host)return '';
+      return `${safeEnvironment}:${url.host.toLowerCase().replace(/[^a-z0-9.-]/g,'_')}`;
+    }catch(_){return ''}
+  }
+
+  function storageKeysFor(namespace){
+    const safeNamespace=/^[a-z0-9_.:-]{3,120}$/.test(namespace||'')?namespace:'sandbox:unit-test';
+    return {sessionKey:`${SESSION_KEY_PREFIX}:${safeNamespace}`,pendingKey:`${PENDING_KEY_PREFIX}:${safeNamespace}`};
+  }
+
+  function createSessionStore(storage,namespace){
+    const {sessionKey,pendingKey}=storageKeysFor(namespace);
+    const read=key=>{try{return storage.getItem(key)}catch(_){return null}};
+    const write=(key,value)=>{try{storage.setItem(key,value);return true}catch(_){return false}};
+    const remove=key=>{try{storage.removeItem(key)}catch(_){}};
+    const readPendingMap=()=>{
+      const parsed=parseJson(read(pendingKey),{});
+      return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};
+    };
+    return {
+      saveSession(session){
+        const userId=normalizeUserId(session&&session.userId);
+        const accessToken=String(session&&session.accessToken||'');
+        const nickname=safeText(session&&session.nickname,80);
+        const rawExchangeCredential=String(session&&session.resumeExchangeCredential||'');
+        const resumeExchangeCredential=normalizeCredential(rawExchangeCredential);
+        if(!userId||!accessToken||accessToken.length>4096)return false;
+        if(rawExchangeCredential&&!resumeExchangeCredential)return false;
+        return write(sessionKey,JSON.stringify({userId,accessToken,nickname,...(resumeExchangeCredential?{resumeExchangeCredential}:{})}));
+      },
+      readSession(){
+        const session=parseJson(read(sessionKey),null);
+        const userId=normalizeUserId(session&&session.userId);
+        const accessToken=String(session&&session.accessToken||'');
+        if(!userId||!accessToken||accessToken.length>4096)return null;
+        const resumeExchangeCredential=normalizeCredential(session&&session.resumeExchangeCredential);
+        return {userId,accessToken,nickname:safeText(session&&session.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
+      },
+      clearAccountSession(){remove(sessionKey)},
+      rememberPending(userId,pending){
+        const owner=normalizeUserId(userId),requestId=normalizeRequestId(pending&&pending.requestId);
+        const tierId=safeText(pending&&pending.tierId,80);
+        if(!owner||!requestId||!tierId)return false;
+        const exchangeCredential=normalizeCredential(pending&&pending.exchangeCredential);
+        const resumeCredential=normalizeCredential(pending&&pending.resumeCredential);
+        const current=readPendingMap();
+        current[owner]={requestId,tierId,orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||Date.now(),
+          ...(exchangeCredential?{exchangeCredential}:{}),...(resumeCredential?{resumeCredential}:{})};
+        const entries=Object.entries(current).sort((a,b)=>Number(b[1].createdAt)-Number(a[1].createdAt)).slice(0,5);
+        return write(pendingKey,JSON.stringify(Object.fromEntries(entries)));
+      },
+      pendingFor(userId){
+        const owner=normalizeUserId(userId),pending=readPendingMap()[owner];
+        const requestId=normalizeRequestId(pending&&pending.requestId),tierId=safeText(pending&&pending.tierId,80);
+        if(!owner||!pending||!requestId||!tierId)return null;
+        const exchangeCredential=normalizeCredential(pending.exchangeCredential),resumeCredential=normalizeCredential(pending.resumeCredential);
+        return {requestId,tierId,orderId:safeText(pending.orderId,80),createdAt:Number(pending.createdAt)||0,
+          ...(exchangeCredential?{exchangeCredential}:{}),...(resumeCredential?{resumeCredential}:{})};
+      },
+      pendingEntries(){
+        return Object.keys(readPendingMap()).map(userId=>({userId:normalizeUserId(userId),pending:this.pendingFor(userId)}))
+          .filter(entry=>entry.userId&&entry.pending);
+      },
+      saveResumeCredential(userId,resumeCredential){
+        const pending=this.pendingFor(userId),credential=normalizeCredential(resumeCredential);
+        return !!pending&&!!credential&&this.rememberPending(userId,{...pending,resumeCredential:credential});
+      },
+      clearResumeCredential(userId){
+        const pending=this.pendingFor(userId);if(!pending)return;
+        this.rememberPending(userId,{...pending,resumeCredential:''});
+      },
+      forgetPending(userId){
+        const owner=normalizeUserId(userId);if(!owner)return;
+        const current=readPendingMap();delete current[owner];
+        Object.keys(current).length?write(pendingKey,JSON.stringify(current)):remove(pendingKey);
+      },
+      keys:{sessionKey,pendingKey}
+    };
+  }
+
+  function createAccountGuard(){
+    let generation=0,userId='';
+    return {
+      switchTo(nextUserId){userId=normalizeUserId(nextUserId);generation+=1;return {generation,userId}},
+      clear(){userId='';generation+=1;return generation},
+      capture(){return {generation,userId}},
+      accepts(snapshot){return !!snapshot&&snapshot.generation===generation&&snapshot.userId===userId}
+    };
+  }
+
+  function trustedHttpsOrigin(value){
+    try{
+      const configured=new URL(value);
+      return configured.protocol==='https:'&&!configured.port&&!configured.username&&!configured.password&&!configured.search&&!configured.hash&&configured.pathname==='/'?configured.origin:'';
+    }catch(_){return ''}
+  }
+
+  function resolveDeploymentTarget(locationLike){
+    const protocol=locationLike&&locationLike.protocol,hostname=String(locationLike&&locationLike.hostname||'').toLowerCase();
+    if(protocol==='https:'&&hostname===PRODUCTION_SITE_HOST&&!locationLike.port){
+      const apiBase=trustedHttpsOrigin(PRODUCTION_API_BASE);
+      return apiBase?{apiBase,environment:'production',channel:ENVIRONMENT_RULES.production.channel}:null;
+    }
+    if(protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(hostname)){
+      return {apiBase:LOOPBACK_API_BASE,environment:'sandbox',channel:ENVIRONMENT_RULES.sandbox.channel};
+    }
+    if(DEPLOYED_TEST_API_BASE){
+      const apiBase=trustedHttpsOrigin(DEPLOYED_TEST_API_BASE);
+      if(apiBase&&protocol==='https:'&&hostname===DEPLOYED_TEST_SITE_HOST&&!locationLike.port)return {apiBase,environment:'sandbox',channel:ENVIRONMENT_RULES.sandbox.channel};
+    }
+    return null;
+  }
+
+  function resolveApiBase(locationLike){const target=resolveDeploymentTarget(locationLike);return target?target.apiBase:''}
+
+  function createApiClient(fetchImpl,apiBase){
+    if(typeof fetchImpl!=='function')throw new TypeError('fetch is required');
+    const allowedBases=[LOOPBACK_API_BASE,trustedHttpsOrigin(DEPLOYED_TEST_API_BASE),trustedHttpsOrigin(PRODUCTION_API_BASE)].filter(Boolean);
+    if(!allowedBases.includes(apiBase))throw new TypeError('trusted api base is required');
+    async function request(path,options={}){
+      if(!/^\/api\/[a-zA-Z0-9_%?&=\-./{}]+$/.test(path)||path.includes('{'))throw new Error('非法接口路径');
+      const method=options.method||'GET',headers={'Accept':'application/json','Accept-Language':'zh-CN','X-App-Market':APP_MARKET};
+      let body;
+      if(options.form){headers['Content-Type']='application/x-www-form-urlencoded;charset=UTF-8';body=new URLSearchParams(options.form).toString()}
+      else if(options.body!==undefined){headers['Content-Type']='application/json';body=JSON.stringify(options.body)}
+      if(options.accessToken)headers.Authorization=`Bearer ${options.accessToken}`;
+      if(options.resumeCredential){
+        const resumeCredential=normalizeCredential(options.resumeCredential);
+        if(!resumeCredential)throw new ApiError(100003,'恢复凭证无效');
+        headers['X-Web-Recharge-Resume']=resumeCredential;
+      }
+      let response;
+      try{response=await fetchImpl(apiBase+path,{method,headers,body,credentials:'omit',cache:'no-store',redirect:'error'})}
+      catch(_){throw new ApiError(0,'网络连接失败，请稍后重试')}
+      let envelope;
+      try{envelope=await response.json()}catch(_){throw new ApiError(0,'服务响应无法识别',response.status)}
+      if(!response.ok||!envelope||envelope.result!==0)throw new ApiError(envelope&&envelope.result,envelope&&envelope.errorMsg||'请求失败',response.status);
+      return envelope.data;
+    }
+    return {
+      getConfig:resumeCredential=>request('/api/web-recharge/config',{resumeCredential}),
+      sendSms:(phone,resumeCredential)=>request('/api/users/send/sms/code',{method:'POST',resumeCredential,form:{countryCode:'86',phoneNumber:phone}}),
+      loginExisting:(phone,code,resumeCredential)=>request('/api/users/login-existing',{method:'POST',resumeCredential,form:{countryCode:'86',phoneNumber:phone,smsCode:code}}),
+      exchangeResume:(clientRequestId,exchangeCredential)=>{
+        const requestId=normalizeRequestId(clientRequestId),credential=normalizeCredential(exchangeCredential);
+        if(!requestId||!credential)throw new ApiError(100003,'恢复请求无效');
+        return request('/api/web-recharge/resume',{method:'POST',body:{clientRequestId:requestId,exchangeCredential:credential}});
+      },
+      getWallet:token=>request('/api/mall/wallet',{accessToken:token}),
+      getRecharge:token=>request('/api/mall/recharge',{accessToken:token}),
+      createOrder:(token,tierId,clientRequestId)=>request('/api/web-recharge/orders',{method:'POST',accessToken:token,body:{tierId,clientRequestId}}),
+      getOrder:(token,orderId)=>request(`/api/web-recharge/orders/${encodeURIComponent(orderId)}`,{accessToken:token})
+    };
+  }
+
+  function userFacingError(error){
+    if(error&&error.code===210001)return '请先回到游戏内完成实名认证，再返回这里重试充值。';
+    if(error&&error.code===210002)return '根据相关规定，未成年人暂不能充值。';
+    if(error&&error.code===100002)return '登录已过期，请重新验证手机号。';
+    const text=safeText(error&&error.message,120);
+    return text||'请求失败，请稍后重试。';
+  }
+
+  function isDefinitiveFreshOrderRejection(error){
+    return !!error&&[210001,210002,100003,100008].includes(Number(error.code));
+  }
+
+  function environmentCapabilities(config,expectedEnvironment){
+    const trusted=!!ENVIRONMENT_RULES[expectedEnvironment]&&!!config&&config.environment===expectedEnvironment;
+    return {trusted,environment:trusted?expectedEnvironment:'',loginAvailable:trusted&&config.loginAvailable===true,
+      orderAvailable:trusted&&config.available===true,reasonCode:trusted?safeText(config.reasonCode,80):''};
+  }
+
+  function sandboxCapabilities(config){return environmentCapabilities(config,'sandbox')}
+
+  function isTrustedSandboxConfig(config){const capabilities=sandboxCapabilities(config);return capabilities.trusted&&capabilities.orderAvailable}
+
+  function lockPage(doc,message){
+    for(const id of ['phone','smsCode','sendSmsButton','loginButton']){const node=doc.getElementById(id);if(node)node.disabled=true}
+    const notice=doc.getElementById('configurationNotice');
+    if(notice){notice.hidden=false;const detail=notice.querySelector('span');if(detail&&message)detail.textContent=message}
+    const badge=doc.getElementById('environmentBadge');if(badge)badge.hidden=true;
+  }
+
+  function init(doc,fetchImpl){
+    if(!doc||!doc.getElementById('loginForm'))return null;
+    const fetcher=fetchImpl||(root.fetch&&root.fetch.bind(root));
+    if(!fetcher){lockPage(doc,'当前浏览器无法连接充值服务。');return null}
+    const deploymentTarget=resolveDeploymentTarget(root.location);
+    if(!deploymentTarget){lockPage(doc,'当前页面来源未绑定可信充值服务，登录、短信和付款均不可用。');return {configured:false}}
+    const {apiBase,environment,channel:expectedChannel}=deploymentTarget;
+    const api=createApiClient(fetcher,apiBase);
+    const store=createSessionStore(root.sessionStorage,storageNamespace(apiBase,environment)),guard=createAccountGuard();
+    const el=id=>doc.getElementById(id);
+    const state={configured:false,loginAvailable:false,serviceLoginAvailable:false,environmentTrusted:false,environment,expectedChannel,reasonCode:'',session:null,tiers:[],selectedTier:null,
+      resumeCandidates:[],activeResumeCredential:'',activeResumeUserId:'',
+      loginAttempt:0,smsAttempt:0,pollCount:0,pollTimer:null,smsTimer:null,smsSeconds:0,orderBusy:false,
+      orderTracker:{orderId:'',rank:0,terminal:false,latestVersion:0}};
+    const message=value=>{el('pageMessage').textContent=safeText(value,180)};
+    const setLoginEnabled=enabled=>{
+      el('phone').disabled=!enabled;el('smsCode').disabled=!enabled;el('loginButton').disabled=!enabled;
+      el('sendSmsButton').disabled=!enabled||state.smsSeconds>0;
+    };
+    const renderAvailabilityNotice=()=>{
+      if(!state.environmentTrusted)return;
+      const notice=el('configurationNotice');
+      if(state.configured&&state.loginAvailable){notice.hidden=true;return}
+      notice.hidden=false;const detail=notice.querySelector('span');
+      if(detail)detail.textContent=state.loginAvailable
+        ?(state.environment==='production'?'官网充值暂不开放新付款；如有待确认订单，仍可登录查询。':'沙箱新充值暂时停止，仍可登录查询本浏览器会话中的待确认订单。')
+        :(state.environment==='production'?'官网充值暂不可用，付款与账号验证暂未开放。':'沙箱充值暂不可用，登录、短信和付款均已锁定。');
+    };
+    const refreshLoginAvailability=()=>{
+      state.loginAvailable=state.environmentTrusted&&(state.configured?state.serviceLoginAvailable:state.resumeCandidates.length>0);
+      setLoginEnabled(state.loginAvailable);renderAvailabilityNotice();return state.loginAvailable;
+    };
+    const invalidateRecoveryCandidate=userId=>{
+      const owner=normalizeUserId(userId);if(!owner)return;
+      store.clearResumeCredential(owner);state.resumeCandidates=state.resumeCandidates.filter(candidate=>candidate.userId!==owner);
+      if(state.activeResumeUserId===owner){
+        state.activeResumeUserId='';state.activeResumeCredential='';state.smsSeconds=0;
+        if(state.smsTimer)root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').textContent='获取验证码';
+      }
+      refreshLoginAvailability();
+    };
+    const stopPolling=()=>{if(state.pollTimer)root.clearTimeout(state.pollTimer);state.pollTimer=null};
+    const hideOrder=()=>{stopPolling();el('orderPanel').hidden=true;el('accountWorkspace').hidden=!state.session;el('checkoutBar').hidden=!state.session};
+
+    function showAccount(){
+      if(!state.session)return;
+      el('loginPanel').hidden=true;el('accountWorkspace').hidden=false;el('checkoutBar').hidden=false;
+      el('accountNickname').textContent=state.session.nickname||'当前账号';
+      el('accountUid').textContent=state.session.userId;
+      el('checkoutAccount').textContent=`${state.session.nickname||'当前账号'} · UID ${state.session.userId}`;
+      el('moonSilkBalance').textContent='—';
+    }
+
+    function showLogin(){
+      el('loginPanel').hidden=false;el('accountWorkspace').hidden=true;el('orderPanel').hidden=true;el('checkoutBar').hidden=true;
+      el('phone').value='';el('smsCode').value='';setLoginEnabled(state.loginAvailable);
+    }
+
+    function expireSession(){
+      state.loginAttempt+=1;state.smsAttempt+=1;stopPolling();guard.clear();store.clearAccountSession();state.session=null;state.selectedTier=null;state.tiers=[];
+      state.orderTracker={orderId:'',rank:0,terminal:false,latestVersion:0};
+      refreshLoginAvailability();
+      showLogin();message('登录已过期，请重新验证手机号。');
+    }
+
+    function switchAccount(){
+      state.loginAttempt+=1;state.smsAttempt+=1;stopPolling();if(state.smsTimer)root.clearInterval(state.smsTimer);state.smsTimer=null;state.smsSeconds=0;
+      state.orderTracker={orderId:'',rank:0,terminal:false,latestVersion:0};
+      el('sendSmsButton').textContent='获取验证码';
+      state.activeResumeUserId='';state.activeResumeCredential='';
+      guard.clear();store.clearAccountSession();state.session=null;state.selectedTier=null;state.tiers=[];refreshLoginAvailability();showLogin();message('已退出当前账号，待确认订单仍保留在本次浏览器会话中。');
+    }
+
+    function handleError(error){if(error&&error.code===100002){expireSession();return true}message(userFacingError(error));return false}
+
+    function renderWallet(wallet){const balance=finiteNonNegative(wallet&&wallet.moonSilk);el('moonSilkBalance').textContent=balance===null?'—':formatNumber(balance)}
+
+    function normalizeTier(raw){
+      const tierId=safeText(raw&&raw.tierId,80),silkAmount=finiteNonNegative(raw&&raw.silkAmount),rmbPrice=finiteNonNegative(raw&&raw.rmbPrice);
+      if(!tierId||silkAmount===null||rmbPrice===null)return null;
+      const bonus=finiteNonNegative(raw.firstRechargeBonus)||0,total=finiteNonNegative(raw.firstRechargeTotal);
+      return {tierId,name:safeText(raw.name,60)||`${formatNumber(silkAmount)} 月绸`,silkAmount,rmbPrice,firstRechargeBonus:bonus,
+        firstRechargeTotal:total===null?silkAmount+bonus:total,firstRechargeAvailable:raw.firstRechargeAvailable===true,isBigTier:raw.isBigTier===true};
+    }
+
+    function selectTier(tier){
+      state.selectedTier=tier;
+      for(const option of el('tierList').querySelectorAll('.tier-option'))option.setAttribute('aria-checked',String(option.dataset.tierId===tier.tierId));
+      const bonus=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`，首次共 ${formatNumber(tier.firstRechargeTotal)} 月绸`:'';
+      el('checkoutAmount').textContent=`${formatFen(tier.rmbPrice)} · ${formatNumber(tier.silkAmount)} 月绸${bonus}`;
+      el('checkoutButton').disabled=!state.configured;
+    }
+
+    function renderTiers(payload){
+      const tiers=Array.isArray(payload&&payload.tiers)?payload.tiers.map(normalizeTier).filter(Boolean):[];
+      state.tiers=tiers;state.selectedTier=null;const list=el('tierList');list.replaceChildren();
+      if(!tiers.length){const empty=doc.createElement('p');empty.className='empty-copy';empty.textContent='暂无可用充值档位。';list.append(empty);el('retryTiersButton').hidden=false;el('checkoutButton').disabled=true;return}
+      el('retryTiersButton').hidden=true;
+      for(const tier of tiers){
+        const option=doc.createElement('button');option.type='button';option.className='tier-option'+(tier.isBigTier?' tier-option-big':'');
+        option.dataset.tierId=tier.tierId;option.setAttribute('role','radio');option.setAttribute('aria-checked','false');
+        const amount=doc.createElement('strong');amount.textContent=`${formatNumber(tier.silkAmount)} 月绸`;
+        const price=doc.createElement('span');price.textContent=formatFen(tier.rmbPrice);
+        const detail=doc.createElement('small');detail.textContent=tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`首次加赠 ${formatNumber(tier.firstRechargeBonus)}，共 ${formatNumber(tier.firstRechargeTotal)}`:tier.name;
+        option.append(amount,price,detail);option.addEventListener('click',()=>selectTier(tier));list.append(option);
+      }
+    }
+
+    async function loadAccountData(){
+      if(!state.session)return;
+      const snapshot=guard.capture(),token=state.session.accessToken;
+      const [walletResult,tierResult]=await Promise.allSettled([api.getWallet(token),api.getRecharge(token)]);
+      if(!guard.accepts(snapshot))return;
+      if(walletResult.status==='fulfilled')renderWallet(walletResult.value);else if(handleError(walletResult.reason))return;
+      if(tierResult.status==='fulfilled')renderTiers(tierResult.value);else{handleError(tierResult.reason);el('retryTiersButton').hidden=false}
+    }
+
+    function renderOrderBase(order){
+      el('loginPanel').hidden=true;el('accountWorkspace').hidden=true;el('checkoutBar').hidden=true;el('orderPanel').hidden=false;
+      el('orderNumber').textContent=safeText(order&&order.orderId,80)||'待服务端确认';
+      el('orderAccount').textContent=state.session?`${state.session.nickname||'当前账号'} · UID ${state.session.userId}`:'—';
+      const price=finiteNonNegative(order&&order.rmbPrice);
+      el('orderProduct').textContent=order&&order.productId?`${safeText(order.productId,80)}${price===null?'':` · ${formatFen(price)}`}`:'正在读取订单内容';
+    }
+
+    function setOrderState(kind,heading,detail){
+      const symbols={pending:'···',paid:'✓',fulfilled:'✓',closed:'×',unknown:'?'};
+      const labels={pending:'等待付款确认',paid:'付款已确认',fulfilled:'月绸已到账',closed:'订单已结束',unknown:'状态待确认'};
+      el('orderGlyph').textContent=symbols[kind]||'?';el('orderLabel').textContent=labels[kind]||labels.unknown;
+      el('orderHeading').textContent=heading;el('orderMessage').textContent=detail;
+      el('backToTiersButton').hidden=!state.configured||(kind!=='closed'&&kind!=='fulfilled');
+      el('refreshOrderButton').hidden=kind==='fulfilled'||kind==='closed';
+    }
+
+    function schedulePoll(pending){
+      stopPolling();if(state.pollCount>=ORDER_POLL_LIMIT)return;
+      state.pollTimer=root.setTimeout(()=>{if(!doc.hidden)resumePending(pending)},ORDER_POLL_DELAY);
+    }
+
+    function trackerFor(orderId){
+      if(state.orderTracker.orderId!==orderId)state.orderTracker={orderId,rank:0,terminal:false,latestVersion:0};
+      return state.orderTracker;
+    }
+
+    async function queryOrder(pending){
+      if(!state.session||!pending.orderId)return;
+      const tracker=trackerFor(pending.orderId);if(tracker.terminal)return;
+      const queryVersion=++tracker.latestVersion,snapshot=guard.capture();state.pollCount+=1;
+      if(tracker.rank===0)renderOrderBase({orderId:pending.orderId});
+      try{
+        const order=await api.getOrder(state.session.accessToken,pending.orderId);
+        if(!guard.accepts(snapshot))return;
+        if(!order||safeText(order.orderId,80)!==pending.orderId||order.channel!==state.expectedChannel||order.productType!=='recharge')throw new Error('订单信息校验失败，请稍后重试。');
+        if(tracker.terminal)return;
+        const status=safeText(order.status,30).toLowerCase();
+        if(status==='fulfilled'){
+          const balance=finiteNonNegative(order.wallet&&order.wallet.moonSilk);
+          if(balance===null)throw new Error('到账信息仍在同步，请稍后查询。');
+          if(!advanceOrderTracker(tracker,status))return;
+          renderOrderBase(order);message('');
+          stopPolling();invalidateRecoveryCandidate(state.session.userId);store.forgetPending(state.session.userId);refreshLoginAvailability();renderWallet(order.wallet);
+          setOrderState('fulfilled','充值已到账',`当前月绸 ${formatNumber(balance)}。你可以回到游戏查看。`);return;
+        }
+        if(['cancelled','failed','closed'].includes(status)){
+          if(!advanceOrderTracker(tracker,status))return;
+          renderOrderBase(order);message('');
+          stopPolling();invalidateRecoveryCandidate(state.session.userId);store.forgetPending(state.session.userId);refreshLoginAvailability();
+          setOrderState('closed','本次订单未完成','没有确认到月绸到账。你可以返回档位重新发起充值。');return;
+        }
+        if(!advanceOrderTracker(tracker,status)){schedulePoll(pending);return}
+        renderOrderBase(order);
+        if(status==='paid')setOrderState('paid','付款已确认，月绸发放中','请稍候，服务端完成发货后这里会显示最新余额。');
+        else setOrderState(status==='created'?'pending':'unknown','正在等待服务端确认到账','不要重复付款。可以保留此页面，也可以稍后使用同一账号重新登录查询。');
+        schedulePoll(pending);
+      }catch(error){if(!guard.accepts(snapshot)||tracker.terminal||queryVersion!==tracker.latestVersion)return;if(handleError(error))return;
+        setOrderState('unknown','暂未取得最新订单状态','订单仍会由服务端继续处理，请稍后查询。');schedulePoll(pending)}
+    }
+
+    async function createOrderFromPending(pending,{fresh=false}={}){
+      if(!state.session)return;
+      if(state.orderBusy)return;state.orderBusy=true;
+      const snapshot=guard.capture();renderOrderBase({});
+      setOrderState('pending',state.configured?(state.environment==='sandbox'?'正在创建沙箱订单':'正在创建充值订单'):'正在恢复待确认订单',
+        state.configured?'请勿重复点击或切换账号。':'正在用原请求编号核对服务端记录，不会创建新的充值请求。');
+      try{
+        const result=await api.createOrder(state.session.accessToken,pending.tierId,pending.requestId);
+        if(!guard.accepts(snapshot))return;
+        const orderId=safeText(result&&result.orderId,80),paymentUrl=safePaymentUrl(result&&result.paymentUrl,state.environment);
+        const resumeCredential=normalizeCredential(result&&result.resumeCredential);
+        if(!orderId)throw new Error('服务端未返回有效订单号。');
+        if(!resumeCredential)throw new Error('服务端未返回安全恢复凭证，已停止打开收银台。');
+        if(!store.rememberPending(state.session.userId,{...pending,orderId,resumeCredential}))throw new Error('当前浏览器无法安全保存订单恢复凭证，已停止打开收银台。');
+        if(!paymentUrl){
+          if(result&&result.paymentUrl)message('支付地址未通过当前环境安全校验，未打开收银台。');
+          await queryOrder({...pending,orderId,resumeCredential});return;
+        }
+        root.location.assign(paymentUrl);
+      }catch(error){if(guard.accepts(snapshot)){
+        if(fresh&&isDefinitiveFreshOrderRejection(error)){
+          store.forgetPending(state.session.userId);refreshLoginAvailability();hideOrder();showAccount();message(userFacingError(error));return;
+        }
+        if(!handleError(error))setOrderState('unknown','订单创建结果待确认','已保留相同请求编号。点击查询会继续恢复本次请求，不会重复生成订单。');
+      }
+      }finally{if(guard.accepts(snapshot))state.orderBusy=false}
+    }
+
+    function resumePending(pendingOverride){
+      if(!state.session)return;
+      const pending=pendingOverride||store.pendingFor(state.session.userId);if(!pending)return;
+      if(pending.orderId)return queryOrder(pending);
+      return createOrderFromPending(pending);
+    }
+
+    async function restoreSession(){
+      if(!state.environmentTrusted){showLogin();return}
+      const saved=store.readSession();if(!saved){showLogin();return}
+      const pending=store.pendingFor(saved.userId);
+      if(!state.configured&&!pending){store.clearAccountSession();showLogin();return}
+      state.session=saved;guard.switchTo(saved.userId);showAccount();
+      if(pending)await resumePending(pending);else await loadAccountData();
+    }
+
+    async function loadConfig(){
+      lockPage(doc,'正在核验充值配置。');
+      try{
+        const capabilities=environmentCapabilities(await api.getConfig(),state.environment);
+        state.environmentTrusted=capabilities.trusted;state.configured=capabilities.orderAvailable;state.reasonCode=capabilities.reasonCode;
+        if(!capabilities.trusted){lockPage(doc,'充值服务尚未完成可信配置，登录、短信和新付款均不可用。');return}
+        state.resumeCandidates=[];state.activeResumeUserId='';state.activeResumeCredential='';
+        if(state.configured){state.serviceLoginAvailable=capabilities.loginAvailable}
+        else{
+          state.serviceLoginAvailable=false;
+          for(const entry of store.pendingEntries()){
+            const {userId,pending}=entry;let resumeCredential=pending.resumeCredential;
+            if(resumeCredential){
+              try{
+                const resumeCapabilities=environmentCapabilities(await api.getConfig(resumeCredential),state.environment);
+                if(!resumeCapabilities.trusted){state.environmentTrusted=false;break}
+                if(!resumeCapabilities.orderAvailable&&resumeCapabilities.loginAvailable){state.resumeCandidates.push({userId,resumeCredential});continue}
+                store.clearResumeCredential(userId);resumeCredential='';
+              }catch(_){store.clearResumeCredential(userId);resumeCredential=''}
+            }
+            if(!resumeCredential&&pending.exchangeCredential){
+              try{
+                const exchanged=await api.exchangeResume(pending.requestId,pending.exchangeCredential);
+                resumeCredential=normalizeCredential(exchanged&&exchanged.resumeCredential);
+                if(!resumeCredential||!store.saveResumeCredential(userId,resumeCredential))throw new ApiError(100003,'恢复凭证无效');
+                const resumeCapabilities=environmentCapabilities(await api.getConfig(resumeCredential),state.environment);
+                if(!resumeCapabilities.trusted){state.environmentTrusted=false;break}
+                if(!resumeCapabilities.orderAvailable&&resumeCapabilities.loginAvailable){state.resumeCandidates.push({userId,resumeCredential});continue}
+                store.clearResumeCredential(userId);
+              }catch(error){
+                store.clearResumeCredential(userId);
+                if(error&&error.code===100003)store.forgetPending(userId);
+              }
+            }
+          }
+        }
+        refreshLoginAvailability();
+        if(!state.environmentTrusted){lockPage(doc,'充值服务尚未完成可信配置，登录、短信和新付款均不可用。');return}
+        el('environmentBadge').textContent=state.environment==='sandbox'?'沙箱验证':'官网充值';
+        el('environmentBadge').hidden=false;
+      }catch(_){state.configured=false;state.loginAvailable=false;state.environmentTrusted=false;lockPage(doc,'未能连接可信配置服务，登录、短信和新付款均不可用。')}
+    }
+
+    function beginCheckout(){
+      if(!state.configured||!state.session||!state.selectedTier)return;
+      const tier=state.selectedTier;
+      el('confirmationNickname').textContent=state.session.nickname||'当前账号';el('confirmationUid').textContent=state.session.userId;
+      el('confirmationProduct').textContent=`${formatNumber(tier.silkAmount)} 月绸${tier.firstRechargeAvailable&&tier.firstRechargeBonus>0?`（首次共 ${formatNumber(tier.firstRechargeTotal)}）`:''}`;
+      el('confirmationAmount').textContent=formatFen(tier.rmbPrice);el('confirmationDialog').showModal();
+    }
+
+    el('sendSmsButton').addEventListener('click',async()=>{
+      const phone=el('phone').value.trim();if(!state.loginAvailable)return;if(!validPhone(phone)){message('请输入正确的中国大陆手机号。');return}
+      const smsAttempt=++state.smsAttempt;el('sendSmsButton').disabled=true;
+      try{
+        if(state.configured){state.activeResumeUserId='';state.activeResumeCredential='';await api.sendSms(phone)}
+        else{
+          let matched=false;
+          for(const candidate of [...state.resumeCandidates]){
+            try{
+              await api.sendSms(phone,candidate.resumeCredential);
+              if(smsAttempt!==state.smsAttempt)return;
+              state.activeResumeUserId=candidate.userId;state.activeResumeCredential=candidate.resumeCredential;matched=true;break;
+            }catch(error){if(error&&error.code===100003){invalidateRecoveryCandidate(candidate.userId);continue}throw error}
+          }
+          if(!matched)throw new ApiError(100003,'当前手机号没有可恢复的待确认订单');
+        }
+        if(smsAttempt!==state.smsAttempt)return;message('验证码已发送。');state.smsSeconds=60;
+        state.smsTimer=root.setInterval(()=>{if(smsAttempt!==state.smsAttempt){root.clearInterval(state.smsTimer);state.smsTimer=null;return}
+          state.smsSeconds-=1;el('sendSmsButton').textContent=state.smsSeconds>0?`${state.smsSeconds} 秒后重试`:'获取验证码';
+          if(state.smsSeconds<=0){root.clearInterval(state.smsTimer);state.smsTimer=null;el('sendSmsButton').disabled=!state.loginAvailable}},1000);
+      }catch(error){if(smsAttempt===state.smsAttempt){el('sendSmsButton').disabled=!state.loginAvailable;handleError(error)}}
+    });
+
+    el('loginForm').addEventListener('submit',async event=>{
+      event.preventDefault();if(!state.loginAvailable)return;
+      const phone=el('phone').value.trim(),code=el('smsCode').value.trim();
+      if(!validPhone(phone)||!validSmsCode(code)){message('请填写正确的手机号和六位验证码。');return}
+      const attempt=++state.loginAttempt;el('loginButton').disabled=true;
+      const recoveryCredential=state.configured?'':state.activeResumeCredential,recoveryUserId=state.configured?'':state.activeResumeUserId;
+      if(!state.configured&&(!recoveryCredential||!recoveryUserId)){message('请先向待恢复账号发送验证码。');el('loginButton').disabled=!state.loginAvailable;return}
+      try{
+        const auth=await api.loginExisting(phone,code,recoveryCredential);if(attempt!==state.loginAttempt)return;
+        const user=auth&&auth.user,userId=normalizeUserId(user&&user.id),token=String(auth&&auth.accessToken||'');
+        if(!userId||!token||auth.newUser===true)throw new Error('未找到可登录的游戏账号，请先在游戏内创建账号。');
+        if(recoveryUserId&&userId!==recoveryUserId)throw new ApiError(100003,'当前账号没有可恢复的待确认订单');
+        const pending=store.pendingFor(userId);
+        if(!state.configured&&!pending)throw new Error('当前账号没有可恢复的待确认订单。');
+        const resumeExchangeCredential=normalizeCredential(auth&&auth.resumeExchangeCredential);
+        if(state.configured&&!resumeExchangeCredential)throw new Error('服务未返回安全恢复凭证，已停止登录充值。');
+        const session={userId,accessToken:token,nickname:safeText(user.nickname,80),...(resumeExchangeCredential?{resumeExchangeCredential}:{})};
+        if(!store.saveSession(session))throw new Error('当前浏览器无法安全保存登录状态。');
+        state.session=session;guard.switchTo(userId);el('phone').value='';el('smsCode').value='';message('');showAccount();
+        if(pending)await resumePending(pending);else await loadAccountData();
+      }catch(error){if(attempt===state.loginAttempt){if(recoveryUserId)invalidateRecoveryCandidate(recoveryUserId);handleError(error)}}
+      finally{if(attempt===state.loginAttempt)el('loginButton').disabled=!state.loginAvailable}
+    });
+
+    el('switchAccountButton').addEventListener('click',switchAccount);
+    el('orderSwitchAccountButton').addEventListener('click',switchAccount);
+    el('retryTiersButton').addEventListener('click',loadAccountData);
+    el('checkoutButton').addEventListener('click',beginCheckout);
+    el('startPaymentButton').addEventListener('click',()=>{
+      if(!state.session||!state.selectedTier)return;el('confirmationDialog').close();
+      const existing=store.pendingFor(state.session.userId);
+      if(existing){resumePending(existing);return}
+      const exchangeCredential=normalizeCredential(state.session.resumeExchangeCredential);
+      if(!exchangeCredential){message('当前登录缺少安全恢复凭证，请切换账号后重新验证手机号。');return}
+      state.pollCount=0;state.orderTracker={orderId:'',rank:0,terminal:false,latestVersion:0};
+      const pending={requestId:newRequestId(),tierId:state.selectedTier.tierId,orderId:'',createdAt:Date.now(),exchangeCredential};
+      if(!store.rememberPending(state.session.userId,pending)){message('当前浏览器无法安全保存订单请求，请勿付款。');return}
+      createOrderFromPending(pending,{fresh:true});
+    });
+    el('refreshOrderButton').addEventListener('click',()=>resumePending());
+    el('backToTiersButton').addEventListener('click',()=>{hideOrder();showAccount();loadAccountData()});
+    doc.addEventListener('visibilitychange',()=>{if(!doc.hidden&&state.session&&store.pendingFor(state.session.userId))resumePending()});
+    root.addEventListener('pageshow',()=>{if(state.session&&store.pendingFor(state.session.userId))resumePending()});
+
+    (async()=>{await loadConfig();await restoreSession()})();
+    return {state,store,guard,api,resumePending};
+  }
+
+  if(root.document)root.document.addEventListener('DOMContentLoaded',()=>init(root.document));
+  return {init,lockPage,validPhone,validSmsCode,safePaymentUrl,safeSandboxPaymentUrl,normalizeUserId,normalizeRequestId,normalizeCredential,newRequestId,
+    createSessionStore,createAccountGuard,createApiClient,isTrustedSandboxConfig,sandboxCapabilities,environmentCapabilities,userFacingError,isDefinitiveFreshOrderRejection,formatFen,
+    resolveApiBase,resolveDeploymentTarget,advanceOrderTracker,storageNamespace,storageKeysFor,ApiError,LOOPBACK_API_BASE,DEPLOYED_TEST_API_BASE,PRODUCTION_API_BASE,
+    DEPLOYED_TEST_SITE_HOST,PRODUCTION_SITE_HOST,SESSION_KEY_PREFIX,PENDING_KEY_PREFIX,SANDBOX_GATEWAY_HOST,PRODUCTION_GATEWAY_HOST,ENVIRONMENT_RULES,APP_MARKET};
+});
+  </script>
 </body>
 </html>
