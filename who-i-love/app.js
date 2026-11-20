@@ -99,14 +99,12 @@ function cardRoundRect(c,x,y,w,h,r){
 let cleanupResultCard = () => {};
 function bindResultActions(person) {
  const saveButton = $('.q-save-card');
- const imageShare = $('[data-type="image"]');
  const inviteShare = $('[data-type="card"]');
  const inviteLink = $('.q-invite-link');
  const status = $('.q-share-panel [role="status"]');
  const saveStatus = $('.q-save-status');
  const fileName = '月光茧-' + person.name + '-人设卡.png';
- const quizUrl = document.baseURI;
- let png;
+ const quizUrl = document.querySelector('link[rel="canonical"]').href;
  let cardUrl;
 
  cleanupResultCard = () => {
@@ -118,10 +116,9 @@ function bindResultActions(person) {
   saveButton.textContent = '正在准备图片…';
   saveStatus.textContent = '';
   try {
-   png = await createPersonaPng(person);
+   const png = await createPersonaPng(person);
    if (!saveButton.isConnected) return;
    cardUrl = URL.createObjectURL(png);
-   imageShare.disabled = false;
    saveButton.textContent = '下载人设卡';
   } catch {
    saveButton.textContent = '重试生成图片';
@@ -142,23 +139,6 @@ function bindResultActions(person) {
   saveButton.after(download);
   download.click();
   download.remove();
- });
-
- imageShare.addEventListener('click', async () => {
-  if (!cardUrl) return;
-  status.textContent = '';
-  try {
-   if (navigator.share && navigator.canShare && typeof File === 'function') {
-    const files = [new File([png], fileName, { type: png.type })];
-    if (navigator.canShare({ files })) {
-     await navigator.share({ files });
-     return;
-    }
-   }
-  } catch (error) {
-   if (error.name === 'AbortError') return;
-  }
-  status.textContent = '请先下载人设卡，再分享图片。';
  });
 
  inviteLink.value = quizUrl;
@@ -213,6 +193,11 @@ function bindHolo(stage){
  };
  const schedule=()=>{if(!raf&&!document.hidden&&!reduce())raf=requestAnimationFrame(apply);};
  const reset=()=>{target={x:0,y:0};schedule();};
+ const isCardControl=event=>event.target.closest('.q-flip-back, .q-portrait-retry');
+ function holdTilt(){
+  cancelAnimationFrame(raf);
+  raf=0;
+ }
 // Both input paths share the same drag threshold and click suppression.
  function followContact(x,y){
   const r=down.bounds;
@@ -242,6 +227,7 @@ function bindHolo(stage){
  }
  stage.addEventListener('touchstart',e=>{
   if(e.touches.length!==1){if(down)end(down.id);return;}
+  if(isCardControl(e)){holdTilt();return;}
   const t=e.touches[0];begin(t.clientX,t.clientY,t.identifier);
  },{passive:true});
  stage.addEventListener('touchmove',e=>{
@@ -253,13 +239,16 @@ function bindHolo(stage){
  stage.addEventListener('touchend',finishTouch);
  stage.addEventListener('touchcancel',finishTouch);
  stage.addEventListener('pointerdown',e=>{
-  if(e.pointerType!=='touch' && e.button===0)begin(e.clientX,e.clientY,e.pointerId);
+  if(e.pointerType==='touch' || e.button!==0)return;
+  if(isCardControl(e)){holdTilt();return;}
+  begin(e.clientX,e.clientY,e.pointerId);
  });
  stage.addEventListener('pointermove',e=>{
   if(e.pointerType==='touch' || reduce())return;
   if(down){
    if(move(e.clientX,e.clientY,e.pointerId,false) && stage.setPointerCapture)stage.setPointerCapture(e.pointerId);
   }else{
+   if(isCardControl(e)){holdTilt();return;}
    const r=stage.getBoundingClientRect();
    target={x:clamp((e.clientX-r.left)/r.width*2-1),y:clamp((e.clientY-r.top)/r.height*2-1)};schedule();
   }
@@ -269,10 +258,10 @@ function bindHolo(stage){
  stage.addEventListener('pointercancel',finishPointer);
  stage.addEventListener('lostpointercapture',finishPointer);
  stage.addEventListener('pointerleave',()=>{if(!down)reset();});
- stage.addEventListener('click',e=>{if(Date.now()<blockUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+ stage.addEventListener('click',e=>{if(Date.now()<blockUntil&&!isCardControl(e)){e.preventDefault();e.stopImmediatePropagation();}},true);
  stage.addEventListener('keydown',e=>{if(reduce())return;const keys={ArrowLeft:[-.35,0],ArrowRight:[.35,0],ArrowUp:[0,-.35],ArrowDown:[0,.35]};if(keys[e.key]){e.preventDefault();const [x,y]=keys[e.key];target={x:clamp(target.x+x),y:clamp(target.y+y)};schedule();}else if(e.key==='Escape'){e.preventDefault();reset();}});
  stage.addEventListener('dragstart',e=>e.preventDefault());
- return ()=>cancelAnimationFrame(raf);
+ return holdTilt;
 }
 
 function renderResult(enter){
@@ -290,7 +279,7 @@ function renderResult(enter){
  </div>
  <div class="q-share-panel">
   <div class="q-share-buttons">
-   <button type="button" data-type="image" disabled>分享我的结果</button>
+   <a href="https://www.lunakoru.com/">了解月光茧</a>
    <button type="button" data-type="card">邀请好友来测</button>
   </div>
   <input type="url" class="q-invite-link" aria-label="测评链接" readonly hidden>

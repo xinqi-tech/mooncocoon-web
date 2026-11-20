@@ -107,7 +107,7 @@
 #who-i-love .q-person h2{font-size:39px;letter-spacing:7px;margin-bottom:7px;background:linear-gradient(110deg,#fffdf7,#c9e6f7 55%,#e8dbff);background-clip:text;-webkit-background-clip:text;color:transparent;text-shadow:none}
 #who-i-love .q-person-meta{font-size:11px;letter-spacing:.4px;color:#d0dff1;margin-bottom:12px}
 #who-i-love .q-person blockquote{font-family:'Songti SC','STSong',serif;font-size:16px;line-height:1.65;color:#edf2ff;margin-bottom:16px;max-width:265px}
-#who-i-love .q-flip-back{min-height:40px;padding:9px 16px;font-size:11px;letter-spacing:1px;color:#e1e9f7;border:1px solid rgba(188,207,228,0.2314);background:linear-gradient(110deg,rgba(199,230,237,0.1216),rgba(215,204,241,0.0980));border-radius:14px;box-shadow:inset 0 1px 0 rgba(224,242,255,0.1294)}
+#who-i-love .q-flip-back{min-height:44px;padding:9px 16px;font-size:11px;letter-spacing:1px;color:#e1e9f7;border:1px solid rgba(188,207,228,0.2314);background:linear-gradient(110deg,rgba(199,230,237,0.1216),rgba(215,204,241,0.0980));border-radius:14px;box-shadow:inset 0 1px 0 rgba(224,242,255,0.1294);cursor:pointer}
 #who-i-love .q-foil{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:5!important;border-radius:inherit;pointer-events:none;background-image:repeating-linear-gradient(112deg,#a0f0ed 0%,#b8cdff 10%,#f3d2f4 20%,#e8ecc6 30%,#a6ece8 40%,#a0f0ed 50%);background-size:280% 280%;background-position:var(--foil-x) var(--foil-y);mix-blend-mode:color-dodge;opacity:.29;mask-image:radial-gradient(ellipse at 50% 29%,transparent 8%,rgba(0,0,0,0.4000) 30%,#000 78%);-webkit-mask-image:radial-gradient(ellipse at 50% 29%,transparent 8%,rgba(0,0,0,0.4000) 30%,#000 78%)}
 #who-i-love .q-analysis .q-foil{opacity:.14;mix-blend-mode:multiply;z-index:1!important;mask-image:linear-gradient(110deg,#000,transparent 42%,transparent 66%,#000);-webkit-mask-image:linear-gradient(110deg,#000,transparent 42%,transparent 66%,#000)}
 #who-i-love .q-glare{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:6!important;pointer-events:none;border-radius:inherit;background:radial-gradient(ellipse at var(--mx) var(--my),rgba(234,255,255,0.3333),transparent 47%),linear-gradient(115deg,transparent 30%,rgba(212,229,255,0.0000) 41%,rgba(234,250,255,0.2588) 47%,rgba(255,253,246,0.1020) 49%,transparent 56%);background-size:100% 100%,230% 230%;background-position:0 0,var(--foil-x) var(--foil-y);mix-blend-mode:screen;opacity:.6}
@@ -232,12 +232,12 @@ html,body{margin:0;min-height:100%;background:#172942}body{font-family:"PingFang
 #who-i-love .q-result:not(.show-share) .q-share-panel{display:none}
 #who-i-love .q-share-panel{max-width:306px;margin:14px auto 0}
 #who-i-love .q-share-buttons{display:flex}
-#who-i-love .q-share-buttons button{
+#who-i-love .q-share-buttons > *{
+ display:flex;align-items:center;justify-content:center;
  flex:1;min-height:44px;border-radius:13px;border:1px solid #d4deef;
- background:#e3e7f4;color:#344865;font-size:14px
+ background:#e3e7f4;color:#344865;font-size:14px;text-decoration:none
 }
-#who-i-love .q-share-buttons button:disabled{opacity:.65}
-#who-i-love .q-share-buttons button+button{margin-left:16px}
+#who-i-love .q-share-buttons > * + *{margin-left:16px}
 #who-i-love .q-invite-link{
  width:100%;margin-top:10px;padding:8px;border:1px solid #d4deef;border-radius:8px;
  color:#344865;background:#fff;font-size:16px
