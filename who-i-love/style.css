@@ -1,0 +1,290 @@
+/* 月光茧官网角色测评。答题、翻卡及邀请区样式，供 index.html 和 app.js 使用。 */
+
+#who-i-love{width:100%;font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:#f7f9ff}#who-i-love *{box-sizing:border-box}#who-i-love [hidden]{display:none!important}#who-i-love button{font:inherit;-webkit-tap-highlight-color:transparent}#who-i-love button:focus{outline:2px solid #afdfff;outline-offset:5px}
+#who-i-love .q-stage{--stage-gutter:20px;display:flex;justify-content:center;padding:var(--stage-gutter) 8px}
+#who-i-love .q-screen{width:100%;max-width:420px;min-height:710px;border-radius:28px;overflow:hidden;isolation:isolate;position:relative;background:#374c71 url('./critical/07fc415fd7e8f39d.webp') center/cover;color-scheme:dark;box-shadow:0 20px 48px rgba(24,43,73,0.1490)}
+#who-i-love .q-screen:before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:-1;background:linear-gradient(180deg,rgba(37,54,83,0.4392),rgba(36,56,89,0.2706) 55%,rgba(77,100,138,0.1333))}
+#who-i-love .q-top{height:108px;padding:26px 30px;display:flex;justify-content:space-between;align-items:center;}#who-i-love .q-name{font-size:14px;letter-spacing:2px;color:#e8effe;font-weight:400;margin:0}#who-i-love .q-logo{width:105px;height:55px;object-fit:contain}
+#who-i-love .q-heading{padding:23px 30px 0;min-height:173px}#who-i-love .q-count{font-size:12px;letter-spacing:3px;color:#d7e5f8;margin:0 0 17px}#who-i-love .q-question{font-family:"Songti SC","STSong",serif;font-weight:500;font-size:27px;line-height:1.55;letter-spacing:.7px;color:#fff;margin:0;white-space:pre-line;text-shadow:0 2px 12px rgba(23,41,77,0.2314)}
+#who-i-love .q-deck{position:relative;height:370px;margin:5px 0 0;perspective:1100px;touch-action:pan-y;user-select:none;--drag:0px;--tilt:0deg;--lift:0px}
+#who-i-love .q-floor{position:absolute;bottom:20px;left:17%;width:66%;height:30px;border-radius:50%;background:rgba(16,30,62,0.3020);filter:blur(16px);pointer-events:none}
+#who-i-love .q-card{position:absolute;top:16px;left:50%;width:77%;height:307px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;border-radius:31px;border:1px solid rgba(255,255,255,0.8510);padding:27px 28px 23px;background:linear-gradient(130deg,#fff 3%,#f9fafc 48%,#e8edf3 100%);color:#24334d;transform-origin:50% 70%;transform:translateX(calc(-50% + var(--offset) + var(--drag))) translateY(calc(var(--drop) + var(--lift))) rotateX(var(--rx)) rotateY(calc(var(--ry) + var(--tilt))) rotateZ(var(--rz)) scale(var(--scale));z-index:var(--z);opacity:var(--alpha);box-shadow:1px 1px 0 #f9fcff,2px 3px 0 #d6dfe9,3px 5px 0 #c2cfdf,4px 7px 0 #afbed2,5px 10px 1px #9eaec6,9px 24px 32px rgba(13,26,59,0.3020),0 5px 8px rgba(24,40,73,0.1294),inset 0 1px 2px #fff;transition:transform .38s cubic-bezier(.2,.75,.25,1),opacity .25s;backface-visibility:hidden;-webkit-font-smoothing:antialiased}
+#who-i-love .q-card:before{content:"“";position:absolute;top:48px;left:22px;font-family:Georgia,serif;font-size:100px;line-height:1;color:rgba(135,153,179,0.1098);pointer-events:none}#who-i-love .q-card:after{content:"”";position:absolute;bottom:62px;right:23px;font-family:Georgia,serif;font-size:88px;line-height:1;color:rgba(135,153,179,0.1098);pointer-events:none}
+#who-i-love .q-card[data-active="false"]{background:linear-gradient(135deg,#e2e9f2,#aebed3);box-shadow:1px 3px 0 #c9d4e3,3px 6px 0 #91a5c0,5px 15px 26px rgba(18,35,69,0.2078)}#who-i-love .q-card[data-active="false"]>*{visibility:hidden}#who-i-love .q-card[data-active="false"]:before,#who-i-love .q-card[data-active="false"]:after{display:none}
+#who-i-love .q-card[data-active="true"] .q-text{position:relative;z-index:1}#who-i-love .q-letter{font-family:Georgia,serif;font-style:italic;font-size:20px;color:#7586a0;margin:0 0 17px;display:block}
+#who-i-love .q-answer{font-size:23px;line-height:1.55;letter-spacing:.2px;font-weight:500;margin:0 0 15px;white-space:pre-line;color:#202f48}
+#who-i-love .q-detail{font-size:14px;line-height:1.85;font-weight:400;color:#56657b;margin:0}
+#who-i-love .q-card-end{display:flex;justify-content:flex-end;margin-top:17px;position:relative;z-index:1}#who-i-love .q-select{font-size:12px;color:#fbfdff;background:#314360;border:1px solid #506380;border-radius:25px;padding:10px 17px;box-shadow:0 3px 6px rgba(38,57,86,0.0980);letter-spacing:1px}
+#who-i-love .q-deck.q-dragging .q-card{transition:none}#who-i-love .q-deck.q-chosen .q-card[data-active="true"]{transform:translateX(-50%) translateY(-8px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(.96);opacity:.45}
+#who-i-love .q-bottom{min-height:54px;padding:0 30px 22px;display:flex;align-items:center}#who-i-love .q-back{border:0;background:transparent;color:#e1eafb;padding:8px 0;font-size:12px;letter-spacing:1px}#who-i-love .q-back:disabled{visibility:hidden}
+#who-i-love .q-result{padding:26px 30px 40px;min-height:550px}#who-i-love .q-result-label{font-size:13px;color:#dce7f7;letter-spacing:2px;margin:0 0 20px}#who-i-love .q-result h2{font-family:"Songti SC","STSong",serif;font-size:32px;font-weight:500;letter-spacing:2px;margin:0 0 27px;color:#fff}#who-i-love .q-result blockquote{margin:0 0 22px;font-size:22px;line-height:1.65;color:#fff}#who-i-love .q-result-body{font-size:15px;line-height:2;color:#e1eaf7;margin:0 0 30px}#who-i-love .q-restart{border:1px solid #f4f8ff;background:#edf3fb;border-radius:28px;padding:13px 24px;font-size:14px;color:#2b3d59}#who-i-love .q-edit{display:block;margin-top:17px;border:0;background:none;padding:9px 0;color:#dce7f7;font-size:12px}
+#who-i-love .q-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:440px){#who-i-love .q-stage{padding:8px 0}#who-i-love .q-screen{border-radius:22px}#who-i-love .q-top{padding:22px 25px}#who-i-love .q-heading{padding-left:25px;padding-right:25px}#who-i-love .q-card{width:78%;padding:25px 24px}#who-i-love .q-question{font-size:25px}#who-i-love .q-answer{font-size:22px}}
+@media(max-width:350px){#who-i-love .q-top{padding:20px 22px;height:96px}#who-i-love .q-logo{width:92px}#who-i-love .q-name{font-size:13px;letter-spacing:1px}#who-i-love .q-heading{padding:22px 23px 0;min-height:180px}#who-i-love .q-question{font-size:23px}#who-i-love .q-card{width:80%;padding:23px 23px;height:340px;border-radius:27px}#who-i-love .q-answer{font-size:21px;line-height:1.55}#who-i-love .q-detail{font-size:14px;line-height:1.8}#who-i-love .q-deck{height:395px}#who-i-love .q-letter{margin-bottom:15px}#who-i-love .q-select{padding:9px 15px}}
+@media(prefers-reduced-motion:reduce){#who-i-love *{transition:none!important}}
+#who-i-love .q-edge{position:absolute;top:55px;width:27px;height:240px;z-index:8;border:0;background:transparent;padding:0}#who-i-love .q-edge-prev{left:1px}#who-i-love .q-edge-next{right:1px}
+/* AI Context: A live four-card stack. Front card follows the finger; real rear cards rise and cover. */
+#who-i-love .q-deck{perspective:1100px;touch-action:pan-y;overflow:visible;user-select:none;-webkit-user-select:none;}
+#who-i-love .q-card,#who-i-love .q-card[data-active="false"]{top:16px;opacity:1;transform:translateX(-50%) rotateX(5deg) rotateY(-7deg) rotateZ(-3deg);background:linear-gradient(130deg,#fff 3%,#f9fafc 48%,#e8edf3 100%);box-shadow:1px 1px 0 #f9fcff,2px 3px 0 #d6dfe9,3px 5px 0 #c2cfdf,4px 7px 0 #afbed2,5px 10px 1px #9eaec6,9px 24px 32px rgba(13,26,59,0.3020),0 5px 8px rgba(24,40,73,0.1294),inset 0 1px 2px #fff;touch-action:pan-y;transition:none;will-change:transform;}
+#who-i-love .q-card[data-active="false"]{pointer-events:none}
+#who-i-love .q-card[data-active="false"]>*{visibility:visible}
+#who-i-love .q-card>*{opacity:var(--reveal,1)}
+#who-i-love .q-card[data-active="false"]:before,#who-i-love .q-card[data-active="false"]:after{display:block;opacity:var(--reveal,0)}
+#who-i-love .q-deck.q-settling .q-card{transition:transform 430ms cubic-bezier(.2,.8,.24,1),opacity 380ms ease,filter 430ms ease}
+#who-i-love .q-deck.q-settling .q-card>*{transition:opacity 300ms ease}
+#who-i-love .q-deck.q-returning .q-card{transition:transform 260ms cubic-bezier(.2,.8,.24,1),opacity 260ms ease,filter 260ms ease}
+#who-i-love .q-deck.q-picking .q-card[data-active="true"]{transition:transform 240ms ease,opacity 220ms ease;transform:translateX(-50%) translateY(-20px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(.99)!important;opacity:0!important}
+#who-i-love .q-deck.q-picking .q-card[data-active="false"]{transition:opacity 200ms;opacity:0!important}
+#who-i-love .q-deck.q-enter{animation:stack-arrive 350ms cubic-bezier(.2,.8,.24,1)}
+@keyframes stack-arrive{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){#who-i-love .q-card{animation:none!important;transition:none!important}}
+#who-i-love .q-deck, #who-i-love .q-card{touch-action:none}
+#who-i-love .q-text{padding-top:19px}
+#who-i-love .q-card:before{top:12px}
+#who-i-love .q-top{justify-content:flex-end}
+#who-i-love .q-count{display:flex;align-items:center;height:16px;margin-bottom:19px;letter-spacing:0}
+#who-i-love .q-star{display:block;font-size:13px;color:rgba(207,227,255,0.2706);line-height:1;transition:color .35s,transform .35s}
+#who-i-love .q-star.is-done{color:rgba(211,234,255,0.7020)}
+#who-i-love .q-star.is-current{color:#fff;transform:scale(1.25);text-shadow:0 0 9px #c1e7ff;animation:moon-star-breathe 2.8s ease-in-out infinite}
+@keyframes moon-star-breathe{50%{opacity:.65;filter:drop-shadow(0 0 4px #d9f3ff)}}
+#who-i-love .q-result{padding:15px 25px 30px;min-height:600px}
+#who-i-love .q-result-intro{margin:0 0 24px;text-align:center;font-family:'Songti SC','STSong',serif;font-size:24px;line-height:1.6;letter-spacing:1px;color:#fff}
+#who-i-love .q-flip-stage{perspective:1400px;width:100%;max-width:340px;margin:0 auto}
+#who-i-love .q-flipper{position:relative;min-height:385px;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.2,.7,.2,1),min-height .85s ease;transform:rotateY(0deg) rotateZ(-2deg)}
+#who-i-love .q-flip-stage.is-revealed .q-flipper{transform:rotateY(180deg) rotateZ(0deg);min-height:470px}
+#who-i-love .q-face{width:100%;border:1px solid rgba(255,255,255,0.7804);border-radius:26px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 2px 0 #d2ddeb,1px 5px 0 #a2b4d0,0 20px 38px rgba(16,29,60,0.3137);overflow:hidden}
+#who-i-love .q-analysis{display:flex;flex-direction:column;align-items:flex-start;min-height:385px;padding:27px 25px 24px;text-align:left;background:linear-gradient(140deg,#fff,#eaf0f8);color:#2e3e58;transform:translateZ(1px)}
+#who-i-love .q-analysis-kicker{display:block;font-size:11px;letter-spacing:2px;color:#667b95;margin-bottom:11px}
+#who-i-love .q-analysis-title{display:block;font-family:'Songti SC','STSong',serif;font-size:27px;line-height:1.5;letter-spacing:1px;color:#263b59;margin-bottom:17px}
+#who-i-love .q-evidence{display:block;font-size:13px;line-height:1.8;color:#64748a;margin-bottom:13px}
+#who-i-love .q-reading{display:block;font-size:15px;line-height:1.95;color:#344962;margin-bottom:24px}
+#who-i-love .q-flip-cta{display:block;align-self:flex-end;margin-top:auto;padding:11px 17px;border-radius:28px;background:#344b6b;color:#fff;font-size:13px;letter-spacing:1px}
+#who-i-love .q-person{position:absolute;top:0;right:0;bottom:0;left:0;min-height:470px;transform:rotateY(180deg) translateZ(1px);background:radial-gradient(ellipse at 50% 22%,#9eacc6,#53688c 52%,#233654 100%);text-align:left}
+#who-i-love .q-person-art{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden;pointer-events:none}
+#who-i-love .q-person-art img{position:absolute;left:50%;top:2px;width:112%;max-width:none;height:auto;transform:translateX(-50%);filter:drop-shadow(0 6px 15px rgba(18,34,59,0.2588))}
+#who-i-love .q-person-art:after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(180deg,transparent 34%,rgba(37,57,85,0.1255) 49%,rgba(34,54,81,0.9216) 76%,#223651 100%)}
+#who-i-love .q-person-caption{position:absolute;bottom:0;left:0;right:0;padding:23px;transform:translateZ(1px)}
+#who-i-love .q-person-label{font-size:11px;letter-spacing:2px;color:#daebff;margin:0 0 7px}
+#who-i-love .q-person h2{font-size:36px;margin:0 0 7px;letter-spacing:5px;color:#fff}
+#who-i-love .q-person-meta{font-size:12px;line-height:1.8;color:#d6e3f7;margin:0 0 10px}
+#who-i-love .q-person blockquote{font-size:16px;line-height:1.7;margin:0 0 13px;color:#fff}
+#who-i-love .q-flip-back{border:0;background:rgba(255,255,255,0.0941);color:#e5efff;border-radius:20px;padding:10px 14px;min-height:44px;font-size:12px}
+#who-i-love .q-result.is-arriving .q-flip-stage{animation:moon-result-arrive .65s cubic-bezier(.2,.8,.2,1) both}
+@keyframes moon-result-arrive{from{opacity:0;transform:translateY(40px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:350px){#who-i-love .q-result{padding:12px 20px 26px}#who-i-love .q-analysis{padding:23px 21px;min-height:415px}#who-i-love .q-flipper{min-height:415px}#who-i-love .q-analysis-title{font-size:25px}#who-i-love .q-result-intro{font-size:22px}#who-i-love .q-person-caption{padding:20px}}
+@media(prefers-reduced-motion:reduce){#who-i-love *{animation:none!important;transition:none!important}}
+
+/* Moonlit foil: original CSS implementation, inspired by Holo Card Studio's separated art/foil/text layers. */
+#who-i-love .q-result{perspective:1500px;padding-top:8px}
+#who-i-love .q-result-intro{font-size:23px;margin-bottom:25px}
+#who-i-love .q-flip-stage{--mx:30%;--my:24%;--foil-x:35%;--foil-y:30%;--art-x:0px;--art-y:0px;--bg-x:0px;--bg-y:0px;--tilt-x:2deg;--tilt-y:-3deg;transform:rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transform-style:preserve-3d;max-width:338px;touch-action:none;user-select:none;-webkit-user-select:none;will-change:transform}
+#who-i-love .q-flipper{min-height:510px;transform:rotateY(0);transition:transform 950ms cubic-bezier(.2,.65,.2,1);transform-style:preserve-3d}
+#who-i-love .q-flip-stage.is-revealed .q-flipper{min-height:510px;transform:rotateY(180deg)}
+#who-i-love .q-face{position:relative;border-radius:24px;border:1px solid #e4f4ff;box-shadow:0 0 0 1px rgba(158,216,230,0.6392),1px 2px 0 #d3cde5,2px 4px 0 #7a8cae,3px 6px 0 #536c91,0 22px 38px rgba(12,23,63,0.3961),inset 0 0 0 1px rgba(255,255,255,0.6706);overflow:hidden}
+#who-i-love .q-face:after{content:'';position:absolute;top:6px;right:6px;bottom:6px;left:6px;border:1px solid rgba(195,217,229,0.5020);border-radius:19px;pointer-events:none;z-index:8}
+#who-i-love .q-analysis{min-height:510px;padding:36px 28px 30px;background:radial-gradient(ellipse at 0 0,#e1f6f4 0,transparent 48%),radial-gradient(ellipse at 100% 100%,#d9dcf1,transparent 60%),linear-gradient(140deg,#fffefa,#f2f5fa 60%,#edf1fa);transform:translateZ(2px)}
+#who-i-love .q-analysis>*{position:relative;z-index:3}
+#who-i-love .q-analysis-kicker{font-size:11px;letter-spacing:2px;color:#7186a0;margin-bottom:19px}
+#who-i-love .q-analysis-title{font-size:29px;color:#283e5e;letter-spacing:2px;margin-bottom:24px}
+#who-i-love .q-evidence{font-size:13px;line-height:1.95;color:#687b95;margin-bottom:21px}
+#who-i-love .q-reading{font-size:15px;line-height:2;color:#314965;margin-bottom:29px}
+#who-i-love .q-flip-cta{min-height:44px;min-width:145px;display:flex;align-items:center;justify-content:center;padding:12px 21px;border:1px solid #c3cfe4;border-radius:17px;background:linear-gradient(112deg,#dbeeee 0%,#e8e9f6 54%,#deddf3 100%);box-shadow:inset 0 1px 0 #fff,0 3px 9px rgba(103,129,162,0.1098);color:#3e5576;font-size:13px;font-weight:500;letter-spacing:2px;transition:box-shadow .3s,filter .3s}
+#who-i-love .q-analysis:hover .q-flip-cta{filter:brightness(1.035);box-shadow:inset 0 1px 0 #fff,0 4px 15px rgba(124,164,187,0.2000)}
+#who-i-love .q-analysis:active .q-flip-cta{filter:brightness(.97)}
+#who-i-love .q-person{position:absolute;top:0;right:0;bottom:0;left:0;min-height:510px;background:#243450;transform:rotateY(180deg) translateZ(2px)}
+#who-i-love .q-person:after{border-color:rgba(212,230,249,0.6118)}
+#who-i-love .q-scene{position:absolute;top:-20px;right:-20px;bottom:-20px;left:-20px;background:radial-gradient(ellipse at 50% 27%,#c7d9eb 0%,#7894b8 35%,#3e557c 65%,#273a5e 100%);transform:translate(var(--bg-x),var(--bg-y));pointer-events:none}
+#who-i-love .q-scene:before{content:'';position:absolute;width:85%;height:56%;top:8%;left:7%;border:1px solid rgba(236,245,255,0.4392);border-radius:50%;box-shadow:0 0 0 18px rgba(209,232,252,0.0314),0 0 0 19px rgba(218,234,255,0.2314),0 0 70px rgba(212,221,255,0.1882);transform:rotate(-28deg) scaleX(.8)}
+#who-i-love .q-scene:after{content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:repeating-linear-gradient(128deg,transparent 0,transparent 58px,rgba(224,237,255,0.0431) 59px,transparent 60px,transparent 115px)}
+#who-i-love .q-person-art{z-index:2;top:0;right:0;bottom:0;left:0;overflow:hidden;transform:translate(var(--art-x),var(--art-y))}
+#who-i-love .q-person-art img{width:163%;top:3px;left:50%;filter:drop-shadow(2px 0 1px rgba(245,227,255,0.4392)) drop-shadow(-2px 0 1px rgba(189,255,244,0.5020)) drop-shadow(0 14px 18px rgba(21,41,71,0.3137))}
+#who-i-love .q-person-art:after{display:none}
+#who-i-love .q-person-shade{position:absolute;top:0;right:0;bottom:0;left:0;z-index:4;pointer-events:none;background:linear-gradient(180deg,transparent 36%,rgba(38,57,87,0.0706) 48%,rgba(37,55,85,0.6392) 66%,rgba(37,55,85,0.9490) 85%,#253755 100%)}
+#who-i-love .q-person-caption{z-index:7;padding:24px 25px 23px;transform:translate(calc(var(--art-x) * .3),calc(var(--art-y) * .3));text-shadow:0 2px 12px rgba(18,37,70,0.3137)}
+#who-i-love .q-person-label{font-size:10px;letter-spacing:2px;color:#c3d9ed;margin-bottom:9px}
+#who-i-love .q-person h2{font-size:39px;letter-spacing:7px;margin-bottom:7px;background:linear-gradient(110deg,#fffdf7,#c9e6f7 55%,#e8dbff);background-clip:text;-webkit-background-clip:text;color:transparent;text-shadow:none}
+#who-i-love .q-person-meta{font-size:11px;letter-spacing:.4px;color:#d0dff1;margin-bottom:12px}
+#who-i-love .q-person blockquote{font-family:'Songti SC','STSong',serif;font-size:16px;line-height:1.65;color:#edf2ff;margin-bottom:16px;max-width:265px}
+#who-i-love .q-flip-back{min-height:44px;padding:9px 16px;font-size:11px;letter-spacing:1px;color:#e1e9f7;border:1px solid rgba(188,207,228,0.2314);background:linear-gradient(110deg,rgba(199,230,237,0.1216),rgba(215,204,241,0.0980));border-radius:14px;box-shadow:inset 0 1px 0 rgba(224,242,255,0.1294);cursor:pointer}
+#who-i-love .q-foil{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:5!important;border-radius:inherit;pointer-events:none;background-image:repeating-linear-gradient(112deg,#a0f0ed 0%,#b8cdff 10%,#f3d2f4 20%,#e8ecc6 30%,#a6ece8 40%,#a0f0ed 50%);background-size:280% 280%;background-position:var(--foil-x) var(--foil-y);mix-blend-mode:color-dodge;opacity:.29;mask-image:radial-gradient(ellipse at 50% 29%,transparent 8%,rgba(0,0,0,0.4000) 30%,#000 78%);-webkit-mask-image:radial-gradient(ellipse at 50% 29%,transparent 8%,rgba(0,0,0,0.4000) 30%,#000 78%)}
+#who-i-love .q-analysis .q-foil{opacity:.14;mix-blend-mode:multiply;z-index:1!important;mask-image:linear-gradient(110deg,#000,transparent 42%,transparent 66%,#000);-webkit-mask-image:linear-gradient(110deg,#000,transparent 42%,transparent 66%,#000)}
+#who-i-love .q-glare{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:6!important;pointer-events:none;border-radius:inherit;background:radial-gradient(ellipse at var(--mx) var(--my),rgba(234,255,255,0.3333),transparent 47%),linear-gradient(115deg,transparent 30%,rgba(212,229,255,0.0000) 41%,rgba(234,250,255,0.2588) 47%,rgba(255,253,246,0.1020) 49%,transparent 56%);background-size:100% 100%,230% 230%;background-position:0 0,var(--foil-x) var(--foil-y);mix-blend-mode:screen;opacity:.6}
+#who-i-love .q-analysis .q-glare{opacity:.2;z-index:2!important}
+#who-i-love .q-rim{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:9!important;border-radius:inherit;border:2px solid transparent;background:linear-gradient(145deg,#c1fff0 0%,#e2faff 14%,#c8bff6 32%,#fff3d5 45%,#9cdfe9 62%,#e5bdee 77%,#d5f8ff 94%) border-box;mask:linear-gradient(#fff 0,#fff 0) padding-box,linear-gradient(#fff 0,#fff 0);mask-composite:exclude;-webkit-mask:linear-gradient(#fff 0,#fff 0) padding-box,linear-gradient(#fff 0,#fff 0);-webkit-mask-composite:xor;pointer-events:none}
+#who-i-love .q-sparkles{position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;overflow:hidden;pointer-events:none;transform:translate(var(--bg-x),var(--bg-y))}
+#who-i-love .q-spark{position:absolute;width:2px;height:2px;background:#e4fcff;border-radius:50%;box-shadow:0 0 4px #c3eaff;opacity:var(--spark-a)}
+#who-i-love .q-spark:nth-child(9n){width:3px;height:3px;box-shadow:0 0 9px 1px #dcf4ff}
+#who-i-love .q-spark:nth-child(9n):after{content:'';position:absolute;top:-4px;right:-4px;bottom:-4px;left:-4px;background:linear-gradient(transparent,#efffff,transparent);width:1px;margin:auto;transform:rotate(32deg)}
+#who-i-love .q-sweep{position:absolute!important;top:-30%;right:-30%;bottom:-30%;left:-30%;z-index:10!important;background:linear-gradient(113deg,transparent 38%,rgba(182,246,238,0.1294) 44%,rgba(239,251,255,0.5020) 48%,rgba(234,215,255,0.2510) 51%,transparent 57%);pointer-events:none;transform:translateX(-110%);mix-blend-mode:screen}
+#who-i-love .is-revealed .q-person .q-sweep{animation:moon-holo-reveal 1500ms 350ms ease-out both}
+@keyframes moon-holo-reveal{from{transform:translateX(-100%);opacity:0}25%{opacity:.8}to{transform:translateX(100%);opacity:0}}
+#who-i-love .q-result.is-arriving .q-flip-stage{animation:none}
+#who-i-love .q-result.is-arriving{animation:moon-result-arrive .65s cubic-bezier(.2,.8,.2,1) both}
+@media(max-width:350px){#who-i-love .q-result{padding-left:18px;padding-right:18px}#who-i-love .q-result-intro{font-size:21px}#who-i-love .q-flipper,#who-i-love .q-flip-stage.is-revealed .q-flipper,#who-i-love .q-person{min-height:520px}#who-i-love .q-analysis{min-height:520px;padding:31px 23px 27px}#who-i-love .q-analysis-title{font-size:26px;margin-bottom:19px}#who-i-love .q-evidence{font-size:12px;margin-bottom:16px}#who-i-love .q-reading{font-size:14px;margin-bottom:22px}#who-i-love .q-person-art img{width:190%;top:6px}#who-i-love .q-person-caption{padding:24px 22px}#who-i-love .q-person h2{font-size:36px}}
+@media(prefers-reduced-motion:reduce){#who-i-love .q-flip-stage{transform:none}#who-i-love .q-sweep{display:none}}
+
+#who-i-love .q-person .q-glare{opacity:.22}
+#who-i-love .q-person .q-foil{opacity:.30;mix-blend-mode:soft-light}
+#who-i-love .q-person .q-scene{background:linear-gradient(125deg,transparent 10%,rgba(230,188,255,0.2078) 24%,transparent 39%,rgba(159,243,228,0.2510) 69%,transparent 84%),radial-gradient(ellipse at 50% 27%,#acbdd3 0%,#6582a7 35%,#354969 65%,#202f4d 100%)}
+#who-i-love .q-scene:before{box-shadow:0 0 0 18px rgba(209,232,252,0.0118),0 0 0 19px rgba(218,234,255,0.2078),0 0 70px rgba(212,221,255,0.1255)}
+#who-i-love .q-person-shade{background:linear-gradient(180deg,transparent 35%,rgba(25,42,70,0.0706) 47%,rgba(25,42,70,0.6784) 67%,rgba(28,43,72,0.9608) 87%,#1c2b48 100%)}
+#who-i-love .q-person-caption{transform:translate(var(--text-x,0px),var(--text-y,0px))}
+#who-i-love .q-flip-stage[data-kind="sunny"] .q-scene{background:radial-gradient(ellipse at 48% 26%,#dfcdb2,#9b92ab 40%,#344663 80%)}
+#who-i-love .q-flip-stage[data-kind="spark"] .q-scene{background:radial-gradient(ellipse at 48% 26%,#c3bbdd,#7f83ad 40%,#344261 80%)}
+#who-i-love .q-flip-stage[data-kind="gentle"] .q-scene{background:radial-gradient(ellipse at 48% 26%,#b7d4d1,#6b969f 40%,#2f4864 80%)}
+
+
+#who-i-love .q-person .q-foil{opacity:.5;mix-blend-mode:color-dodge;mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,0.3333) 17%,transparent 29%,transparent 71%,rgba(0,0,0,0.3333) 83%,#000 100%);-webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,0.3333) 17%,transparent 29%,transparent 71%,rgba(0,0,0,0.3333) 83%,#000 100%)}
+#who-i-love .q-glare{background-image:radial-gradient(ellipse at var(--mx) var(--my),rgba(234,255,255,0.3333),transparent 47%),linear-gradient(115deg,transparent 30%,rgba(212,229,255,0.0000) 41%,rgba(234,250,255,0.5333) 47%,rgba(255,253,246,0.2000) 49%,transparent 56%)}
+/* Separate the printed foil plane, lifted portrait, and readable foreground type. */
+#who-i-love .q-flip-stage{--foil-strength:.56;--cloth-strength:.12;--portrait-size:163%;--portrait-top:3px;--shadow-x:0px;--shadow-y:15px;--foil-angle:115deg}
+#who-i-love .q-person{overflow:visible;transform-style:preserve-3d;background:#263957}
+#who-i-love .q-person>*{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+#who-i-love .q-material-bed{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden;border-radius:23px;transform:translateZ(0);pointer-events:none}
+#who-i-love .q-person .q-material-bed .q-foil{opacity:var(--foil-strength);mix-blend-mode:color-dodge;mask-image:linear-gradient(#000 0%,#000 54%,rgba(0,0,0,0.2667) 72%,transparent 87%);-webkit-mask-image:linear-gradient(#000 0%,#000 54%,rgba(0,0,0,0.2667) 72%,transparent 87%);background-image:repeating-linear-gradient(var(--foil-angle),#52ffce 0%,#48c6ff 8%,#a78bff 16%,#ff8cdb 24%,#ffd777 32%,#85ffc9 40%,#52ffce 48%);background-size:240% 240%;background-position:var(--foil-x) var(--foil-y)}
+#who-i-love .q-person .q-material-bed .q-glare{opacity:.48;background-image:radial-gradient(ellipse at var(--mx) var(--my),rgba(245,255,255,0.4000),transparent 44%),linear-gradient(var(--foil-angle),transparent 35%,rgba(153,255,227,0.2510) 42%,rgba(226,236,255,0.5882) 46%,rgba(255,199,249,0.4000) 49%,transparent 56%);mask-image:linear-gradient(#000 0%,#000 52%,transparent 80%);-webkit-mask-image:linear-gradient(#000 0%,#000 52%,transparent 80%)}
+#who-i-love .q-person-art{top:-13px;right:-5px;bottom:0;left:-5px;overflow:hidden;border-radius:23px;transform:translate3d(var(--art-x),var(--art-y),42px);mask-image:linear-gradient(#000 0%,#000 58%,rgba(0,0,0,0.6667) 76%,transparent 94%);-webkit-mask-image:linear-gradient(#000 0%,#000 58%,rgba(0,0,0,0.6667) 76%,transparent 94%);pointer-events:none}
+#who-i-love .q-person-art img{width:var(--portrait-size);top:var(--portrait-top);filter:drop-shadow(var(--shadow-x) var(--shadow-y) 12px rgba(7,22,41,0.6706)) drop-shadow(-1px -1px 1px rgba(217,250,255,0.4392))}
+#who-i-love .q-clothes-foil{position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:repeating-linear-gradient(var(--foil-angle),#76ffd1 0%,#69d4ff 10%,#e8a1ff 20%,#ffd9a1 30%,#76ffd1 40%);background-size:240% 240%;background-position:var(--foil-x) var(--foil-y);mix-blend-mode:color-dodge;opacity:var(--cloth-strength);mask-image:var(--portrait);-webkit-mask-image:var(--portrait);mask-size:var(--portrait-size) auto;-webkit-mask-size:var(--portrait-size) auto;mask-position:center var(--portrait-top);-webkit-mask-position:center var(--portrait-top);mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat;clip-path:inset(35% 0 28% 0)}
+#who-i-love .q-person-shade{border-radius:23px;transform:translateZ(49px);background:linear-gradient(180deg,transparent 51%,rgba(26,42,69,0.0784) 60%,rgba(27,44,73,0.7216) 76%,rgba(27,44,73,0.9804) 100%)}
+#who-i-love .q-person-caption{transform:translate3d(var(--text-x,0px),var(--text-y,0px),54px);text-shadow:0 1px 8px #10223b;font-smooth:always}
+#who-i-love .q-person .q-rim{transform:translateZ(6px);background:linear-gradient(var(--foil-angle),#c8fff4 0%,#a7cfff 17%,#ecb7ff 33%,#ffe3ab 48%,#94ffe0 67%,#d5b6ff 85%,#e5ffff 100%) border-box;filter:drop-shadow(0 0 2px rgba(215,236,255,0.3137))}
+#who-i-love .q-person:after{transform:translateZ(7px)}
+#who-i-love .q-person .q-sweep{display:none}
+#who-i-love .q-person .q-material-bed .q-sweep{display:block;opacity:.6}
+#who-i-love .q-analysis .q-glare{opacity:.18}
+#who-i-love .q-analysis .q-foil{opacity:.16}
+@media(max-width:350px){#who-i-love .q-flip-stage{--portrait-size:182%;--portrait-top:6px}#who-i-love .q-person-art{top:-10px;right:-3px;bottom:0;left:-3px;}#who-i-love .q-person-caption{transform:translate3d(0,0,54px)}}
+
+#who-i-love .q-person .q-material-bed .q-foil{mix-blend-mode:overlay;background-size:160% 160%}
+#who-i-love .q-person .q-material-bed .q-glare{opacity:.28}
+#who-i-love .q-clothes-foil{clip-path:none;-webkit-mask-image:var(--portrait),linear-gradient(transparent 32%,#000 44%,#000 57%,transparent 72%);mask-image:var(--portrait),linear-gradient(transparent 32%,#000 44%,#000 57%,transparent 72%);-webkit-mask-size:var(--portrait-size) auto,100% 100%;mask-size:var(--portrait-size) auto,100% 100%;-webkit-mask-position:center var(--portrait-top),0 0;mask-position:center var(--portrait-top),0 0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-composite:source-in;mask-composite:intersect;background-size:160% 160%}
+#who-i-love .q-person-shade{top:0;right:6px;bottom:7px;left:6px;transform:translateZ(46px);border-radius:20px;background:linear-gradient(180deg,transparent 51%,rgba(26,42,69,0.0392) 60%,rgba(27,44,73,0.5020) 76%,rgba(27,44,73,0.7216) 100%)}
+
+
+/* Approved posed portraits: framing differs from the official full-body renders. */
+#who-i-love .q-flip-stage[data-source="custom"]{--portrait-size:150%;--portrait-top:0px}
+#who-i-love .q-person-meta{line-height:1.7;overflow-wrap:break-word}
+#who-i-love .q-person-shade{background:linear-gradient(180deg,transparent 30%,rgba(25,43,70,0.2510) 43%,rgba(25,43,70,0.8118) 58%,rgba(25,43,70,0.9294) 82%,#192b46 100%)}
+@media(max-width:350px){#who-i-love .q-flip-stage[data-source="custom"]{--portrait-size:165%;--portrait-top:0px}}
+@media(prefers-reduced-motion:reduce){
+ #who-i-love .q-person-art{transform:translateZ(2px)}
+ #who-i-love .q-person-shade{transform:translateZ(3px)}
+ #who-i-love .q-person-caption{transform:translateZ(4px)}
+ #who-i-love .q-clothes-foil{opacity:.12}
+ #who-i-love .q-person .q-material-bed .q-sweep{display:none}
+}
+/* Standalone page and download controls. */
+html,body{margin:0;min-height:100%;background:#172942}body{font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+.q-save-guide{font-size:12px;line-height:1.85;letter-spacing:.5px;color:#dce7f6;margin:12px 0 0}
+.q-save-wrap{margin:26px auto 0;max-width:338px;text-align:center}.q-save-card{width:100%;min-height:50px;padding:13px 20px;border-radius:17px;border:1px solid #e3f1f1;background:linear-gradient(110deg,#d8eeee,#e9e4f7);box-shadow:inset 0 1px 0 #fff,0 6px 18px rgba(18,34,59,0.1569);color:#344c6d;letter-spacing:2px;font-size:15px}.q-save-card:disabled{opacity:.65}.q-save-pending{font-size:12px;color:#d5e1f3;margin:10px 0 0}
+/* Page padding includes the browser safe area when present. */
+.q-count > * + *{margin-left:12px}
+#who-i-love .q-screen{
+ --screen-height:calc(var(--app-height,100vh) - 2 * var(--stage-gutter));
+ --page-top:12px;--page-bottom:16px;
+ --page-top:calc(12px + env(safe-area-inset-top,0px));
+ --page-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+ padding-top:var(--page-top);padding-bottom:var(--page-bottom);
+ min-height:min(710px,var(--screen-height));
+}
+@media(max-width:440px){
+ #who-i-love .q-stage{--stage-gutter:0px;padding:0}
+ #who-i-love .q-screen{border-radius:0;min-height:var(--screen-height);max-width:440px}
+}
+.q-top{min-width:0}.q-portrait-retry{position:absolute;top:90px;left:30px;right:30px;z-index:9;color:#fff;background:#263f61;border:1px solid #c4dcf0;border-radius:14px;padding:12px}
+.q-person[aria-hidden="true"]{pointer-events:none}.q-analysis[aria-hidden="true"]{pointer-events:none}
+.q-startup-note{color:#dce7f6;font-size:13px;line-height:1.8;margin:12px 30px}
+@supports not (-webkit-mask-composite:xor){.q-rim{background:none!important;border-color:#c4ddeb!important}}
+@supports not (-webkit-mask-image:linear-gradient(#000,#000)){.q-clothes-foil{display:none!important}}
+/* Scope these rules to the generated quiz root. */
+#who-i-love .q-screen.show-result{
+ display:flex;flex-direction:column;
+ height:var(--screen-height);min-height:0;overflow-y:auto;overflow-x:hidden;
+ -webkit-overflow-scrolling:touch;
+}
+#who-i-love .q-top{height:42px;padding:0 26px;flex:none}
+#who-i-love .q-logo{height:36px;width:78px}
+#who-i-love .q-result{display:flex;flex:1;flex-direction:column;min-height:0;padding:8px 22px 14px}
+#who-i-love .q-result-intro{font-size:21px;line-height:1.4;margin:0 0 14px}
+#who-i-love .q-result-intro,#who-i-love .q-result-controls{flex:none}
+#who-i-love .q-flip-stage{flex:1 0 242px;max-width:306px;max-height:425px;touch-action:pan-y}
+#who-i-love .q-flip-stage.is-revealed{min-height:0}
+#who-i-love .q-flipper,#who-i-love .q-flip-stage.is-revealed .q-flipper,#who-i-love .q-person{min-height:0}
+#who-i-love .q-flipper{height:100%}
+#who-i-love .q-analysis{
+ height:100%;min-height:0;
+ padding:20px 22px;touch-action:pan-y;
+}
+#who-i-love .q-analysis-kicker{margin-bottom:8px}
+#who-i-love .q-analysis-title{font-size:25px;margin-bottom:10px}
+#who-i-love .q-evidence{line-height:1.65;margin-bottom:11px}
+#who-i-love .q-reading{font-size:14px;line-height:1.65;margin-bottom:14px}
+#who-i-love .q-flip-cta{min-height:40px;padding:8px 16px}
+#who-i-love .q-result-controls{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:10px 16px;
+ width:100%;max-width:306px;margin:13px auto 0;
+}
+#who-i-love .q-save-wrap{margin:0;max-width:none}
+#who-i-love .q-result:not(.show-share) .q-save-wrap{grid-column:1/-1}
+#who-i-love .q-save-card{min-height:44px;padding:10px 8px}
+#who-i-love .q-save-guide{margin:5px 0 0;line-height:1.5}
+#who-i-love .q-save-status{margin:6px 0 0;color:#fff;font-size:13px}
+#who-i-love .q-save-status:empty{display:none}
+#who-i-love .q-top .q-restart{
+ margin-right:auto;padding:8px 0;min-height:36px;border:0;background:transparent;color:#edf4ff;
+ font-size:12px;text-decoration:underline;text-underline-offset:3px
+}
+
+#who-i-love .q-foil,#who-i-love .q-glare,#who-i-love .q-clothes-foil{background-repeat:no-repeat}
+#who-i-love .q-result:not(.show-share) .q-share-panel,
+#who-i-love .q-result:not(.show-share) .q-invite-qr{display:none}
+#who-i-love .q-share-panel{grid-column:1/-1}
+#who-i-love .q-invite-qr{grid-column:2;margin:0;text-align:center}
+#who-i-love .q-invite-qr figcaption{margin-bottom:6px;color:#edf4ff;font-size:13px}
+#who-i-love .q-invite-qr img{display:block;max-width:100%;height:auto;margin:0 auto}
+#who-i-love .q-share-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#who-i-love .q-share-buttons > *{
+ display:flex;align-items:center;justify-content:center;
+ min-height:44px;border-radius:13px;border:1px solid #d4deef;
+ background:#e3e7f4;color:#344865;font-size:14px;text-decoration:none
+}
+#who-i-love .q-invite-link{
+ width:100%;margin-top:10px;padding:8px;border:1px solid #d4deef;border-radius:8px;
+ color:#344865;background:#fff;font-size:16px
+}
+#who-i-love .q-share-panel p{margin:6px 0 0;color:#fff;font-size:13px}
+#who-i-love .q-share-panel p:empty{display:none}
+
+#who-i-love .q-official-guide{max-width:306px;margin:16px auto 0;color:#edf4ff;text-align:center;font-size:14px;line-height:1.65}
+#who-i-love .q-result:not(.show-share) .q-official-guide{display:none}
+
+@media(max-height:740px){
+ #who-i-love .q-heading{min-height:122px;padding-top:14px}
+ #who-i-love .q-count{margin-bottom:10px}
+ #who-i-love .q-deck{height:clamp(248px,calc(var(--screen-height) - var(--page-top) - var(--page-bottom) - 224px),370px)}
+ #who-i-love .q-card{height:calc(100% - 34px);padding:16px 20px}
+ #who-i-love .q-text{padding-top:8px}
+ #who-i-love .q-answer{line-height:1.36;margin-bottom:10px}
+ #who-i-love .q-detail{font-size:13px;line-height:1.6}
+ #who-i-love .q-card-end{margin-top:10px}
+ #who-i-love .q-bottom{min-height:44px;padding-bottom:8px}
+ #who-i-love .q-person-caption{padding:12px 18px 10px}
+ #who-i-love .q-person h2{font-size:32px;margin-bottom:5px}
+ #who-i-love .q-person-label{margin-bottom:5px}
+ #who-i-love .q-person-meta{line-height:1.5;margin-bottom:7px}
+ #who-i-love .q-person blockquote{font-size:14px;line-height:1.5;margin-bottom:8px}
+}
+@media(max-height:640px){
+ #who-i-love .q-screen{
+  --page-top:calc(8px + env(safe-area-inset-top,0px));
+  --page-bottom:calc(8px + env(safe-area-inset-bottom,0px));
+ }
+ #who-i-love .q-top{height:36px}
+ #who-i-love .q-logo{height:30px}
+ #who-i-love .q-result{padding:4px 18px 4px}
+ #who-i-love .q-result-intro{font-size:18px;margin-bottom:9px}
+ #who-i-love .q-flip-stage{flex-basis:212px}
+ #who-i-love .q-result-controls{gap:6px 16px;margin-top:6px}
+ #who-i-love .q-invite-qr img{width:86px}
+}
