@@ -231,6 +231,9 @@ html,body{margin:0;min-height:100%;background:#172942}body{font-family:"PingFang
 #who-i-love .q-foil,#who-i-love .q-glare,#who-i-love .q-clothes-foil{background-repeat:no-repeat}
 #who-i-love .q-result:not(.show-share) .q-share-panel{display:none}
 #who-i-love .q-share-panel{max-width:306px;margin:14px auto 0}
+#who-i-love .q-invite-qr{margin:0 0 12px;text-align:center}
+#who-i-love .q-invite-qr figcaption{margin-bottom:6px;color:#edf4ff;font-size:13px}
+#who-i-love .q-invite-qr img{display:block;max-width:100%;height:auto;margin:0 auto}
 #who-i-love .q-share-buttons{display:flex}
 #who-i-love .q-share-buttons > *{
  display:flex;align-items:center;justify-content:center;

@@ -278,6 +278,10 @@ function renderResult(enter){
    : '将图片保存到相册，再到月光茧 App 选择「导入人设卡」。'}</p>
  </div>
  <div class="q-share-panel">
+  <figure class="q-invite-qr">
+   <figcaption>扫码来测</figcaption>
+   <img src="./assets/quiz-invite-qr.png" width="172" height="172" alt="「我爱的角色」测评二维码">
+  </figure>
   <div class="q-share-buttons">
    <a href="https://www.lunakoru.com/">了解月光茧</a>
    <button type="button" data-type="card">邀请好友来测</button>
