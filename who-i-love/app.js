@@ -270,26 +270,28 @@ function renderResult(enter){
  const evidence=selected.sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,2).sort((a,b)=>a.index-b.index).map(({option})=>`「${option.title.replace(/\n/g,'').replace(/[「」]/g,'')}」`).join('，也选了');
  const container=$('.q-result');
  container.classList.toggle('is-arriving',!!enter);
- container.innerHTML=`<p class="q-result-intro">${quizId==='love'?'原来，你会为这样的他心动':'这样的你，会让谁心动？'}</p><div class="q-flip-stage" data-kind="${kind}" data-character="${person.id}" data-source="${person.source}"><div class="q-flipper"><button class="q-face q-analysis cursor-interaction" aria-label="翻开分析卡，揭晓对应角色"><span class="q-foil" aria-hidden="true"></span><span class="q-glare" aria-hidden="true"></span><span class="q-rim" aria-hidden="true"></span><span class="q-analysis-kicker">${quizId==='love'?'你的心动，藏在选择里':'你的选择，写出了你的温柔'}</span><strong class="q-analysis-title">${r.name}</strong><span class="q-evidence">你选了${evidence}</span><span class="q-reading">${quizId==='love'?person.matchLove:person.matchLoved}</span><span class="q-flip-cta">翻开，看看他</span></button><section class="q-face q-person" aria-label="匹配角色：${person.name}" aria-hidden="true" inert><div class="q-material-bed"><div class="q-scene" aria-hidden="true"></div><div class="q-sparkles" aria-hidden="true">${Array.from({length:46},(_,i)=>`<span class="q-spark" style="left:${(i*67+11)%100}%;top:${(i*43+7)%100}%;--spark-a:${.25+(i%6)*.12}"></span>`).join('')}</div><span class="q-foil" aria-hidden="true"></span><span class="q-glare" aria-hidden="true"></span><span class="q-sweep" aria-hidden="true"></span></div><div class="q-person-art"><img src="${person.image}" alt="${person.name}角色立绘" draggable="false"><span class="q-clothes-foil" aria-hidden="true" style="--portrait:url('${person.image}')"></span></div><div class="q-person-shade" aria-hidden="true"></div><span class="q-rim" aria-hidden="true"></span><span class="q-sweep" aria-hidden="true"></span><div class="q-person-caption"><p class="q-person-label">${quizId==='love'?'与你心动同频的他':'可能为你心动的他'}</p><h2>${person.name}</h2><p class="q-person-meta">${person.archetype?person.archetype+' · ':''}${person.job} · ${person.age}岁</p><blockquote>${person.quoted?'「'+person.line+'」':person.line}</blockquote><button class="q-flip-back cursor-interaction">再看分析</button></div></section></div></div><div class="q-save-wrap" hidden>
-  <button type="button" class="q-save-card" disabled>下载人设卡</button>
-  <p class="q-save-status" role="status"></p>
-  <p class="q-save-guide">${person.source === 'official'
-   ? `打开月光茧 App，选择「邂逅他」，在官方角色中选择${person.name}。`
-   : '将图片保存到相册，再到月光茧 App 选择「导入人设卡」。'}</p>
- </div>
- <div class="q-share-panel">
+ container.innerHTML=`<p class="q-result-intro">${quizId==='love'?'原来，你会为这样的他心动':'这样的你，会让谁心动？'}</p><div class="q-flip-stage" data-kind="${kind}" data-character="${person.id}" data-source="${person.source}"><div class="q-flipper"><button class="q-face q-analysis cursor-interaction" aria-label="翻开分析卡，揭晓对应角色"><span class="q-foil" aria-hidden="true"></span><span class="q-glare" aria-hidden="true"></span><span class="q-rim" aria-hidden="true"></span><span class="q-analysis-kicker">${quizId==='love'?'你的心动，藏在选择里':'你的选择，写出了你的温柔'}</span><strong class="q-analysis-title">${r.name}</strong><span class="q-evidence">你选了${evidence}</span><span class="q-reading">${quizId==='love'?person.matchLove:person.matchLoved}</span><span class="q-flip-cta">翻开，看看他</span></button><section class="q-face q-person" aria-label="匹配角色：${person.name}" aria-hidden="true" inert><div class="q-material-bed"><div class="q-scene" aria-hidden="true"></div><div class="q-sparkles" aria-hidden="true">${Array.from({length:46},(_,i)=>`<span class="q-spark" style="left:${(i*67+11)%100}%;top:${(i*43+7)%100}%;--spark-a:${.25+(i%6)*.12}"></span>`).join('')}</div><span class="q-foil" aria-hidden="true"></span><span class="q-glare" aria-hidden="true"></span><span class="q-sweep" aria-hidden="true"></span></div><div class="q-person-art"><img src="${person.image}" alt="${person.name}角色立绘" draggable="false"><span class="q-clothes-foil" aria-hidden="true" style="--portrait:url('${person.image}')"></span></div><div class="q-person-shade" aria-hidden="true"></div><span class="q-rim" aria-hidden="true"></span><span class="q-sweep" aria-hidden="true"></span><div class="q-person-caption"><p class="q-person-label">${quizId==='love'?'与你心动同频的他':'可能为你心动的他'}</p><h2>${person.name}</h2><p class="q-person-meta">${person.archetype?person.archetype+' · ':''}${person.job} · ${person.age}岁</p><blockquote>${person.quoted?'「'+person.line+'」':person.line}</blockquote><button class="q-flip-back cursor-interaction">再看分析</button></div></section></div></div>
+ <div class="q-result-controls">
+  <div class="q-save-wrap" hidden>
+   <button type="button" class="q-save-card" disabled>下载人设卡</button>
+   <p class="q-save-status" role="status"></p>
+   <p class="q-save-guide">${person.source === 'official'
+    ? `打开月光茧 App，选择「邂逅他」，在官方角色中选择${person.name}。`
+    : '将图片保存到相册，再到月光茧 App 选择「导入人设卡」。'}</p>
+  </div>
   <figure class="q-invite-qr">
    <figcaption>扫码来测</figcaption>
-   <img src="./assets/quiz-invite-qr.png" width="172" height="172" alt="「我爱的角色」测评二维码">
+   <img src="./assets/quiz-invite-qr.png" width="129" height="129" alt="「我爱的角色」测评二维码">
   </figure>
-  <div class="q-share-buttons">
-   <a href="https://www.lunakoru.com/">了解月光茧</a>
-   <button type="button" data-type="card">邀请好友来测</button>
+  <div class="q-share-panel">
+   <div class="q-share-buttons">
+    <a href="https://www.lunakoru.com/">了解月光茧</a>
+    <button type="button" data-type="card">邀请好友来测</button>
+   </div>
+   <input type="url" class="q-invite-link" aria-label="测评链接" readonly hidden>
+   <p role="status"></p>
   </div>
-  <input type="url" class="q-invite-link" aria-label="测评链接" readonly hidden>
-  <p role="status"></p>
- </div>
- <div class="q-result-actions"><button class="q-restart cursor-interaction">重新测试</button></div>`;
+ </div>`;
  const flip=(reveal,focus=false)=>{
   state.revealed=reveal;container.classList.toggle('show-share',reveal);
   const saveWrap=$('.q-save-wrap');if(saveWrap)saveWrap.hidden=person.source==='official' && !reveal;
@@ -301,15 +303,27 @@ function renderResult(enter){
  };
  $('.q-analysis').addEventListener('click',()=>flip(true,true));
  $('.q-flip-back').addEventListener('click',()=>flip(false,true));
- $('.q-restart').addEventListener('click',()=>{state={step:0,card:0,answers:[],revealed:false};suppress=0;render();save();announce();});
 
  bindResultActions(person);bindPortraitRetry(person);holoCleanup=bindHolo($('.q-flip-stage'));
  flip(!!state.revealed);live.textContent=state.revealed?`为你揭晓：${person.name}`:`${r.name}，点击卡片揭晓角色`;
 }
 
-function render(enter=false){cleanupResultCard();cleanupResultCard=()=>{};holoCleanup();const done=state.step===5;$('.q-screen').classList.toggle('show-result',done);$('.q-quiz').hidden=done;$('.q-result').hidden=!done;if(done){renderResult(enter);return;}
+function render(enter=false){cleanupResultCard();cleanupResultCard=()=>{};holoCleanup();const done=state.step===5;$('.q-screen').classList.toggle('show-result',done);restart.hidden=!done;$('.q-quiz').hidden=done;$('.q-result').hidden=!done;if(done){renderResult(enter);return;}
 const q=questions[state.step];$('.q-count').setAttribute('role','img');$('.q-count').setAttribute('aria-label',`第 ${state.step+1} 题，共 5 题`);$('.q-count').innerHTML=questions.map((_,i)=>`<span aria-hidden="true" class="q-star ${i<state.step?'is-done':i===state.step?'is-current':''}">✦</span>`).join('');$('.q-question').textContent=q.title;deck.innerHTML='<div class="q-floor" aria-hidden="true"></div>'+q.options.map((o,i)=>`<button class="q-card cursor-interaction" aria-label="选择：${o.title.replace(/\n/g,'')} ${o.copy}"><div class="q-text"><h3 class="q-answer">${o.title}</h3><p class="q-detail">${o.copy}</p></div><div class="q-card-end"><span class="q-select">选这个</span></div></button>`).join('');deck.querySelectorAll('.q-card').forEach((el,i)=>el.addEventListener('click',()=>choose(i)));$('.q-back').disabled=state.step===0;direction=1;paint();deck.classList.toggle('q-enter',enter);}
 $('.q-back').addEventListener('click',back);
+const restart = document.createElement('button');
+restart.type = 'button';
+restart.className = 'q-restart cursor-interaction';
+restart.hidden = true;
+restart.textContent = '重新测试';
+$('.q-top').prepend(restart);
+restart.addEventListener('click', () => {
+ state = {step:0,card:0,answers:[],revealed:false};
+ suppress = 0;
+ render();
+ save();
+ announce();
+});
 // Touch input is handled separately from mouse input. The entire deck accepts swipes.
 function beginSwipe(x,y,id,card){if(busy||state.step>=5)return;deck.classList.remove('q-enter');gesture={id,x,y,dx:0,start:performance.now(),lastX:x,lastTime:performance.now(),velocity:0,moved:false,card};}
 function dragSwipe(x,y){const g=gesture;if(!g)return;const dx=x-g.x,dy=y-g.y;if(!g.moved&&Math.abs(dy)>Math.abs(dx)*1.35&&Math.abs(dy)>16){gesture=null;return;}if(Math.abs(dx)>6||g.moved){g.moved=true;g.dx=dx;const now=performance.now();g.velocity=(x-g.lastX)/Math.max(1,now-g.lastTime);g.lastTime=now;g.lastX=x;direction=dx<=0?1:-1;suppress=Date.now()+450;paint(Math.min(.92,Math.abs(dx)/(deck.clientWidth*.73)),dx);}}
