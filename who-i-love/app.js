@@ -99,8 +99,6 @@ function cardRoundRect(c,x,y,w,h,r){
 let cleanupResultCard = () => {};
 function bindResultActions(person) {
  const saveButton = $('.q-save-card');
- const preview = $('.q-card-preview');
- const previewImage = preview.querySelector('img');
  const imageShare = $('[data-type="image"]');
  const inviteShare = $('[data-type="card"]');
  const inviteLink = $('.q-invite-link');
@@ -123,8 +121,6 @@ function bindResultActions(person) {
    png = await createPersonaPng(person);
    if (!saveButton.isConnected) return;
    cardUrl = URL.createObjectURL(png);
-   previewImage.src = cardUrl;
-   preview.hidden = false;
    imageShare.disabled = false;
    saveButton.textContent = '下载人设卡';
   } catch {
@@ -162,9 +158,7 @@ function bindResultActions(person) {
   } catch (error) {
    if (error.name === 'AbortError') return;
   }
-  status.textContent = '可下载图片，或在预览中长按保存后分享。';
-  preview.open = true;
-  preview.querySelector('summary').focus();
+  status.textContent = '请先下载人设卡，再分享图片。';
  });
 
  inviteLink.value = quizUrl;
@@ -293,10 +287,6 @@ function renderResult(enter){
   <p class="q-save-guide">${person.source === 'official'
    ? `打开月光茧 App，选择「邂逅他」，在官方角色中选择${person.name}。`
    : '将图片保存到相册，再到月光茧 App 选择「导入人设卡」。'}</p>
-  <details class="q-card-preview" hidden>
-   <summary>预览图片（可长按保存）</summary>
-   <img alt="${person.name}的人设卡">
-  </details>
  </div>
  <div class="q-share-panel">
   <div class="q-share-buttons">

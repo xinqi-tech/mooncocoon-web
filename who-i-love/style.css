@@ -177,7 +177,7 @@
  #who-i-love .q-clothes-foil{opacity:.12}
  #who-i-love .q-person .q-material-bed .q-sweep{display:none}
 }
-/* Standalone output only: native document downloads and mobile long-press. */
+/* Standalone page and download controls. */
 html,body{margin:0;min-height:100%;background:#172942}body{font-family:"PingFang SC","Microsoft YaHei",sans-serif}
 .q-save-guide{font-size:12px;line-height:1.85;letter-spacing:.5px;color:#dce7f6;margin:12px 0 0}
 .q-save-wrap{margin:26px auto 0;max-width:338px;text-align:center}.q-save-card{width:100%;min-height:50px;padding:13px 20px;border-radius:17px;border:1px solid #e3f1f1;background:linear-gradient(110deg,#d8eeee,#e9e4f7);box-shadow:inset 0 1px 0 #fff,0 6px 18px rgba(18,34,59,0.1569);color:#344c6d;letter-spacing:2px;font-size:15px}.q-save-card:disabled{opacity:.65}.q-save-pending{font-size:12px;color:#d5e1f3;margin:10px 0 0}
@@ -222,9 +222,6 @@ html,body{margin:0;min-height:100%;background:#172942}body{font-family:"PingFang
 #who-i-love .q-save-guide{margin:5px 0 0;line-height:1.5}
 #who-i-love .q-save-status{margin:6px 0 0;color:#fff;font-size:13px}
 #who-i-love .q-save-status:empty{display:none}
-#who-i-love .q-card-preview{margin-top:10px;color:#edf4ff;font-size:13px}
-#who-i-love .q-card-preview summary{padding:8px;cursor:pointer}
-#who-i-love .q-card-preview img{display:block;width:100%;height:auto;border-radius:12px}
 #who-i-love .q-result-actions{margin:8px auto 0;justify-content:center}
 #who-i-love .q-result-actions .q-restart{
  padding:8px 16px;min-height:44px;border:0;background:transparent;color:#edf4ff;
