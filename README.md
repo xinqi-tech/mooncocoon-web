@@ -1,5 +1,11 @@
 # 月光茧官网 (mooncocoon-web)
 
+## 我爱的角色测评
+
+页面入口为 `/who-i-love/`。发布时将整个 `who-i-love/` 目录放入官网静态托管根目录。在本地运行 `python3 preview_server.py --port 8769` 后，访问 [测评预览](http://127.0.0.1:8769/who-i-love/)。
+
+答题、匹配和人设卡 PNG 在浏览器中生成。图片可直接下载，也可在预览中长按保存。支持的浏览器可系统分享卡片或测评链接，链接也可复制。
+
 ## 预约回归
 
 - 基础检查：`node --test tests/reservation.test.mjs`。

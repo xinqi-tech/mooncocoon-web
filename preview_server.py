@@ -17,7 +17,7 @@ READS = {'/activity', '/mine'}
 WRITES = {'POST': {'/sms', '/verify', '/reserve', '/reserve-with-code', '/lookup', '/lookup/subscribe', '/activation-code', '/bundle-code', '/subscribe', '/unsubscribe', '/logout'}, 'PATCH': {'/platform'}}
 PUBLIC_ROOTS = {'index.html', 'reservation.js', 'reservation.css', 'app-ui.css', 'region.js',
                 'title-plates.js', 'images', 'videos', 'audio', 'fonts', 'vendor',
-                'privacy-policy', 'user-agreement'}
+                'privacy-policy', 'user-agreement', 'who-i-love'}
 
 def preview_host(value, real_test):
     address = ipaddress.IPv4Address(value)
